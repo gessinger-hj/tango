@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+  <xml>
+    <LocaleCode>en_US</LocaleCode>
+    <CountryCode>US</CountryCode>
+    <Language>en</Language>
+    <TextDirection>ltr</TextDirection>
+    <TextVerticalDirection>tb</TextVerticalDirection>
+    <CurrencySymbol>$</CurrencySymbol>
+    <InternationalCurrencySymbol>USD</InternationalCurrencySymbol>
+    <DecimalSeparator>.</DecimalSeparator>
+    <GroupingSeparator>,</GroupingSeparator>
+    <MonetaryDecimalSeparator>.</MonetaryDecimalSeparator>
+    <PatternSeparator>;</PatternSeparator>
+    <Percent>%</Percent>
+    <PerMill>‰</PerMill>
+    <ZeroDigit>0</ZeroDigit>
+    <FirstDayOfWeek>1</FirstDayOfWeek>
+    <FormatSymbols>
+      <Date><![CDATA[["en"
+,["January"
+,"February"
+,"March"
+,"April"
+,"May"
+,"June"
+,"July"
+,"August"
+,"September"
+,"October"
+,"November"
+,"December"
+,"Jan"
+,"Feb"
+,"Mar"
+,"Apr"
+,"May"
+,"Jun"
+,"Jul"
+,"Aug"
+,"Sep"
+,"Oct"
+,"Nov"
+,"Dec"
+],["Sunday"
+,"Monday"
+,"Tuesday"
+,"Wednesday"
+,"Thursday"
+,"Friday"
+,"Saturday"
+,"Sun"
+,"Mon"
+,"Tue"
+,"Wed"
+,"Thu"
+,"Fri"
+,"Sat"
+]
+,"M/d/yy"
+,"MMM d, yyyy"
+,"MMMM d, yyyy"
+,"M/d/yy HH:mm:ss"
+,"MMM d, yyyy HH:mm:ss"
+,"MMMM d, yyyy HH:mm:ss"]]]></Date>
+    </FormatSymbols>
+    <CurrencySymbolInFront>true</CurrencySymbolInFront>
+  </xml>

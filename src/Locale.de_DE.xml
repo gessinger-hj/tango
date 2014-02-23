@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+  <xml>
+    <LocaleCode>de_DE</LocaleCode>
+    <CountryCode>DE</CountryCode>
+    <Language>de</Language>
+    <TextDirection>ltr</TextDirection>
+    <TextVerticalDirection>tb</TextVerticalDirection>
+    <CurrencySymbol>€</CurrencySymbol>
+    <InternationalCurrencySymbol>EUR</InternationalCurrencySymbol>
+    <DecimalSeparator>,</DecimalSeparator>
+    <GroupingSeparator>.</GroupingSeparator>
+    <MonetaryDecimalSeparator>,</MonetaryDecimalSeparator>
+    <PatternSeparator>;</PatternSeparator>
+    <Percent>%</Percent>
+    <PerMill>‰</PerMill>
+    <ZeroDigit>0</ZeroDigit>
+    <FirstDayOfWeek>2</FirstDayOfWeek>
+    <FormatSymbols>
+      <Date><![CDATA[["de"
+,["Januar"
+,"Februar"
+,"März"
+,"April"
+,"Mai"
+,"Juni"
+,"Juli"
+,"August"
+,"September"
+,"Oktober"
+,"November"
+,"Dezember"
+,"Jan"
+,"Feb"
+,"Mrz"
+,"Apr"
+,"Mai"
+,"Jun"
+,"Jul"
+,"Aug"
+,"Sep"
+,"Okt"
+,"Nov"
+,"Dez"
+],["Sonntag"
+,"Montag"
+,"Dienstag"
+,"Mittwoch"
+,"Donnerstag"
+,"Freitag"
+,"Samstag"
+,"So"
+,"Mo"
+,"Di"
+,"Mi"
+,"Do"
+,"Fr"
+,"Sa"
+]
+,"dd.MM.yy"
+,"dd.MM.yyyy"
+,"d. MMMM yyyy"
+,"dd.MM.yy HH:mm:ss"
+,"dd.MM.yyyy HH:mm:ss"
+,"d. MMMM yyyy HH:mm:ss"]]]></Date>
+    </FormatSymbols>
+    <CurrencySymbolInFront>false</CurrencySymbolInFront>
+  </xml>
