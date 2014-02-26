@@ -2,7 +2,7 @@ var sax = require('sax');
 var T = require ( "Tango" ) ;
 var DateUtils = require ( "DateUtils" ) ;
 
-var U = require ( "util" ) ;
+var util = require ( "util" ) ;
 var StringStreamWritable = require ( "StringStreamWritable" ) ;
 
 /**
@@ -888,6 +888,10 @@ XmlElement.prototype._evaluateProperty = function ( propertyValue, properties, e
 
   return ;
 };
+XmlElement.prototype.toJSON = function()
+{
+  return { type:'Xml', 'value': this.toString() } ;
+};
 
 /**
   * @constructor
@@ -968,7 +972,7 @@ XmlTree = function ( name )
 };
 
 // XmlTree.inherits ( XmlElement ) ;
-U.inherits ( XmlTree, XmlElement ) ;
+T.inherits ( XmlTree, XmlElement ) ;
 
 XmlTree.prototype._setCollectedElements = function ( list )
 {

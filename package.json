@@ -25,7 +25,8 @@
         "node": ">= 0.6.x"
     },
     "dependencies": {
-        "sax":"0.6.x"
+        "sax":"0.6.x",
+        "promise": ">=4.0.0"
     },
     "devDependencies": {
     }

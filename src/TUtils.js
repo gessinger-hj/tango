@@ -30,7 +30,11 @@ MultiHash.prototype =
     }
     l = this._hash[key] ;
     if ( ! l ) return false ;
-    l.remove ( obj ) ;
+    var index = l.indexOf ( obj ) ;
+    if ( index >= 0 )
+    {
+      l.splice ( index, 1 ) ;
+    }
     if ( ! l.length )
     {
       delete this._hash[key] ;

@@ -1,18 +1,9 @@
+// http://www.sebastianseilund.com/nodejs-async-in-practice
 /** 
  * @module Tango
  * @exports Tango
  */
 var util = require  ( "util" ) ;
-Function.prototype.inherits = function ( parentClass )
-{
-  if ( ! parentClass )
-  {
-    return ;
-  }
-  // this.prototype = new parentClass();
-  this.prototype = Object.create ( parentClass.prototype ) ;
-  this.prototype.constructor = this;
-};
 if ( ! String.prototype.startsWith )
 {
   String.prototype.startsWith = function ( needle )
@@ -32,43 +23,6 @@ if ( ! String.prototype.endsWith )
     return false ;
   };
 };
-if ( !Array.prototype.remove)
-{
-  Array.prototype.remove = function (element)
-  {
-    var length = this.length ;
-    if ( typeof ( element ) == 'number' )
-    {
-      var index = Math.floor ( element ) ;
-      if ( index < 0 ) return false ;
-      if ( index >= length ) return false ;
-      this.splice ( index, 1 ) ;
-      return true ;
-    }
-    if ( typeof ( element ) == 'string' || typeof ( element ) == 'number' || typeof ( element ) == 'boolean' )
-    {
-      for ( var i = 0 ; i < length ; i++ )
-      {
-        if ( this[i] == element )
-        {
-          this.splice ( i, 1 ) ;
-          return true ;
-  }
-      }
-      return false ;
-    }
-    for ( var i = 0 ; i < length ; i++ )
-    {
-      if ( this[i] === element )
-      {
-        this.splice ( i, 1 ) ;
-        return true ;
-      }
-    }
-    return false ;
-  } ;
-};
-
 /**
  * @constructor
  */
@@ -110,6 +64,12 @@ TangoClass.prototype.initSuper = function ( thiz, parentClass )
     parentClass.call ( thiz ) ;
   }
 };
+TangoClass.prototype.inherits = function ( clazz, parentClazz )
+{
+  clazz.prototype = Object.create ( parentClazz.prototype ) ;
+  clazz.prototype.constructor = this;
+};
+
 TangoClass.prototype.mixin = function ( from, to )
 {
   for ( var key in from )
@@ -323,7 +283,7 @@ TangoClass.prototype.serialize = function ( obj )
   {
     Date.prototype.toJSON = function()
     {
-      return { clazz:'Date', 'value': this.toISOString() } ;
+      return { type:'Date', 'value': this.toISOString() } ;
     };
     return JSON.stringify ( obj ) ; //+ "\r\n" ;
   }
@@ -334,7 +294,7 @@ TangoClass.prototype.serialize = function ( obj )
   }
 };
 /** */
-TangoClass.prototype.deepDeserializeClazz = function ( obj )
+TangoClass.prototype.deepDeserializeClass = function ( obj )
 {
   if ( ! obj ) return ;
   for ( var k in obj )
@@ -344,11 +304,23 @@ TangoClass.prototype.deepDeserializeClazz = function ( obj )
     var o = obj[k] ;
     if ( ! o ) continue ;
     
-    if ( o.clazz && typeof o.clazz === 'string' )
+    if ( typeof o.type === 'string' )
     {
-      if ( o.clazz === 'Date' )
+      if ( o.type === 'Date' )
       {
         obj[k] = new Date ( o.value ) ;
+        continue ;
+      }
+      if ( o.type === 'Xml' )
+      {
+        var txml = require ( "TXml" ) ;
+        var f = new txml.XmlFactory() ;
+        obj[k] = f.create ( o.value ) ;
+        continue ;
+      }
+      if ( o.type === "Buffer" && this.isArray ( o.data ) )
+      {
+        obj[k] = new Buffer ( o.data ) ;
         continue ;
       }
     }
@@ -356,28 +328,23 @@ TangoClass.prototype.deepDeserializeClazz = function ( obj )
     {
 // console.log ( "o.className=" + o.className ) ;
     }
-    if ( o && typeof o === 'object' )
+    if ( typeof o === 'object' )
     {
-      if ( o.type === "Buffer" && this.isArray ( o.data ) )
-      {
-        obj[k] = new Buffer ( o.data ) ;
-        continue ;
-      }
-      this.deepDeserializeClazz ( o ) ;
+      this.deepDeserializeClass ( o ) ;
     }
   }
 }
 /** */
-TangoClass.prototype.deserialize = function ( serializedObject, deepClazzInspection )
+TangoClass.prototype.deserialize = function ( serializedObject, deepClassInspection )
 {
   var that ;
   var obj = serializedObject ;
-  if ( deepClazzInspection !== false ) deepClazzInspection = true ;
+  if ( deepClassInspection !== false ) deepClassInspection = true ;
   if ( typeof serializedObject === 'string' )
   {
     obj = JSON.parse ( serializedObject ) ;
   }
-  if ( deepClazzInspection ) this.deepDeserializeClazz ( obj ) ;
+  if ( deepClassInspection ) this.deepDeserializeClass ( obj ) ;
   if ( obj.className && typeof obj.className === 'string' )
   {
     var f = eval ( obj.className ) ;

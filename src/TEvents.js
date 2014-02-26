@@ -1,4 +1,4 @@
-var u  = require ( "Tango.js" ) ;
+var T  = require ( "Tango.js" ) ;
 
 /**
  *  @constructor
@@ -15,10 +15,10 @@ var FunctionExecutor = function ( object, method, args )
     this.method = method ;
     if ( args )
     {
-      if ( u.isArray ( args ) ) a = args ;
+      if ( T.isArray ( args ) ) a = args ;
       else
       {
-        a = u.toArray ( arguments ) ;
+        a = T.toArray ( arguments ) ;
         a.splice ( 0, 2 ) ;
       }
     }
@@ -30,8 +30,8 @@ var FunctionExecutor = function ( object, method, args )
     this.method = object ;
     if ( method )
     {
-      if ( u.isArray ( method ) ) a = method ;
-      else { a = u.toArray(arguments) ; a.splice ( 0, 1 ) ; }
+      if ( T.isArray ( method ) ) a = method ;
+      else { a = T.toArray(arguments) ; a.splice ( 0, 1 ) ; }
     }
   }
   // else
@@ -82,7 +82,7 @@ FunctionExecutor.prototype.execute = function ( argumentArray )
     argumentArray = this.argsArray ;
   }
   else
-  if ( ! u.isArray ( argumentArray ) )
+  if ( ! T.isArray ( argumentArray ) )
   {
     argumentArray = [ argumentArray ] ;
   }
@@ -254,34 +254,34 @@ TEvent.prototype.toString = function()
 var TItemEvent = function ( item, type )
 {
   if ( ! type ) type = TEvent.prototype.ITEM_SELECTED ;
-  u.initSuper ( this, TEvent, null, type ) ;
+  T.initSuper ( this, TEvent, null, type ) ;
   this.jsClassName = "TItemEvent" ;
   this.item = item ;
 };
-TItemEvent.inherits( TEvent ) ;
+T.inherits ( TItemEvent, TEvent ) ;
 /**
  *  @constructor
  *  @extends TEvent
  */
 var TActionEvent = function ( actionName )
 {
-  u.initSuper ( this, TEvent, actionName, TEvent.prototype.ACTION ) ;
+  T.initSuper ( this, TEvent, actionName, TEvent.prototype.ACTION ) ;
   this.jsClassName = "TActionEvent" ;
   this.action = actionName ;
   if ( ! this.action ) this.action = "*" ;
 };
-TActionEvent.inherits( TEvent ) ;
+T.inherits ( TActionEvent, TEvent ) ;
 /**
  *  @constructor
  *  @extends TEvent
  */
 var TPropertyChangeEvent = function ( propertyName )
 {
-  u.initSuper ( this, TEvent, propertyName, TEvent.prototype.PROPERTY_CHANGE ) ;
+  T.initSuper ( this, TEvent, propertyName, TEvent.prototype.PROPERTY_CHANGE ) ;
   this.jsClassName = "TPropertyChangeEvent" ;
   this.propertyName = propertyName ;
 };
-TPropertyChangeEvent.inherits( TEvent ) ;
+T.inherits ( TPropertyChangeEvent, TEvent ) ;
 
 /**
  *  @constructor
@@ -416,10 +416,10 @@ PropertyChangeTrait._firePropertyChangeEvent = function ( ev, propertyName )
  */
 EventMulticaster = function()
 {
-  u.initSuper ( this, PropertyChangeHandler );
+  T.initSuper ( this, PropertyChangeHandler );
   this.jsClassName = "EventMulticaster" ;
 }
-EventMulticaster.inherits( PropertyChangeHandler ) ;
+T.inherits ( EventMulticaster, PropertyChangeHandler ) ;
 EventMulticaster.prototype.toString = function()
 {
   return "(" + this.jsClassName + ")" ;
