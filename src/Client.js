@@ -3,7 +3,7 @@ var os = require('os');
 var NEvent = require ( "Event" ).NEvent ;
 var T = require ( "Tango" ) ;
 var events = require ( "TEvents" ) ;
-var MultiHash = require ( "TUtils" ).MultiHash ;
+var MultiHash = require ( "Utils" ).MultiHash ;
 var Logger = require ( "TLogFile" ) ;
 var User = require ( "User" ) ;
 

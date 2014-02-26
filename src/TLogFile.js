@@ -1,6 +1,6 @@
 var Path = require ( "path" ) ;
 var T = require ( "Tango" ) ;
-var File = require ( "TFile" ) ;
+var File = require ( "File" ) ;
 var fs = require ( "fs" ) ;
 var util = require ( "util" ) ;
 

@@ -1,5 +1,5 @@
 var T = require ( "Tango" ) ;
-var txml = require ( 'TXml' ) ;
+var txml = require ( 'Xml' ) ;
 var LocalizedMessages = require ( 'LocalizedMessages' ) ;
 
 /**

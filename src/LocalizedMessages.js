@@ -1,6 +1,6 @@
 var T = require ( "Tango" ) ;
-var txml = require ( 'TXml' ) ;
-var File = require ( 'TFile' ) ;
+var txml = require ( 'Xml' ) ;
+var File = require ( 'File' ) ;
 
 /**
 	* @constructor

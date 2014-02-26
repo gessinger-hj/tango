@@ -146,7 +146,7 @@ serialize = function ( obj )
 
 if ( require.main === module )
 {
-	var File = require ( "TFile" ) ;
+	var File = require ( "File" ) ;
 	var f = new File ( "r.txt" ) ;
 	var buf = f.toBuffer() ;
 	var ne = new NEvent ( 'BC', "T" ) ;

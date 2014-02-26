@@ -313,7 +313,7 @@ TangoClass.prototype.deepDeserializeClass = function ( obj )
       }
       if ( o.type === 'Xml' )
       {
-        var txml = require ( "TXml" ) ;
+        var txml = require ( "Xml" ) ;
         var f = new txml.XmlFactory() ;
         obj[k] = f.create ( o.value ) ;
         continue ;
@@ -412,7 +412,7 @@ Config.prototype.getLocalePath = function()
 };
 Config.prototype.getLocaleXml = function ( localeCode )
 {
-  var File = require ( "TFile" ) ;
+  var File = require ( "File" ) ;
   if ( ! localeCode ) localeCode = this.defaultLocaleCode ;
   var f = new File ( this.getLocalePath(), "Locale." + localeCode + ".xml" ) ;
   if ( ! f.exists() )

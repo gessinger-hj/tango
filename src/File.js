@@ -1,7 +1,7 @@
 var Path = require ( "path" ) ;
 var fs = require ( "fs" ) ;
 var T = require ( "Tango" ) ;
-var txml = require ( 'TXml' ) ;
+var txml = require ( 'Xml' ) ;
 
 /**
  *  @constructor
