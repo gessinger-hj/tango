@@ -5,9 +5,9 @@ var util = require('util');
  * @constructor
  * @extends stream.Writable
  */
-StringStreamWritable = function()
+StringStreamWritable = function ( enc )
 {
-  // allow use without new operator
+  if ( ! enc ) enc = "utf8" ;
   if (!(this instanceof StringStreamWritable)) {
     return new StringStreamWritable ( "utf8" ) ;
   }
@@ -19,8 +19,8 @@ util.inherits(StringStreamWritable, stream.Writable);
 StringStreamWritable.prototype._write = function ( chunk, enc, cb )
 {
   var buffer = (Buffer.isBuffer(chunk))
-              ? chunk  // already is Buffer use it
-                : new Buffer(chunk, enc)  // string, convert
+                ? chunk
+                  : new Buffer ( chunk, enc )
              ;
   this._buffer = Buffer.concat( [ this._buffer, buffer ] ) ;
   cb();
