@@ -4,7 +4,7 @@ var NEvent = require ( "Event" ).NEvent ;
 var T = require ( "Tango" ) ;
 var events = require ( "TEvents" ) ;
 var MultiHash = require ( "Utils" ).MultiHash ;
-var Logger = require ( "TLogFile" ) ;
+var Logger = require ( "LogFile" ) ;
 var User = require ( "User" ) ;
 
 var counter = 0 ;
@@ -21,7 +21,7 @@ Client = function ( port, host )
   this.pendingEventList = [] ;
   this.user = null ;
   this.pendingResultList = {} ;
-  this.resultCallbacks = {} ;
+  this.callbacks = {} ;
   T.mixin ( events.EventMulticasterTrait, this ) ;
   this.pendingEventListenerList = [] ;
   this.eventListenerFunctions = new MultiHash() ;
@@ -49,16 +49,13 @@ Client.prototype.connect = function()
         var uid = os.hostname() + "_" + this.localPort + "-" + counter ;
         var ctx = thiz.pendingEventList[i] ;
         var e = ctx.e ;
-        var callback = ctx.callback ;
         var resultCallback = ctx.resultCallback ;
         e.setUniqueId ( uid ) ;
-        if ( resultCallback )
-        {
-          thiz.resultCallbacks[uid] = resultCallback ;
-        }
+        thiz.callbacks[uid] = ctx ;
+        ctx.e = undefined ;
         this.write ( T.serialize ( e ), function()
         {
-          if ( callback ) callback.apply ( thiz, arguments ) ;
+          if ( ctx.write ) ctx.write.apply ( thiz, arguments ) ;
         }) ;
       }
       thiz.pendingEventList.length = 0 ;
@@ -109,8 +106,9 @@ Client.prototype.connect = function()
         if ( e.isResult() )
         {
           var uid = e.getUniqueId() ;
-          var rcb = thiz.resultCallbacks[uid] ;
-          delete thiz.resultCallbacks[uid] ;
+          var ctx = thiz.callbacks[uid] ;
+          delete thiz.callbacks[uid] ;
+          var rcb = ctx.result ;
           rcb.call ( thiz, e ) ;
           continue ;
         }
@@ -118,7 +116,15 @@ Client.prototype.connect = function()
         {
           if ( e.isBad() )
           {
-T.log ( e ) ;
+            var uid = e.getUniqueId() ;
+            var ctx = thiz.callbacks[uid] ;
+            delete thiz.callbacks[uid] ;
+            var rcb = ctx.error ;
+            if ( rcb )
+            {
+              rcb.call ( thiz, e ) ;
+            }
+            continue ;
           }
         }
         else
@@ -181,34 +187,42 @@ Client.prototype.fireEvent = function ( params, callback )
   {
     e.setUser ( u ) ;
   }
-  if ( callback && typeof callback === 'object' )
+  var resultCallback ;
+  var errorCallback ;
+  var ctx = {} ;
+  if ( callback )
   {
-    var resultCallback = callback.result ;
-    if ( resultCallback )
+    if ( typeof callback === 'object' )
     {
-      e.setRequestResult() ;
+      ctx.result = callback.result ;
+      if ( ctx.result ) e.setRequestResult() ;
+      ctx.error = callback.error ;
+      ctx.write = callback.write ;
     }
-    callback = callback.callback ;
+    else
+    if ( typeof callback === 'function' )
+    {
+      ctx.write = callback ;
+    }
   }
   if ( ! this.socket )
   {
-    this.pendingEventList.push ( { e:e, callback:callback, resultCallback:resultCallback } ) ;
+    ctx.e = e ;
+    this.pendingEventList.push ( ctx ) ;
   }
   var s = this.getSocket() ;
   if ( ! this.pendingEventList.length )
   {
-    if ( resultCallback )
-    {
-      this.resultCallbacks[uid] = resultCallback ;
-    }
-
     counter++ ;
     var uid = os.hostname() + "_" + this.localPort + "-" + counter ;
     e.setUniqueId ( uid ) ;
+
+    this.callbacks[uid] = ctx ;
+
     var thiz = this ;
     s.write ( T.serialize ( e ), function()
     {
-      if ( callback ) callback.apply ( thiz, arguments ) ;
+      if ( ctx.write ) ctx.write.apply ( thiz, arguments ) ;
     } ) ;
   }
 };

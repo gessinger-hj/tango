@@ -33,6 +33,7 @@ LogFile = function()
   this._stdout = process.stdout ;
   this._out = this._stdout ;
   this._LEVEL = this.LOG | this.INFO | this.WARNING | this.ERROR ;
+  this._LogCallback = null ;
 };
 
 LogFile.prototype.OFF     = 0x00000000 ; /** No Logging. */
@@ -320,9 +321,21 @@ LogFile.prototype._writeToOutputBuffer = function ( s
   }
   if ( util.isError ( s ) )
   {
+    var ttt = s.toString() ;
     var tt = util.inspect ( s.stack ) ;
     tt = tt.split ( "\\n" ) ;
-    s = tt.join ( "\n" ) ;
+    if ( tt.length > 0 )
+    {
+      tt.splice ( 0, 1 ) ;
+    }
+    if ( tt.length )
+    {
+      s = ttt + "\n" + tt.join ( "\n" ) ;
+    }
+    else
+    {
+      s = ttt ;
+    }
     ln = true ;
   }
   this._out.write ( s ) ;
@@ -442,42 +455,42 @@ LogFile.prototype.debug = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
 	if ( ! ( this._LEVEL & this.DBG ) ) return ;
-  // if ( _LogCallback != null ) { _LogCallback.log ( str ) ; return ; }
+  if ( this._LogCallback != null ) { this._LogCallback.debug ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[DEBUG]" ) ;
 };
 LogFile.prototype.info = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
 	if ( ! ( this._LEVEL & this.INFO ) ) return ;
-  // if ( _LogCallback != null ) { _LogCallback.log ( str ) ; return ; }
+  if ( this._LogCallback != null ) { this._LogCallback.info ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[INFO]" ) ;
 };
 LogFile.prototype.warning = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
 	if ( ! ( this._LEVEL & this.WARNING ) ) return ;
-  // if ( _LogCallback != null ) { _LogCallback.log ( str ) ; return ; }
+  if ( this._LogCallback != null ) { this._LogCallback.warning ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[WARNING]" ) ;
 };
 LogFile.prototype.error = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
 	if ( ! ( this._LEVEL & this.ERROR ) ) return ;
-  // if ( _LogCallback != null ) { _LogCallback.log ( str ) ; return ; }
+  if ( this._LogCallback != null ) { this._LogCallback.error ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[ERROR]" ) ;
 };
 LogFile.prototype.log = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
 	if ( ! ( this._LEVEL & this.LOG ) ) return ;
-  // if ( _LogCallback != null ) { _LogCallback.log ( str ) ; return ; }
+  if ( this._LogCallback != null ) { this._LogCallback.log ( str ) ; return ; }
   this._writeToBuffer ( str, true ) ;
 };
 LogFile.prototype.logln = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
 	if ( ! ( this._LEVEL & this.LOG ) ) return ;
-  // if ( _LogCallback != null ) { _LogCallback.log ( str ) ; return ; }
+  if ( this._LogCallback != null ) { this._LogCallback.log ( str ) ; return ; }
   this._writeToBuffer ( str, true, true ) ;
 };
 LogFile.prototype.flush = function()
