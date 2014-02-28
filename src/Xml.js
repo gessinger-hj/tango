@@ -4,6 +4,7 @@ var DateUtils = require ( "DateUtils" ) ;
 
 var util = require ( "util" ) ;
 var StringStreamWritable = require ( "StringStreamWritable" ) ;
+var stream = require('stream');
 
 /**
   * @constructor
@@ -911,14 +912,24 @@ XmlFactory.prototype.create = function ( source )
   {
     throw new Error ( "No XML to create!" ) ;
   }
-  if ( typeof source === 'string' )
+  // if ( typeof source === 'string' )
   {
-    source = source.trim() ;
     var x = new XmlTree() ;
     var elementStack = [x];
     this.currentChild = x ;
     var thiz = this ;
-    var parser = sax.parser(true)
+    var parser = null ;
+
+    if ( source instanceof stream.Readable )
+    {
+      parser = sax.createStream ( true ) ; //, options)      
+    }
+    else
+    if ( typeof source === 'string' )
+    {
+      source = source.trim() ;
+      parser = sax.parser(true)
+    }
     parser.ontext = function ( text ) { thiz.currentChild._ontext ( text ) } ;
     parser.oncdata = function ( cdata ) { thiz.currentChild._oncdata ( cdata ) } ;
     parser.onprocessinginstruction = function()
@@ -956,8 +967,28 @@ XmlFactory.prototype.create = function ( source )
       elementStack.shift();
       thiz.currentChild = elementStack[0] ;
     } ;
-
-    parser.write(source);
+    if ( source instanceof stream.Readable )
+    {
+      parser.on ( "error", function (e)
+      {
+        // unhandled errors will throw, since this is a proper node
+        // event emitter.
+        console.error("error!", e)
+        // clear the error
+        this._parser.error = null
+        this._parser.resume()
+      });
+    }
+    if ( source instanceof stream.Readable )
+    {
+      source.pipe ( parser ) ;
+      parser.end() ;
+    }
+    else
+    {
+      parser.write ( source ) ;
+      parser.close() ;
+    }
     return x ;
   }
 };

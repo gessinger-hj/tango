@@ -117,6 +117,30 @@ TangoClass.prototype.callSuper = function ( obj, name, a )
 			break ;
 		}
 	}
+};
+var hasStacks = false;
+try {
+    throw new Error();
+} catch (e) {
+    hasStacks = !!e.stack;
+}
+
+TangoClass.prototype.where = function()
+{
+  if (!hasStacks) {
+      return;
+  }
+
+  try
+  {
+    throw new Error();
+  }
+  catch (e)
+  {
+    var lines = e.stack.split ("\n") ;
+    var firstLine = lines[0].indexOf("@") > 0 ? lines[1] : lines[2];
+    return firstLine ;
+  }
 }
 TangoClass.prototype.toArray = function (iterable)
 {
