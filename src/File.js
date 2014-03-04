@@ -8,7 +8,6 @@ var txml = require ( 'Xml' ) ;
  *  @param {path|dom} id the id of an html element or
  *         the html dom element itself.
  */
-
 File = function ( path, name )
 {
 	if ( path instanceof File )
