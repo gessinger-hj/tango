@@ -270,6 +270,11 @@ Client.prototype.addEventListener = function ( eventNameList, callback )
   {
     this.pendingEventListenerList.push ( { e:e, callback:callback } ) ;
   }
+  else
+  if ( this.pendingEventListenerList.length )
+  {
+    this.pendingEventListenerList.push ( { e:e, callback:callback } ) ;
+  }
   var s = this.getSocket() ;
   if ( ! this.pendingEventListenerList.length )
   {
@@ -277,6 +282,33 @@ Client.prototype.addEventListener = function ( eventNameList, callback )
     var uid = os.hostname() + "_" + this.localPort + "-" + counter ;
     e.setUniqueId ( uid ) ;
     var thiz = this ;
+    s.write ( T.serialize ( e ) ) ;
+  }
+};
+Client.prototype.removeEventListener = function ( eventNameOrFunction )
+{
+  var i ;
+  if ( typeof eventNameOrFunction === 'string' )
+  {
+    eventNameOrFunction = [ eventNameOrFunction ] ;
+  }
+
+  if ( T.isArray ( eventNameOrFunction ) )
+  {
+    for ( i = 0 ; i < eventNameOrFunction.length  ; i++ )
+    {
+      var list = this.eventListenerFunctions.get ( eventNameOrFunction ) ;
+      if ( ! list ) continue ;
+      this.eventListenerFunctions.remove  ( eventNameOrFunction ) ;
+    }
+    var e = new NEvent ( "system", "removeEventListener" ) ;
+    var u = this.user ;
+    if ( u )
+    {
+      e.setUser ( this.user ) ;
+    }
+    e.data.eventList = eventNameOrFunction ;
+    var s = this.getSocket() ;
     s.write ( T.serialize ( e ) ) ;
   }
 };

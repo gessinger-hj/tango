@@ -117,7 +117,7 @@ NEvent.prototype.getUniqueId = function()
 };
 NEvent.prototype.isBad = function()
 {
-	return this.control.statusCode !== 0 ;
+	return this.control.status.code !== 0 ;
 };
 NEvent.prototype.getStatusReason = function()
 {
