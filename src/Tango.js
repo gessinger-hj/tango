@@ -139,6 +139,7 @@ TangoClass.prototype.where = function()
   {
     var lines = e.stack.split ("\n") ;
     var firstLine = lines[0].indexOf("@") > 0 ? lines[1] : lines[2];
+    if ( firstLine.indexOf ( "at " ) === 0 ) firstLine = firstLine.substring ( 3 ) ;
     return firstLine ;
   }
 }
