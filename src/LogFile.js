@@ -32,30 +32,68 @@ LogFile = function()
 
   this._stdout = process.stdout ;
   this._out = this._stdout ;
-  this._LEVEL = this.LOG | this.INFO | this.WARNING | this.ERROR ;
+  this._LEVEL = this.INFO ;
+  this._LEVEL_NAME = "info" ;
   this._LogCallback = null ;
 };
 
-LogFile.prototype.OFF     = 0x00000000 ; /** No Logging. */
-LogFile.prototype.INFO    = 0x00000001 ; /** Obsolete in Java. @deprecated */
-LogFile.prototype.ERROR   = 0x00000002 ; /** Log prologs and epilogs. */
-LogFile.prototype.SYS     = 0x00000004 ; /** Not used. */
-LogFile.prototype.WARNING = 0x00000008 ; /** Log regular log output. */
-LogFile.prototype.LOG     = 0x00000010 ; /** Default log level. */
-LogFile.prototype.DBG     = 0x00008000 ;
+LogLevel =
+{
+  LOG       : 0x00001000 ,
+  EMERGENCY : 0x00000100 ,
+  ALERT     : 0x00000080 ,
+  CRITICAL  : 0x00000040 ,
+  ERROR     : 0x00000020 ,
+  WARNING   : 0x00000010 ,
+  NOTICE    : 0x00000008 ,
+  INFO      : 0x00000004 ,
+  DEBUG     : 0x00000002 ,
+  OFF       : 0x00000000
+};
+LogFile.prototype.setLogger = function ( loggerInterface )
+{
+  var o =
+  {
+  //   emergency: function ( str ) {}
+  // , alert: function ( str ) {}
+  // , critical: function ( str ) {}
+  // , error: function ( str ) {}
+  // , warning: function ( str ) {}
+  // , notice: function ( str ) {}
+  // , info: function ( str ) {}
+    debug: function ( str ) {}
+  // , log: function ( str ) {}
+  } ;
+  var li = loggerInterface ;
+  if ( typeof li.emergency === 'function' ) o.emergency = function ( str ) { li.emergency ( str ) } ;
+  if ( typeof li.alert === 'function' ) o.alert = function ( str ) { li.alert ( str ) } ;
+  if ( typeof li.critical === 'function' ) o.critical = function ( str ) { li.critical ( str ) } ;
+  if ( typeof li.error === 'function' ) o.error = function ( str ) { li.error ( str ) } ;
+  if ( typeof li.warning === 'function' ) o.warning = function ( str ) { li.warning ( str ) } ;
+  if ( typeof li.notice === 'function' ) o.notice = function ( str ) { li.notice ( str ) } ;
+  if ( typeof li.info === 'function' ) o.info = function ( str ) { li.info ( str ) } ;
+  if ( typeof li.debug === 'function' ) o.debug = function ( str ) { li.debug ( str ) } ;
+  if ( typeof li.log === 'function' ) o.log = function ( str ) { li.log ( str ) } ;
 
+  if ( ! o.log ) o.log = o.info ;
+  if ( ! o.emergency ) o.emergency = o.error ;
+  if ( ! o.alert ) o.alert = o.error ;
+  if ( ! o.critical ) o.critical = o.error ;
+  if ( ! o.notice ) o.notice = o.info ;
+
+  this._LogCallback = o ;
+};
 LogFile.prototype.init = function ( s )
 {
   if ( this._isInitialized ) return ;
   this._isInitialized = true ;
-
   var appName = process.argv[1] ;
-	appName = appName.replace ( /\\/g, "/" ) ;
-	appName = appName.substring ( appName.lastIndexOf ( "/" ) + 1 ) ;
-	if ( appName.endsWith ( ".js" ) )
-	{
-		appName = appName.substring ( 0, appName.lastIndexOf ( "." ) ) ;
-	}
+  appName = appName.replace ( /\\/g, "/" ) ;
+  appName = appName.substring ( appName.lastIndexOf ( "/" ) + 1 ) ;
+  if ( appName.endsWith ( ".js" ) )
+  {
+    appName = appName.substring ( 0, appName.lastIndexOf ( "." ) ) ;
+  }
   var tango_app_str = T.getProperty ( "tango_" + appName ) ;
   var tango_env_str = T.getProperty ( "tango.env" ) ;
   if ( ! tango_app_str )
@@ -228,14 +266,26 @@ LogFile.prototype.init = function ( s )
     else
     if ( tag.startsWith ( "level" ) )
     {
-      this._LEVEL = this.LOG ;
-      if ( val === "error" ) this._LEVEL = this._LEVEL | this.ERROR ;
+      this._LEVEL = 0 ;
+
+      var VAL = val.toUpperCase() ;
+      if ( VAL === 'DBG' ) VAL = 'DEBUG' ;
+      var level = LogLevel[VAL] ;
+      if ( typeof level === 'undefined' )
+      {
+        this._LEVEL = LogLevel.NOTICE ;
+        this._LEVEL_NAME = "notice" ;
+      }
       else
-      if ( val === "warning" ) this._LEVEL = this._LEVEL | this.ERROR | this.WARNING ;
+      if ( level === 0 )
+      {
+        this._LEVEL = 0x00002000 ;
+      }
       else
-      if ( val === "info" ) this._LEVEL = this._LEVEL | this.ERROR | this.WARNING | this.INFO ;
-      else
-      if ( val === "dbg" ) this._LEVEL = this._LEVEL | this.ERROR | this.WARNING | this.INFO | this.DBG ;
+      {
+        this._LEVEL = level ;
+        this._LEVEL_NAME = val ;
+      }
     }
   }
   if ( ! this._appName )
@@ -255,7 +305,7 @@ LogFile.prototype.init = function ( s )
   {
     this.redirectOutput ( redirectOutput ) ;
   }
-  if ( this._LEVEL & this.DBG )
+  if ( this._LEVEL & this.DEBUG )
   {
     this._writeToBuffer ( "Application '" + this._appName + "' initialized with: " + initString + "\n", true ) ;
   }
@@ -454,42 +504,71 @@ LogFile.prototype.openNewFileIntern = function()
 LogFile.prototype.debug = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
-	if ( ! ( this._LEVEL & this.DBG ) ) return ;
+	if ( this._LEVEL > LogLevel.DEBUG ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.debug ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[DEBUG]" ) ;
 };
 LogFile.prototype.info = function ( str )
 {
-	if ( ! this._isInitialized ) this.init() ;
-	if ( ! ( this._LEVEL & this.INFO ) ) return ;
+  if ( ! this._isInitialized ) this.init() ;
+  if ( this._LEVEL > LogLevel.INFO ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.info ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[INFO]" ) ;
+};
+LogFile.prototype.notice = function ( str )
+{
+	if ( ! this._isInitialized ) this.init() ;
+	if ( this._LEVEL > LogLevel.NOTICE ) return ;
+  if ( this._LogCallback != null ) { this._LogCallback.notice ( str ) ; return ; }
+  this._writeToBuffer ( str, true, true, "[NOTICE]" ) ;
 };
 LogFile.prototype.warning = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
-	if ( ! ( this._LEVEL & this.WARNING ) ) return ;
+	if ( this._LEVEL > LogLevel.WARNING ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.warning ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[WARNING]" ) ;
 };
 LogFile.prototype.error = function ( str )
 {
-	if ( ! this._isInitialized ) this.init() ;
-	if ( ! ( this._LEVEL & this.ERROR ) ) return ;
+  if ( ! this._isInitialized ) this.init() ;
+  if ( this._LEVEL > LogLevel.ERROR ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.error ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[ERROR]" ) ;
 };
+LogFile.prototype.critical = function ( str )
+{
+  if ( ! this._isInitialized ) this.init() ;
+  if ( this._LEVEL > LogLevel.CRITICAL ) return ;
+  if ( this._LogCallback != null ) { this._LogCallback.critical ( str ) ; return ; }
+  this._writeToBuffer ( str, true, true, "[CRITICAL]" ) ;
+};
+LogFile.prototype.alert = function ( str )
+{
+  if ( ! this._isInitialized ) this.init() ;
+  if ( this._LEVEL > LogLevel.ALERT ) return ;
+  if ( this._LogCallback != null ) { this._LogCallback.alert ( str ) ; return ; }
+  this._writeToBuffer ( str, true, true, "[ALERT]" ) ;
+};
+LogFile.prototype.emergency = function ( str )
+{
+	if ( ! this._isInitialized ) this.init() ;
+	if ( this._LEVEL > LogLevel.EMERGENCY ) return ;
+  if ( this._LogCallback != null ) { this._LogCallback.emergency ( str ) ; return ; }
+  this._writeToBuffer ( str, true, true, "[EMERGENCY]" ) ;
+};
+
 LogFile.prototype.log = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
-	if ( ! ( this._LEVEL & this.LOG ) ) return ;
+	if ( ! this._LEVEL ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.log ( str ) ; return ; }
   this._writeToBuffer ( str, true ) ;
 };
 LogFile.prototype.logln = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
-	if ( ! ( this._LEVEL & this.LOG ) ) return ;
+	if ( ! this._LEVEL ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.log ( str ) ; return ; }
   this._writeToBuffer ( str, true, true ) ;
 };
@@ -613,33 +692,47 @@ process.on ( "exit", function(rc)
   TLOG.flush() ;
 }) ;
 
-function XX()
-{
-  // TLOG.warning ( "XXX----------------" ) ;
-  var e = new Error ( "error --------------------");
-  throw e ;
-}
 if ( require.main === module )
 {
-  try
-  {
-    XX() ;
-  }
-  catch ( exc )
-  {
-  TLOG.log ( exc ) ;
-  }
-  var i = 0 ;
-  // TLOG.init ( "appl=TLOG,level=dbg,xfile=TLOG.log:max=100:v=10" ) ;
+  TLOG.init ( "appl=TLOG,level=debug,xfile=TLOG.log:max=100:v=10" ) ;
+  // var XX = function()
+  // {
+  //   var e = new Error ( "error --------------------");
+  //   throw e ;
+  // } ;
+  // try
+  // {
+  //   XX() ;
+  // }
+  // catch ( exc )
+  // {
+  // TLOG.log ( exc ) ;
+  // }
+
+  // var i = 0 ;
   // TLOG.init ( "level=dbg,file=TLOG.log:max=1m:v=4" ) ;
   // TLOG.init ( "level=dbg,file=TLOG-%DATE%.log" ) ;
-  for ( i = 0 ; i < 10 ; i++ )
-  {
-  TLOG.logln ( "xxxxxxxxxxxxxxxxxxxxx") ;
-  }
-  TLOG.info ( "----------------" ) ;
-  TLOG.warning ( "----------------" ) ;
+  // for ( i = 0 ; i < 10 ; i++ )
+  // {
+  // TLOG.logln ( "xxxxxxxxxxxxxxxxxxxxx") ;
+  // }
+
+//   var o =
+//   {
+//     error: function ( str ) { console.log ( "1-" + str ) ;}
+//   , warning: function ( str ) { console.log ( "2-" + str ) ;}
+//   , info: function ( str ) { console.log ( "3-" + str ) ;}
+//   , log: function ( str ) { console.log ( "4-" + str ) ;}
+//   } ;
+// TLOG.setLogger ( o ) ;
+  TLOG.emergency ( "----------------" ) ;
+  TLOG.alert ( "----------------" ) ;
+  TLOG.critical ( "----------------" ) ;
+
   TLOG.error ( "----------------" ) ;
+  TLOG.warning ( "----------------" ) ;
+  TLOG.info ( "----------------" ) ;
+  TLOG.notice ( "----------------" ) ;
   TLOG.debug ( "----------------" ) ;
   console.log ( "1 ---- console.log ---------" ) ;
   // TLOG.redirectOutput() ;
