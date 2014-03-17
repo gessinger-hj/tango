@@ -5,6 +5,7 @@ var User = require ( "User" ) ;
 /**
  * @constructor
  */
+tangojs = {} ;
 NEvent = function ( name, type )
 {
 	this.className = "NEvent" ;
@@ -16,6 +17,7 @@ NEvent = function ( name, type )
 	this.control = { createdAt: new Date() } ;
 	this.data = {} ;
 };
+tangojs.NEvent = NEvent ;
 /** */
 NEvent.prototype.getClassName = function()
 {

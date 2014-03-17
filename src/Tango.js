@@ -125,12 +125,36 @@ try {
     hasStacks = !!e.stack;
 }
 
+TangoClass.prototype.lwhere = function ( str )
+{
+  if (!hasStacks) {
+      return;
+  }
+  try
+  {
+    throw new Error();
+  }
+  catch (e)
+  {
+    var lines = e.stack.split ("\n") ;
+    var firstLine = lines[0].indexOf("@") > 0 ? lines[1] : lines[2];
+    firstLine = firstLine.trim() ;
+    if ( firstLine.indexOf ( "at " ) === 0 ) firstLine = firstLine.substring ( 3 ) ;
+    if ( str )
+    {
+      console.log ( str + ": " + firstLine ) ;
+    }
+    else
+    {
+      console.log ( firstLine ) ;
+    }
+  }
+}
 TangoClass.prototype.where = function()
 {
   if (!hasStacks) {
       return;
   }
-
   try
   {
     throw new Error();
