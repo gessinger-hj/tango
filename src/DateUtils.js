@@ -142,10 +142,18 @@ DateUtilsClass.prototype =
     iDayOfYear += date.getDate();
     return iDayOfYear ;
   },
-  getFirstDayOfWeek: function()
+  getFirstDayOfWeek: function ( localeCode )
   {
-    var x = T.getConfig().getLocale().getXml() ;
-    return x.getInt ( "FirstDayOfWeek", 2 ) ;
+    var x ;
+    if ( localeCode )
+    {
+      x = T.getConfig().getLocaleXml ( localeCode ) ;
+    }
+    else
+    {
+      x = T.getConfig().getLocale().getXml() ;
+    }
+    return x.getNumber ( "FirstDayOfWeek", 2 ) ;
   },
   getDayNames: function ( lang )
   {
@@ -206,9 +214,9 @@ DateUtilsClass.prototype =
     d.setMilliseconds ( 0 ) ;
     return d ;
   },
-  roundDownToWeek: function ( date )
+  roundDownToWeek: function ( date, localeCode )
   {
-    var firstDayOfWeek = this.getFirstDayOfWeek() ;
+    var firstDayOfWeek = this.getFirstDayOfWeek ( localeCode ) ;
     var d = this.roundDownToDay ( date ) ;
 
     for ( var i = 0 ; i < 40 ; i++ )

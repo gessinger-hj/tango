@@ -9,7 +9,7 @@ var stream = require('stream');
 /**
   * @constructor
   */
-XmlElement = function ( tag, text, attr )
+var XmlElement = function ( tag, text, attr )
 {
   if ( ! tag )
   {
@@ -896,8 +896,30 @@ XmlElement.prototype.toJSON = function()
 
 /**
   * @constructor
+  * @extends XmlElement
   */
-XmlFactory = function ( callbackCloseTag )
+var XmlTree = function ( name )
+{
+  if ( ! name ) name = 'xml' ;
+  T.initSuper ( this, XmlElement, name ) ;
+};
+
+// XmlTree.inherits ( XmlElement ) ;
+T.inherits ( XmlTree, XmlElement ) ;
+
+XmlTree.prototype._setCollectedElements = function ( list )
+{
+  this.collectedElements = list ;
+};
+XmlTree.prototype.getCollectedElements = function()
+{
+  return this.collectedElements ;
+};
+
+/**
+  * @constructor
+  */
+var XmlFactory = function ( callbackCloseTag )
 {
   this.callbackCloseTag = undefined ;
   if ( typeof callbackCloseTag === 'function' )
@@ -991,27 +1013,6 @@ XmlFactory.prototype.create = function ( source )
     }
     return x ;
   }
-};
-/**
-  * @constructor
-  * @extends XmlElement
-  */
-XmlTree = function ( name )
-{
-  if ( ! name ) name = 'xml' ;
-  T.initSuper ( this, XmlElement, name ) ;
-};
-
-// XmlTree.inherits ( XmlElement ) ;
-T.inherits ( XmlTree, XmlElement ) ;
-
-XmlTree.prototype._setCollectedElements = function ( list )
-{
-  this.collectedElements = list ;
-};
-XmlTree.prototype.getCollectedElements = function()
-{
-  return this.collectedElements ;
 };
 
 /*txml = {} ;

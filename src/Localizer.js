@@ -1,11 +1,11 @@
 var T = require ( "Tango" ) ;
-var txml = require ( 'Xml' ) ;
 var LocalizedMessages = require ( 'LocalizedMessages' ) ;
+var Substitutor = require ( './Substitutor' ) ;
 
 /**
   * @constructor
   */
-Localizer = function ( localizedMessages )
+var Localizer = function ( localizedMessages )
 {
   if ( typeof localizedMessages === 'string' )
   {

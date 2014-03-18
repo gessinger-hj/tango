@@ -5,7 +5,7 @@ var File = require ( 'File' ) ;
 /**
 	* @constructor
 	*/
-LocalizedMessages = function ( file, localeString )
+var LocalizedMessages = function ( file, localeString )
 {
 	this.file = new File ( file ) ;
 	this.xml = this.file.toXml() ;
