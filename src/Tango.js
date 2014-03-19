@@ -140,6 +140,20 @@ TangoClass.prototype.lwhere = function ( str )
     var firstLine = lines[0].indexOf("@") > 0 ? lines[1] : lines[2];
     firstLine = firstLine.trim() ;
     if ( firstLine.indexOf ( "at " ) === 0 ) firstLine = firstLine.substring ( 3 ) ;
+    var p1 = firstLine.lastIndexOf ( "(" ) ;
+    var p2 = firstLine.indexOf ( ")", p1 ) ;
+    if ( p1 >= 0 && p2 >= 0 && p2 > p1 )
+    {
+      var p_slash = firstLine.lastIndexOf ( "/", p2 ) ;
+      if ( p_slash < 0 )
+      {
+        p_slash = firstLine.lastIndexOf ( "\\", p1 ) ;
+      }
+      if ( p_slash > p1 && p_slash < p2 )
+      {
+        firstLine = firstLine.substring ( 0, p1+1 ) + firstLine.substring ( p_slash + 1 ) ;
+      }
+    }
     if ( str )
     {
       console.log ( str + ": " + firstLine ) ;

@@ -1,8 +1,8 @@
+var util = require ( "util" ) ;
 var sax = require('sax');
 var T = require ( "Tango" ) ;
 var DateUtils = require ( "DateUtils" ) ;
 
-var util = require ( "util" ) ;
 var StringStreamWritable = require ( "StringStreamWritable" ) ;
 var stream = require('stream');
 
@@ -916,17 +916,20 @@ XmlTree.prototype.getCollectedElements = function()
   return this.collectedElements ;
 };
 
+var EventEmitter = require ( "events" ).EventEmitter ;
 /**
   * @constructor
   */
 var XmlFactory = function ( callbackCloseTag )
 {
+  EventEmitter.call ( this ) ;
   this.callbackCloseTag = undefined ;
   if ( typeof callbackCloseTag === 'function' )
   {
     this.callbackCloseTag = callbackCloseTag ;
   }
 };
+util.inherits ( XmlFactory, EventEmitter ) ;
 /** */
 XmlFactory.prototype.create = function ( source )
 {
@@ -991,6 +994,10 @@ XmlFactory.prototype.create = function ( source )
     } ;
     if ( source instanceof stream.Readable )
     {
+      parser.on ( "end", function (e)
+      {
+        thiz.emit ( "end", x ) ;
+      }) ;
       parser.on ( "error", function (e)
       {
         // unhandled errors will throw, since this is a proper node
@@ -1004,7 +1011,7 @@ XmlFactory.prototype.create = function ( source )
     if ( source instanceof stream.Readable )
     {
       source.pipe ( parser ) ;
-      parser.end() ;
+      // parser.end() ;
     }
     else
     {
@@ -1015,10 +1022,6 @@ XmlFactory.prototype.create = function ( source )
   }
 };
 
-/*txml = {} ;
-txml.XmlElement = XmlElement;
-txml.XmlTree = XmlTree;
-txml.XmlFactory = XmlFactory;*/
 module.exports = {
   XmlElement: XmlElement,
   XmlTree: XmlTree,
