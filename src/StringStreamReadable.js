@@ -21,9 +21,10 @@ StringStreamReadable.prototype._read = function ( size )
 {
   if ( this.done )
   {
+    this.push ( null ) ;
     return ;
   }
-  this.push  ( this._buffer ) ;
+  this.push ( this._buffer ) ;
   this.done = true ;
 };
 StringStreamReadable.prototype.toString = function()
@@ -38,7 +39,7 @@ module.exports = StringStreamReadable ;
 
 if ( require.main === module )
 {
-  var r = new StringStreamReadable ( "XXXXdfg dfg dfgl dfg adfg afg adf g adfg adfg adf" ) ;
+  var r = new StringStreamReadable ( "<xml><result><A>nÜnn</A></result></xml>" ) ;
   // r.on ( 'data', function(data)
   // {
   //   console.log ( data ) ;
