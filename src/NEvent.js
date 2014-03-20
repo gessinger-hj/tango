@@ -127,7 +127,7 @@ NEvent.prototype.getStatusReason = function()
 if ( typeof tangojs === 'object' && tangojs ) tangojs.NEvent = NEvent ;
 else tangojs = { NEvent:NEvent } ;
 
-module.exports.NEvent = NEvent ;
+module.exports = NEvent ;
 
 serialize = function ( obj )
 {

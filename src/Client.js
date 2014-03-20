@@ -1,8 +1,8 @@
 var net = require('net');
 var os = require('os');
-var NEvent = require ( "Event" ).NEvent ;
 var T = require ( "Tango" ) ;
-require ( "TEvents" ) ;
+var NEvent = require ( "NEvent" ) ;
+require ( "Events" ) ;
 require ( "MultiHash" ) ;
 require ( "LogFile" ) ;
 require ( "User" ) ;
