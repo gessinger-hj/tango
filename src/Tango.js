@@ -397,6 +397,10 @@ TangoClass.prototype.deepDeserializeClass = function ( obj )
     }
   }
 }
+var classNameMappings =
+{
+  NEvent: "tangojs.NEvent"
+} ;
 /** */
 TangoClass.prototype.deserialize = function ( serializedObject, deepClassInspection )
 {
@@ -410,7 +414,16 @@ TangoClass.prototype.deserialize = function ( serializedObject, deepClassInspect
   if ( deepClassInspection ) this.deepDeserializeClass ( obj ) ;
   if ( obj.className && typeof obj.className === 'string' )
   {
-    var f = eval ( obj.className ) ;
+    var mcn = classNameMappings[obj.className] ;
+    var f ;
+    if ( mcn )
+    {
+      f = eval ( mcn ) ;
+    }
+    else
+    {
+      f = eval ( obj.className ) ;
+    }
     that = Object.create ( f.prototype ) ;
     for ( var k in obj )
     {
@@ -493,5 +506,7 @@ Config.prototype.getLocaleXml = function ( localeCode )
 };
 
 var Tango = new TangoClass() ;
+if ( typeof tangojs === 'object' && tangojs ) tangojs.Tango = Tango ;
+else tangojs = { Tango:Tango } ;
 
 module.exports = Tango ;

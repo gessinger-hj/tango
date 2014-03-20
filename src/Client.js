@@ -2,16 +2,16 @@ var net = require('net');
 var os = require('os');
 var NEvent = require ( "Event" ).NEvent ;
 var T = require ( "Tango" ) ;
-var events = require ( "TEvents" ) ;
-var MultiHash = require ( "Utils" ).MultiHash ;
-var Logger = require ( "LogFile" ) ;
-var User = require ( "User" ) ;
+require ( "TEvents" ) ;
+require ( "MultiHash" ) ;
+require ( "LogFile" ) ;
+require ( "User" ) ;
 
 var counter = 0 ;
 /**
   * @constructor
   */
-Client = function ( port, host )
+var Client = function ( port, host )
 {
   this.port = port ;
   if ( ! this.port ) this.port = T.getProperty ( "GEPARD_PORT" ) ;
@@ -22,9 +22,9 @@ Client = function ( port, host )
   this.user = null ;
   this.pendingResultList = {} ;
   this.callbacks = {} ;
-  T.mixin ( events.EventMulticasterTrait, this ) ;
+  T.mixin ( tangojs.EventMulticasterTrait, this ) ;
   this.pendingEventListenerList = [] ;
-  this.eventListenerFunctions = new MultiHash() ;
+  this.eventListenerFunctions = new tangojs.MultiHash() ;
 } ;
 /** */
 Client.prototype.setUser = function ( user )
@@ -312,4 +312,7 @@ Client.prototype.removeEventListener = function ( eventNameOrFunction )
     s.write ( T.serialize ( e ) ) ;
   }
 };
+if ( typeof tangojs === 'object' && tangojs ) tangojs.Client = Client ;
+else tangojs = { Client:Client } ;
+
 module.exports = Client ;

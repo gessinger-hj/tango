@@ -303,6 +303,9 @@ Locale.prototype.getXml = function()
 {
   return this.xml ;
 };
+if ( typeof tangojs === 'object' && tangojs ) tangojs.Locale = Locale ;
+else tangojs = { Locale:Locale } ;
+
 module.exports = Locale ;
 if ( require.main === module )
 {

@@ -11,7 +11,7 @@ StringStreamWritable = function ( enc )
   if (!(this instanceof StringStreamWritable)) {
     return new StringStreamWritable ( "utf8" ) ;
   }
-  stream.Writable.call ( this, arguments ) ; // init super
+  stream.Writable.call ( this, arguments ) ;
   this._buffer = new Buffer('') ;
 }
 util.inherits(StringStreamWritable, stream.Writable);
@@ -33,4 +33,7 @@ StringStreamWritable.prototype.flush = function()
 {
   delete this._buffer ;
 };
+if ( typeof tangojs === 'object' && tangojs ) tangojs.StringStreamWritable = StringStreamWritable ;
+else tangojs = { StringStreamWritable:StringStreamWritable } ;
+
 module.exports = StringStreamWritable ;

@@ -1,6 +1,6 @@
 var T = require ( "Tango" ) ;
-var LocalizedMessages = require ( 'LocalizedMessages' ) ;
-var Substitutor = require ( './Substitutor' ) ;
+require ( 'LocalizedMessages' ) ;
+require ( 'Substitutor' ) ;
 
 /**
   * @constructor
@@ -9,7 +9,7 @@ var Localizer = function ( localizedMessages )
 {
   if ( typeof localizedMessages === 'string' )
   {
-    this._LocalizedMessages = new LocalizedMessages ( localizedMessages ) ;
+    this._LocalizedMessages = new tangojs.LocalizedMessages ( localizedMessages ) ;
   }
   else
   {
@@ -94,7 +94,10 @@ Localizer.prototype.localize = function ( src )
   }
   return tgt ;
 };
+if ( typeof tangojs === 'object' && tangojs ) tangojs.Localizer = Localizer ;
+else tangojs = { Localizer:Localizer } ;
 module.exports = Localizer ;
+
 if ( require.main === module )
 {
   // var lm = new LocalizedMessages ( "localized.messages.xml" ) ;

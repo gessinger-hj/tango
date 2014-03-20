@@ -1,7 +1,7 @@
 var Path = require ( "path" ) ;
 var fs = require ( "fs" ) ;
 var T = require ( "Tango" ) ;
-var txml = require ( 'Xml' ) ;
+require ( 'Xml' ) ;
 
 /**
  *  @constructor
@@ -190,7 +190,7 @@ File.prototype.getAbsoluteFile = function()
 File.prototype.toXml = function ( elementCallback )
 {
 	var data = this.asString() ;
-  var f = new txml.XmlFactory ( elementCallback ) ;
+  var f = new tangojs.XmlFactory ( elementCallback ) ;
   return f.create ( data ) ;
 };
 /** */
@@ -399,4 +399,7 @@ File.prototype.remove = function()
 		// console.log ( exc ) ;
 	}
 };
+if ( typeof tangojs === 'object' && tangojs ) tangojs.File = File ;
+else tangojs = { File:File } ;
+
 module.exports = File ;

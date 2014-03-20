@@ -1,9 +1,9 @@
 var util = require ( "util" ) ;
 var sax = require('sax');
 var T = require ( "Tango" ) ;
-var DateUtils = require ( "DateUtils" ) ;
+require ( "DateUtils" ) ;
 
-var StringStreamWritable = require ( "StringStreamWritable" ) ;
+require ( "StringStreamWritable" ) ;
 var stream = require('stream');
 
 /**
@@ -30,7 +30,7 @@ var XmlElement = function ( tag, text, attr )
     else
     if ( T.isDate ( text ) )
     {
-      var sd = DateUtils.getSoapDateTime ( text ) ;
+      var sd = tangojs.DateUtils.getSoapDateTime ( text ) ;
       this._value = sd ;
       if ( attr && typeof attr === 'object') this._attributes = attr ;
       else this._attributes = {} ;
@@ -339,7 +339,7 @@ XmlElement.prototype.valueOf = function ( path )
 {
   if ( ! path )
   {
-    if ( this._attributes["xsi:type"] === "xsd:date" ) return DateUtils.parseDate ( this._value ) ;
+    if ( this._attributes["xsi:type"] === "xsd:date" ) return tangojs.DateUtils.parseDate ( this._value ) ;
     else
     if ( this._attributes["xsi:type"] === "xsd:number" ) return parseFloat ( this._value ) ;
     else
@@ -366,7 +366,7 @@ XmlElement.prototype.valueOf = function ( path )
   {
     return child._attributes[attributeName] ;
   }
-  if ( child._attributes["xsi:type"] === "xsd:date" ) return DateUtils.parseDate ( child._value ) ;
+  if ( child._attributes["xsi:type"] === "xsd:date" ) return tangojs.DateUtils.parseDate ( child._value ) ;
   else
   if ( child._attributes["xsi:type"] === "xsd:number" ) return parseFloat ( child._value ) ;
   else
@@ -387,7 +387,7 @@ XmlElement.prototype.getDate = function ( path )
   var v = this.valueOf ( path ) ;
   if ( typeof v === 'string' )
   {
-    return DateUtils.parseDate ( this.valueOf ( path ) ) ;
+    return tangojs.DateUtils.parseDate ( this.valueOf ( path ) ) ;
   }
   return v ;
 };
@@ -440,7 +440,7 @@ XmlElement.prototype.toString = function ( wstream )
 {
   if ( ! wstream )
   {
-    wstream = new StringStreamWritable() ;
+    wstream = new tangojs.StringStreamWritable() ;
     this._toString ( "", wstream ) ;
     var s = wstream.toString() ;
     wstream.end() ;
@@ -1027,6 +1027,20 @@ module.exports = {
   XmlTree: XmlTree,
   XmlFactory: XmlFactory
 } ;
+if ( typeof tangojs === 'object' && tangojs )
+{
+  tangojs.XmlElement = XmlElement ;
+  tangojs.XmlTree = XmlTree ;
+  tangojs.XmlFactory = XmlFactory ;
+}
+else
+{
+  tangojs = {
+    XmlElement: XmlElement,
+    XmlTree: XmlTree,
+    XmlFactory: XmlFactory
+  } ;
+}
 
 if ( require.main === module )
 {

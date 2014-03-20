@@ -1,12 +1,12 @@
-var T = require ( "Tango" ) ;
 var util = require ( "util" ) ;
-var User = require ( "User" ) ;
+
+var T = require ( "Tango" ) ;
+require ( "User" ) ;
 
 /**
  * @constructor
  */
-tangojs = {} ;
-NEvent = function ( name, type )
+var NEvent = function ( name, type )
 {
 	this.className = "NEvent" ;
 	this.name = "" ;
@@ -17,7 +17,6 @@ NEvent = function ( name, type )
 	this.control = { createdAt: new Date() } ;
 	this.data = {} ;
 };
-tangojs.NEvent = NEvent ;
 /** */
 NEvent.prototype.getClassName = function()
 {
@@ -125,9 +124,11 @@ NEvent.prototype.getStatusReason = function()
 {
 	return this.control.reason ;
 };
+if ( typeof tangojs === 'object' && tangojs ) tangojs.NEvent = NEvent ;
+else tangojs = { NEvent:NEvent } ;
 
 module.exports.NEvent = NEvent ;
-module.exports.User = User ;
+
 serialize = function ( obj )
 {
   var old = Date.prototype.toJSON ;
@@ -148,8 +149,8 @@ serialize = function ( obj )
 
 if ( require.main === module )
 {
-	var File = require ( "File" ) ;
-	var f = new File ( "r.txt" ) ;
+	require ( "File" ) ;
+	var f = new tangojs.File ( "r.txt" ) ;
 	var buf = f.toBuffer() ;
 	var ne = new NEvent ( 'BC', "T" ) ;
 	// ne.setUser ( new User ( "admin", 17 ) ) ;

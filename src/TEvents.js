@@ -1,4 +1,4 @@
-var T  = require ( "Tango.js" ) ;
+var T  = require ( "Tango" ) ;
 
 /**
  *  @constructor
@@ -103,19 +103,19 @@ FunctionExecutor.prototype.execute = function ( argumentArray )
  * @param {int} [eventType]
  *   One of the following values:
  * <ul>
- * <li>TEvent.prototype.CHANGED</li>
- * <li>TEvent.prototype.RESET</li>
- * <li>TEvent.prototype.ITEM_SELECTED</li>
- * <li>TEvent.prototype.ITEM_DESELECTED</li>
- * <li>TEvent.prototype.PROPERTY_CHANGE</li>
- * <li>TEvent.prototype.ACTION</li>
+ * <li>Event.prototype.CHANGED</li>
+ * <li>Event.prototype.RESET</li>
+ * <li>Event.prototype.ITEM_SELECTED</li>
+ * <li>Event.prototype.ITEM_DESELECTED</li>
+ * <li>Event.prototype.PROPERTY_CHANGE</li>
+ * <li>Event.prototype.ACTION</li>
  *  </ul>
  */
-var TEvent = function ( eventName, eventType )
+var Event = function ( eventName, eventType )
 {
   this.jsEvent = null ;
   this.consumed = false ;
-  this.jsClassName = "TEvent" ;
+  this.jsClassName = "Event" ;
   this.eventType = -1 ;
   this.oldValue = null ;
   this.newValue = null ;
@@ -124,7 +124,7 @@ var TEvent = function ( eventName, eventType )
   this.action = null ;
   if ( typeof eventType !== 'undefined' ) this.setType ( eventType ) ;
 };
-TEvent.prototype =
+Event.prototype =
 {
   CHANGED: 1,
   RESET: 2,
@@ -171,8 +171,8 @@ TEvent.prototype =
   },
   setType: function ( type )
   {
-    if ( typeof ( type ) != 'number' ) throw "TEvent.setType(): type is not a number: '" + typeof ( type ) ;
-    if ( type <= 0 || type > this.TYPE_MAX ) throw "TEvent.setType(): ivalid type: '" + type ;
+    if ( typeof ( type ) != 'number' ) throw "Event.setType(): type is not a number: '" + typeof ( type ) ;
+    if ( type <= 0 || type > this.TYPE_MAX ) throw "Event.setType(): ivalid type: '" + type ;
     this.eventType = type ;
   },
   typeToString: function()
@@ -232,11 +232,11 @@ TEvent.prototype =
     this.consumed = true ;
   }
 };
-TEvent.prototype.setAction = function ( name )
+Event.prototype.setAction = function ( name )
 {
   this.action = name ;
 };
-TEvent.prototype.toString = function()
+Event.prototype.toString = function()
 {
   return "(" + this.jsClassName + ")[consumed=" + this.consumed + ",name=" + this.eventName
         + ( this.eventType >= 0 || typeof ( this.eventType ) == 'string' ? ",type=" + this.typeToString() + "(" + this.eventType + ")" : "" )
@@ -249,44 +249,44 @@ TEvent.prototype.toString = function()
 };
 /**
   * @constructor
-  * @extends TEvent
+  * @extends Event
   */
-var TItemEvent = function ( item, type )
+var ItemEvent = function ( item, type )
 {
-  if ( ! type ) type = TEvent.prototype.ITEM_SELECTED ;
-  T.initSuper ( this, TEvent, null, type ) ;
-  this.jsClassName = "TItemEvent" ;
+  if ( ! type ) type = Event.prototype.ITEM_SELECTED ;
+  T.initSuper ( this, Event, null, type ) ;
+  this.jsClassName = "ItemEvent" ;
   this.item = item ;
 };
-T.inherits ( TItemEvent, TEvent ) ;
+T.inherits ( ItemEvent, Event ) ;
 /**
  *  @constructor
- *  @extends TEvent
+ *  @extends Event
  */
-var TActionEvent = function ( actionName )
+var ActionEvent = function ( actionName )
 {
-  T.initSuper ( this, TEvent, actionName, TEvent.prototype.ACTION ) ;
-  this.jsClassName = "TActionEvent" ;
+  T.initSuper ( this, Event, actionName, Event.prototype.ACTION ) ;
+  this.jsClassName = "ActionEvent" ;
   this.action = actionName ;
   if ( ! this.action ) this.action = "*" ;
 };
-T.inherits ( TActionEvent, TEvent ) ;
+T.inherits ( ActionEvent, Event ) ;
 /**
  *  @constructor
- *  @extends TEvent
+ *  @extends Event
  */
-var TPropertyChangeEvent = function ( propertyName )
+var PropertyChangeEvent = function ( propertyName )
 {
-  T.initSuper ( this, TEvent, propertyName, TEvent.prototype.PROPERTY_CHANGE ) ;
-  this.jsClassName = "TPropertyChangeEvent" ;
+  T.initSuper ( this, Event, propertyName, Event.prototype.PROPERTY_CHANGE ) ;
+  this.jsClassName = "PropertyChangeEvent" ;
   this.propertyName = propertyName ;
 };
-T.inherits ( TPropertyChangeEvent, TEvent ) ;
+T.inherits ( PropertyChangeEvent, Event ) ;
 
 /**
  *  @constructor
  */
-PropertyChangeHandler = function()
+var PropertyChangeHandler = function()
 {
   this._flushed = false ;
   this.listenerList = [] ;
@@ -414,7 +414,7 @@ PropertyChangeTrait._firePropertyChangeEvent = function ( ev, propertyName )
  *  @constructor
  *  @extends PropertyChangeHandler
  */
-EventMulticaster = function()
+var EventMulticaster = function()
 {
   T.initSuper ( this, PropertyChangeHandler );
   this.jsClassName = "EventMulticaster" ;
@@ -427,13 +427,13 @@ EventMulticaster.prototype.toString = function()
 EventMulticaster.prototype.fireEvent = function ( evt, type )
 {
   var ev = null ;
-  if ( evt instanceof TEvent )
+  if ( evt instanceof Event )
   {
   }
   else
   if ( typeof ( evt ) == 'string' )
   {
-    ev = new TEvent ( evt ) ;
+    ev = new Event ( evt ) ;
     ev.eventType = evt  ;
   }
   else
@@ -444,7 +444,7 @@ EventMulticaster.prototype.fireEvent = function ( evt, type )
   }
   else
   {
-    ev = new TEvent ( evt ) ;
+    ev = new Event ( evt ) ;
     if ( type ) ev.eventType = type  ;
   }
   for ( var i = 0 ; i < this.listenerList.length ; i++ )
@@ -497,13 +497,38 @@ EventMulticasterTrait.flushEventMulticaster = function()
 
 events = {} ;
 events.EventMulticasterTrait = EventMulticasterTrait ;
-events.TEvent = TEvent ;
+events.Event = Event ;
 events.FunctionExecutor = FunctionExecutor ;
-events.TItemEvent = TItemEvent ;
-events.TActionEvent = TActionEvent ;
-events.TPropertyChangeEvent = TPropertyChangeEvent ;
+events.ItemEvent = ItemEvent ;
+events.ActionEvent = ActionEvent ;
+events.PropertyChangeEvent = PropertyChangeEvent ;
 events.PropertyChangeHandler = PropertyChangeHandler ;
 events.PropertyChangeTrait = PropertyChangeTrait ;
 events.EventMulticaster = EventMulticaster ;
 
+if ( typeof tangojs === 'object' && tangojs )
+{
+  tangojs.EventMulticasterTrait = EventMulticasterTrait ;
+  tangojs.Event = Event ;
+  tangojs.FunctionExecutor = FunctionExecutor ;
+  tangojs.ItemEvent = ItemEvent ;
+  tangojs.ActionEvent = ActionEvent ;
+  tangojs.PropertyChangeEvent = PropertyChangeEvent ;
+  tangojs.PropertyChangeHandler = PropertyChangeHandler ;
+  tangojs.PropertyChangeTrait = PropertyChangeTrait ;
+  tangojs.EventMulticaster = EventMulticaster ;
+}
+else
+{
+  tangojs = {} ;
+  tangojs.EventMulticasterTrait = EventMulticasterTrait ;
+  tangojs.Event = Event ;
+  tangojs.FunctionExecutor = FunctionExecutor ;
+  tangojs.ItemEvent = ItemEvent ;
+  tangojs.ActionEvent = ActionEvent ;
+  tangojs.PropertyChangeEvent = PropertyChangeEvent ;
+  tangojs.PropertyChangeHandler = PropertyChangeHandler ;
+  tangojs.PropertyChangeTrait = PropertyChangeTrait ;
+  tangojs.EventMulticaster = EventMulticaster ;
+}
 module.exports = events ;

@@ -21,4 +21,7 @@ User.prototype.getId = function (  )
 {
 	return this.id ;
 };
+if ( typeof tangojs === 'object' && tangojs ) tangojs.User = User ;
+else tangojs = { User:User } ;
+
 module.exports = User ;

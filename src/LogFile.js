@@ -1,13 +1,13 @@
 var Path = require ( "path" ) ;
 var T = require ( "Tango" ) ;
-var File = require ( "File" ) ;
+require ( "File" ) ;
 var fs = require ( "fs" ) ;
 var util = require ( "util" ) ;
 
 /**
 	* @constructor
 	*/
-LogFile = function()
+var LogFile = function()
 {
   this._appName = "" ;
 	this._SizedFile = false ;
@@ -32,7 +32,7 @@ LogFile = function()
 
   this._stdout = process.stdout ;
   this._out = this._stdout ;
-  this._LEVEL = this.INFO ;
+  this._LEVEL = LogLevel.INFO ;
   this._LEVEL_NAME = "info" ;
   this._LogCallback = null ;
 };
@@ -567,8 +567,8 @@ LogFile.prototype.log = function ( str )
 };
 LogFile.prototype.logln = function ( str )
 {
-	if ( ! this._isInitialized ) this.init() ;
-	if ( ! this._LEVEL ) return ;
+  if ( ! this._isInitialized ) this.init() ;
+  if ( ! this._LEVEL ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.log ( str ) ; return ; }
   this._writeToBuffer ( str, true, true ) ;
 };
@@ -685,6 +685,10 @@ LogFile.prototype.unredirectOutput = function ( channelFlags )
   }
 };
 var TLOG = new LogFile() ;
+
+if ( typeof tangojs === 'object' && tangojs ) tangojs.LogFile = TLOG ;
+else tangojs = { LogFile:TLOG } ;
+tangojs.Logger = TLOG ;
 module.exports = TLOG ;
 
 process.on ( "exit", function(rc)

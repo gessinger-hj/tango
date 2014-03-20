@@ -1,5 +1,5 @@
-T = require ( "./Tango" ) ;
-ItemSubstitutor = require ( "./ItemSubstitutor" ) ;
+var T = require ( "./Tango" ) ;
+var ItemSubstitutor = require ( "./ItemSubstitutor" ) ;
 // tangojs = require ( "tangojs" ) ;
 var splitCsv = require ( "./Utils" ).splitCsv ;
 var stream = require('stream');
@@ -454,6 +454,9 @@ Substitutor.prototype._substitute = function ( r, w, map, useEnv, delimiter, dep
 	}
   return count ;
 }
+if ( typeof tangojs === 'object' && tangojs ) tangojs.Substitutor = Substitutor ;
+else tangojs = { Substitutor:Substitutor } ;
+
 module.exports = Substitutor ;
 
 if ( require.main === module )
@@ -476,8 +479,8 @@ if ( require.main === module )
   // console.log ( t ) ;
   var t = sub.substitute ( str, { NN: "XXXX" }, true, '%' ) ;
   console.log ( t ) ;
-  var r = new StringStreamReadable ( str ) ;
-  var w = new StringStreamWritable() ;
+  var r = new tangojs.StringStreamReadable ( str ) ;
+  var w = new tangojs.StringStreamWritable() ;
   var t = sub.substitute ( r, w, { NN: "XXXX" }, true, '%' ) ;
   console.log ( w.toString() ) ;
   // console.log ( sub.substitute ( "--${firstTimeOfMonthOf(month=0)}--" ) ) ;
