@@ -366,8 +366,8 @@ LogFile.prototype._writeToOutputBuffer = function ( s
   }
   if ( type )
   {
-    this._out.write ( type ) ;
-    dateLen = type.length ;
+    this._out.write ( type + " " ) ;
+    dateLen += type.length ;
   }
   if ( util.isError ( s ) )
   {
@@ -398,7 +398,7 @@ LogFile.prototype.getDatePrefix = function()
 {
   var d = new Date() ;
   var DateUtils = require ( "DateUtils" ) ;
-  return "[" + DateUtils.getSoapDateTimeWithMillis ( d ) + "] " ;
+  return "[" + DateUtils.getSoapDateTimeWithMillis ( d ) + "]" ;
 };
 LogFile.prototype.openNewFile = function()
 {

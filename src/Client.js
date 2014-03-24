@@ -114,6 +114,10 @@ Client.prototype.connect = function()
         }
         if ( e.getName() === "system" )
         {
+          if ( e.getType() === "shutdown" )
+          {
+            return ;
+          }
           if ( e.isBad() )
           {
             var uid = e.getUniqueId() ;
