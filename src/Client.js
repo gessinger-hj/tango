@@ -46,7 +46,7 @@ Client.prototype.connect = function()
       for ( i = 0 ; i < thiz.pendingEventList.length ; i++ )
       {
         counter++ ;
-        var uid = os.hostname() + "_" + this.localPort + "-" + counter ;
+        var uid = os.hostname() + "_" + thiz.socket.localPort + "-XX-" + counter ;
         var ctx = thiz.pendingEventList[i] ;
         var e = ctx.e ;
         var resultCallback = ctx.resultCallback ;
@@ -218,7 +218,7 @@ Client.prototype.fireEvent = function ( params, callback )
   if ( ! this.pendingEventList.length )
   {
     counter++ ;
-    var uid = os.hostname() + "_" + this.localPort + "-" + counter ;
+    var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
     e.setUniqueId ( uid ) ;
 
     this.callbacks[uid] = ctx ;
@@ -297,7 +297,7 @@ Client.prototype.removeEventListener = function ( eventNameOrFunction )
     eventNameOrFunction = [ eventNameOrFunction ] ;
   }
 
-  if ( T.isArray ( eventNameOrFunction ) )
+  if ( Array.isArray ( eventNameOrFunction ) )
   {
     for ( i = 0 ; i < eventNameOrFunction.length  ; i++ )
     {
