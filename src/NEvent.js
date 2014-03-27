@@ -3,7 +3,7 @@ if ( typeof tangojs === 'undefined' ) tangojs = {} ;
 if ( !Array.isArray )
 {
   Array.isArray = function(arg) {
-    return Object.prototype.toString.call(arg) === '[object Array]';
+  	return arg && arg.constructor === Array ;
   };
 }
 /**
@@ -21,6 +21,10 @@ tangojs.NEvent.prototype =
 	},
 	serialize: function ( obj )
 	{
+		if ( ! obj )
+		{
+			obj = this ;
+		}
 	  var old = Date.prototype.toJSON ;
 	  try
 	  {
@@ -161,7 +165,7 @@ tangojs.NEvent.prototype =
 			+ "]\n"
 			+ ( this.user ? "[user=" + this.user + "]" : "" )
 			+ "[control=" + util.inspect ( this.control ) + "]\n"
-			+ "[data" + util.inspect ( this.data ) + "]" ;
+			+ "[data=" + util.inspect ( this.data ) + "]" ;
 		}
 		else
 		{

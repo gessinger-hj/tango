@@ -2,10 +2,10 @@ var net = require('net');
 var os = require('os');
 var T = require ( "Tango" ) ;
 var NEvent = require ( "NEvent" ) ;
-require ( "Events" ) ;
-require ( "MultiHash" ) ;
-require ( "LogFile" ) ;
-require ( "User" ) ;
+var Events = require ( "Events" ) ;
+var MultiHash = require ( "MultiHash" ) ;
+var Log = require ( "LogFile" ) ;
+var User = require ( "User" ) ;
 
 var counter = 0 ;
 /**
@@ -14,17 +14,17 @@ var counter = 0 ;
 var Client = function ( port, host )
 {
   this.port = port ;
-  if ( ! this.port ) this.port = T.getProperty ( "GEPARD_PORT" ) ;
+  if ( ! this.port ) this.port = T.getProperty ( "gepard.port" ) ;
   this.host = host ;
-  if ( ! this.host ) this.host = T.getProperty ( "GEPARD_HOST" ) ;
+  if ( ! this.host ) this.host = T.getProperty ( "gepard.host" ) ;
   this.socket = null ;
   this.pendingEventList = [] ;
   this.user = null ;
   this.pendingResultList = {} ;
   this.callbacks = {} ;
-  T.mixin ( tangojs.EventMulticasterTrait, this ) ;
+  T.mixin ( Events.EventMulticasterTrait, this ) ;
   this.pendingEventListenerList = [] ;
-  this.eventListenerFunctions = new tangojs.MultiHash() ;
+  this.eventListenerFunctions = new MultiHash() ;
 } ;
 /** */
 Client.prototype.setUser = function ( user )
@@ -40,20 +40,27 @@ Client.prototype.connect = function()
   var thiz = this ;
   this.socket = net.connect ( p, function()
   {
+    var einfo = new NEvent ( "system", "client_info" ) ;
+    einfo.data.hostname = os.hostname() ;
+    einfo.data.connectionTime = new Date() ;
+    einfo.data.application = process.argv[1] ;
+
+    this.write ( einfo.serialize() ) ;
+
     var i ;
     if ( thiz.pendingEventList.length )
     {
       for ( i = 0 ; i < thiz.pendingEventList.length ; i++ )
       {
         counter++ ;
-        var uid = os.hostname() + "_" + thiz.socket.localPort + "-XX-" + counter ;
+        var uid = os.hostname() + "_" + thiz.socket.localPort + "_" + counter ;
         var ctx = thiz.pendingEventList[i] ;
         var e = ctx.e ;
         var resultCallback = ctx.resultCallback ;
         e.setUniqueId ( uid ) ;
         thiz.callbacks[uid] = ctx ;
         ctx.e = undefined ;
-        this.write ( T.serialize ( e ), function()
+        this.write ( e.serialize(), function()
         {
           if ( ctx.write ) ctx.write.apply ( thiz, arguments ) ;
         }) ;
@@ -70,7 +77,7 @@ Client.prototype.connect = function()
         var e = ctx.e ;
         var callback = ctx.callback ;
         e.setUniqueId ( uid ) ;
-        this.write ( T.serialize ( e ) ) ;
+        this.write ( e.serialize() ) ;
       }
       thiz.pendingEventListenerList.length = 0 ;
     }
@@ -144,7 +151,7 @@ Client.prototype.connect = function()
             callbackList[j].call ( thiz, e ) ;
             if ( e.isResult() && e.isResultRequested() )
             {
-              this.write ( T.serialize ( e ) ) ;
+              this.write ( e.serialize() ) ;
             }
           }
         }
@@ -224,7 +231,7 @@ Client.prototype.fireEvent = function ( params, callback )
     this.callbacks[uid] = ctx ;
 
     var thiz = this ;
-    s.write ( T.serialize ( e ), function()
+    s.write ( e.serialize(), function()
     {
       if ( ctx.write ) ctx.write.apply ( thiz, arguments ) ;
     } ) ;
@@ -286,7 +293,7 @@ Client.prototype.addEventListener = function ( eventNameList, callback )
     var uid = os.hostname() + "_" + this.localPort + "-" + counter ;
     e.setUniqueId ( uid ) ;
     var thiz = this ;
-    s.write ( T.serialize ( e ) ) ;
+    s.write ( e.serialize() ) ;
   }
 };
 Client.prototype.removeEventListener = function ( eventNameOrFunction )
@@ -313,7 +320,7 @@ Client.prototype.removeEventListener = function ( eventNameOrFunction )
     }
     e.data.eventList = eventNameOrFunction ;
     var s = this.getSocket() ;
-    s.write ( T.serialize ( e ) ) ;
+    s.write ( e.serialize() ) ;
   }
 };
 if ( typeof tangojs === 'object' && tangojs ) tangojs.Client = Client ;

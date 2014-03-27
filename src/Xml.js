@@ -1,9 +1,10 @@
 var util = require ( "util" ) ;
 var sax = require('sax');
 var T = require ( "Tango" ) ;
-require ( "DateUtils" ) ;
+var Utils = require ( "Utils" ) ;
+var DateUtils = require ( "DateUtils" ) ;
 
-require ( "StringStreamWritable" ) ;
+var StringStreamWritable = require ( "StringStreamWritable" ) ;
 var stream = require('stream');
 
 /**
@@ -30,7 +31,7 @@ var XmlElement = function ( tag, text, attr )
     else
     if ( T.isDate ( text ) )
     {
-      var sd = tangojs.DateUtils.getSoapDateTime ( text ) ;
+      var sd = DateUtils.getSoapDateTime ( text ) ;
       this._value = sd ;
       if ( attr && typeof attr === 'object') this._attributes = attr ;
       else this._attributes = {} ;
@@ -339,7 +340,7 @@ XmlElement.prototype.valueOf = function ( path )
 {
   if ( ! path )
   {
-    if ( this._attributes["xsi:type"] === "xsd:date" ) return tangojs.DateUtils.parseDate ( this._value ) ;
+    if ( this._attributes["xsi:type"] === "xsd:date" ) return DateUtils.parseDate ( this._value ) ;
     else
     if ( this._attributes["xsi:type"] === "xsd:number" ) return parseFloat ( this._value ) ;
     else
@@ -366,7 +367,7 @@ XmlElement.prototype.valueOf = function ( path )
   {
     return child._attributes[attributeName] ;
   }
-  if ( child._attributes["xsi:type"] === "xsd:date" ) return tangojs.DateUtils.parseDate ( child._value ) ;
+  if ( child._attributes["xsi:type"] === "xsd:date" ) return DateUtils.parseDate ( child._value ) ;
   else
   if ( child._attributes["xsi:type"] === "xsd:number" ) return parseFloat ( child._value ) ;
   else
@@ -387,7 +388,7 @@ XmlElement.prototype.getDate = function ( path )
   var v = this.valueOf ( path ) ;
   if ( typeof v === 'string' )
   {
-    return tangojs.DateUtils.parseDate ( this.valueOf ( path ) ) ;
+    return DateUtils.parseDate ( this.valueOf ( path ) ) ;
   }
   return v ;
 };
@@ -440,7 +441,7 @@ XmlElement.prototype.toString = function ( wstream )
 {
   if ( ! wstream )
   {
-    wstream = new tangojs.StringStreamWritable() ;
+    wstream = new StringStreamWritable() ;
     this._toString ( "", wstream ) ;
     var s = wstream.toString() ;
     wstream.end() ;
@@ -792,6 +793,7 @@ XmlElement.prototype._evaluateProperty = function ( propertyValue, properties, e
   var name ;
   var value ;
   var operator ;
+  var i ;
   if ( typeof propertyValue !== 'string' )
   {
     name = e.getAttribute ( "property" ) ;
@@ -830,6 +832,42 @@ XmlElement.prototype._evaluateProperty = function ( propertyValue, properties, e
     if ( typeof value !== 'string' ) return ;
     if ( propertyValue.toUpperCase().indexOf ( value.toUpperCase() ) >= 0 ) return propertyValue ;
     else                                                                    return null ;
+  }
+  if ( operator === "not-contains" )
+  {
+    if ( typeof value !== 'string' ) return ;
+    if ( propertyValue.indexOf ( value ) < 0 ) return propertyValue ;
+    else                                       return ;
+  }
+  if ( operator === "not-containsic" )
+  {
+    if ( typeof value !== 'string' ) return ;
+    if ( propertyValue.toUpperCase().indexOf ( value.toUpperCase() ) < 0 ) return propertyValue ;
+    else                                                                   return null ;
+  }
+  if ( operator === "in" )
+  {
+    if ( typeof value !== 'string' ) return ;
+    var list = Utils.splitCsv ( propertyValue ) ;
+    if ( list.indexOf ( value ) >= 0 )
+    {
+      list.length = 0 ;
+      return propertyValue ;
+    }
+    list.length = 0 ;
+    return null ;
+  }
+  if ( operator === "not-in" )
+  {
+    if ( typeof value !== 'string' ) return ;
+    var list = Utils.splitCsv ( propertyValue ) ;
+    if ( list.indexOf ( value ) < 0 )
+    {
+      list.length = 0 ;
+      return propertyValue ;
+    }
+    list.length = 0 ;
+    return null ;
   }
   if ( operator === "matches" )
   {
@@ -1062,6 +1100,12 @@ if ( require.main === module )
   var xif = xml.add ( "if", { property:"LOGNAME" } ) ;
   xif.add ( "optionalElement3" ) ;
 
+  var xif = xml.add ( "if", { property:"partner", value:"gess", operator:"contains" } ) ;
+  xif.add ( "optionalElement4" ) ;
+
+  var xif = xml.add ( "if", { property:"partner_list", value:"gess", operator:"not-in" } ) ;
+  xif.add ( "optionalElement5" ) ;
+
   console.log ( xml.toString() ) ;
 
   console.log ( "---------- various access methods ----------------" ) ;
@@ -1101,7 +1145,7 @@ if ( require.main === module )
   console.log ( "" + xdup.toString() ) ;
 
   console.log ( "---------- duplicate conditional ----------------" ) ;
-  var xxdup = tree.duplicateConditional ( { TEST:true, NUMBER:1.2 } ) ;
+  var xxdup = tree.duplicateConditional ( { TEST:true, NUMBER:1.2, partner:"gess", partner_list:"a,b,gess,c" } ) ;
   console.log ( "" + xxdup.toString() ) ;
 
 process.exit() ;

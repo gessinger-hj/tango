@@ -79,6 +79,7 @@ function stripQuotes ( t )
   }
   return t ;
 }
+module.exports.stripQuotes = stripQuotes ;
 function parseNameValues ( str, map, del )
 {
   if ( ! map ) map = {} ;
