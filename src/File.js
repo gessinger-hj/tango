@@ -1,14 +1,18 @@
 var Path = require ( "path" ) ;
 var fs = require ( "fs" ) ;
-var T = require ( "Tango" ) ;
-require ( 'Xml' ) ;
+var util = require ( "util" ) ;
+var EventEmitter = require ( "events" ).EventEmitter ;
+var stream = require('stream');
+
+var xml = require ( 'Xml' ) ;
+var FileLineReader = require ( 'FileLineReader' ) ;
 
 /**
  *  @constructor
  *  @param {path|dom} id the id of an html element or
  *         the html dom element itself.
  */
-File = function ( path, name )
+var File = function ( path, name )
 {
 	if ( path instanceof File )
 	{
@@ -70,6 +74,30 @@ File.prototype.getWriteStream = function ( enc, mode )
 		return fs.createWriteStream ( this.path, { encoding: enc, flags: mode } ) ;
 	}
 	return fs.createWriteStream ( this.path, { encoding: enc } ) ;
+};
+/** */
+File.prototype.getCharStream = function()
+{
+	return this._getReadStream ( "utf8" ) ;
+}
+/** */
+File.prototype.getBinaryStream = function()
+{
+	return this._getReadStream ( null ) ;
+}
+;
+/** */
+File.prototype._getReadStream = function ( enc )
+{
+	if ( ! enc ) enc = null ;
+	var options =
+	{
+		flags: 'r'
+	, encoding: enc
+	, fd: null
+	, autoClose: true
+	} ;
+	return fs.createReadStream ( this.path, options ) ;
 };
 /** */
 File.prototype.write = function ( o, enc )
@@ -190,7 +218,7 @@ File.prototype.getAbsoluteFile = function()
 File.prototype.toXml = function ( elementCallback )
 {
 	var data = this.asString() ;
-  var f = new tangojs.XmlFactory ( elementCallback ) ;
+  var f = new xml.XmlFactory ( elementCallback ) ;
   return f.create ( data ) ;
 };
 /** */
@@ -202,7 +230,7 @@ File.prototype.toXmlResolved = function ( options )
 	}
 	var m = [] ;
 	var i ;
-	if ( T.isArray ( options.includeTags ) )
+	if ( Array.isArray ( options.includeTags ) )
 	{
 		var a = options.includeTags ;
 		var len = a.length ;
@@ -399,7 +427,41 @@ File.prototype.remove = function()
 		// console.log ( exc ) ;
 	}
 };
+/**
+	*/
+File.prototype.lines = function ( callback )
+{
+	var lr = new FileLineReader ( this.path ) ;
+	if ( callback )
+	{
+		var thiz = this ;
+		lr.on ( "end", function()
+		{
+			callback.call ( thiz, null ) ;
+		});
+		lr.on ( "line", function ( line )
+		{
+			callback.call ( thiz, line ) ;
+		});
+	}
+	return lr ;
+};
 if ( typeof tangojs === 'object' && tangojs ) tangojs.File = File ;
 else tangojs = { File:File } ;
 
 module.exports = File ;
+if ( require.main === module )
+{
+	var T = require ( "Tango" ) ;
+	var CsvReader = require ( "CsvReader" ) ;
+
+	var csvr = new CsvReader ( new File ( "x.csv" ).lines() ) ;
+	csvr.on ( "array", function onarray(a)
+	{
+console.log ( a ) ;
+	});
+// 	new File ( "yield.js" ).lines ( function(line)
+// 	{
+// console.log ( "line=" + line ) ;
+// 	});
+}

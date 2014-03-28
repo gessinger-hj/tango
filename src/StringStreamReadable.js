@@ -5,7 +5,7 @@ var util = require('util');
  * @constructor
  * @extends stream.Readable
  */
-StringStreamReadable = function ( inputBufferOrString, options )
+var StringStreamReadable = function ( inputBufferOrString, options )
 {
   var enc  = "utf8" ;
   if ( ! options ) options = { encoding:"utf8" } ;

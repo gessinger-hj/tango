@@ -691,11 +691,6 @@ else tangojs = { LogFile:TLOG } ;
 tangojs.Logger = TLOG ;
 module.exports = TLOG ;
 
-process.on ( "exit", function(rc)
-{
-  TLOG.flush() ;
-}) ;
-
 if ( require.main === module )
 {
   TLOG.init ( "appl=TLOG,level=debug,xfile=TLOG.log:max=100:v=10" ) ;
