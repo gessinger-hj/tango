@@ -1,6 +1,6 @@
 var T = require ( "Tango" ) ;
-require ( 'LocalizedMessages' ) ;
-require ( 'Substitutor' ) ;
+var LocalizedMessages = require ( 'LocalizedMessages' ) ;
+var Substitutor = require ( 'Substitutor' ) ;
 
 /**
   * @constructor
@@ -31,69 +31,10 @@ Localizer.prototype.translate = function ( text, args, defaultString )
 Localizer.prototype.localize = function ( src )
 {
   var delimiter  = '%' ;
-  if ( src.length == 0 ) return src ;
-
-  var tgt = "" ;
-
-  var i = 0 ;
-  var j ;
-  var name ;
-  var n, v ;
-  for ( i = 0 ; i < src.length ; i++ )
-  {
-    var c = src.charAt ( i ) ;
-    if ( c == delimiter )
-    {
-      var found = false ;
-      j = i + 1 ;
-      for ( ; j < src.length ; j++ )
-      {
-        if ( src.charAt ( j ) === delimiter )
-        {
-          found = true ;
-          break ;
-        }
-      }
-      if ( found )
-      {
-        name = "" ;
-        for ( i++ ; i < j ; i++ )
-        {
-          name += src.charAt ( i ) ;
-        }
-        n = name ;
-        v = this._LocalizedMessages.getText ( n ) ;
-        if ( v )
-        {
-          if ( v.indexOf ( '\'' ) >= 0 )
-          {
-            for ( var iv = 0 ; iv < v.length ; iv++ )
-            {
-              if ( v.charAt ( iv ) == '\'' ) tgt += "&apos;" ;
-              else                           tgt += v.charAt ( iv ) ;
-            }
-          }
-          else
-          {
-            tgt += v ;
-          }
-        }
-        else
-        {
-          tgt += '%' ;
-          tgt += name ;
-          i-- ;
-        }
-      }
-      else tgt += c ;
-    }
-    else
-    {
-      tgt += c ;
-    }
-  }
-  return tgt ;
+  var sub = new Substitutor() ;
+  return sub.substitute ( src, this._LocalizedMessages, false, delimiter, true ) ;
 };
+
 if ( typeof tangojs === 'object' && tangojs ) tangojs.Localizer = Localizer ;
 else tangojs = { Localizer:Localizer } ;
 module.exports = Localizer ;

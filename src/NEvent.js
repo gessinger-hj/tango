@@ -297,25 +297,25 @@ if ( typeof document === 'undefined' )
 		var util = require ( "util" ) ;
 		var T = require ( "Tango" ) ;
 
-		require ( "User" ) ;
-		require ( "File" ) ;
+		var User = require ( "User" ) ;
+		var File = require ( "File" ) ;
 
-		var f = new tangojs.File ( "r.txt" ) ;
-		var buf = f.toBuffer() ;
-		var ne = new NEvent ( 'BC', "T" ) ;
+		// var f = new tangojs.File ( "r.txt" ) ;
+		// var buf = f.toBuffer() ;
+		var ne = new tangojs.NEvent ( 'BC', "T" ) ;
 		// ne.setUser ( new User ( "admin", 17 ) ) ;
 		// ne.data.fileContent = buf ;
-		var tree = new XmlTree() ;
-		var xfile = tree.add ( "file" ) ;
-		xfile.add ( "name", "r.txt" ) ;
-		xfile.add ( "content", buf ) ;
+		// var tree = new tangojs.XmlTree() ;
+		// var xfile = tree.add ( "file" ) ;
+		// xfile.add ( "name", "r.txt" ) ;
+		// xfile.add ( "content", buf ) ;
 
-		ne.xdata = tree ;
-		T.log ( ne ) ;
+		// ne.xdata = tree ;
+		// T.log ( ne ) ;
 
-		var str = T.serialize ( ne ) ;
+		var str = ne.serialize() ;
 	console.log ( "str=" + str ) ;
-
+new File ( "nevent.json" ).write ( str ) ;
 		var o = T.deserialize ( str ) ;
 		T.log ( o ) ;
 

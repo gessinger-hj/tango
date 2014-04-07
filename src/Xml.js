@@ -1107,6 +1107,14 @@ if ( require.main === module )
   xif.add ( "optionalElement5" ) ;
 
   console.log ( xml.toString() ) ;
+  console.log ( "---------- duplicate ----------------" ) ;
+  var xdup = xml.duplicate()
+  console.log ( "" + xdup.toString() ) ;
+
+  console.log ( "---------- duplicate conditional ----------------" ) ;
+  var xxdup = xml.duplicateConditional ( { TEST:true, NUMBER:1.2, partner:"gess", partner_list:"a,b,gess,c" } ) ;
+  console.log ( "" + xxdup.toString() ) ;
+process.exit() ;
 
   console.log ( "---------- various access methods ----------------" ) ;
   var ch1 = xml.elem ( "child[last()]" ) ;
@@ -1140,13 +1148,6 @@ if ( require.main === module )
   tree.add ( "Start", new Date() ) ;
   console.log ( tree.toString() ) ;
   console.log ( "Start=" + tree.valueOf ( "Start") ) ;
-  console.log ( "---------- duplicate ----------------" ) ;
-  var xdup = tree.duplicate()
-  console.log ( "" + xdup.toString() ) ;
-
-  console.log ( "---------- duplicate conditional ----------------" ) ;
-  var xxdup = tree.duplicateConditional ( { TEST:true, NUMBER:1.2, partner:"gess", partner_list:"a,b,gess,c" } ) ;
-  console.log ( "" + xxdup.toString() ) ;
 
 process.exit() ;
 
