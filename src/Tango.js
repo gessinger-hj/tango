@@ -296,7 +296,8 @@ TangoClass.prototype.splitJSONObjects = function ( str )
   var pcounter = 1 ;
   var q = "" ;
   var i0 = 0 ;
-  for ( var i = 1 ; i < str.length ; i++ )
+  var i = 1 ;
+  for ( i = 1 ; i < str.length ; i++ )
   {
     var c = str.charAt ( i ) ;
     if ( c === '"' || c === "'" )
@@ -328,13 +329,21 @@ TangoClass.prototype.splitJSONObjects = function ( str )
       {
         list.push ( str.substring ( i0, i + 1 ) ) ;
         i0 = i + 1 ;
+        for ( ; i0 < str.length ; i0++ )
+        {
+          if ( str.charAt ( i0 ) === '{' )
+          {
+            i = i0 - 1 ;
+            break ;
+          }
+        }
       }
       continue ;
     }
   }
   if ( i0 < str.length )
   {
-    list.push ( str.substring ( i0, i + 1 ) ) ;
+    list.push ( str.substring ( i0 ) ) ;
   }
   return list ;
 };
