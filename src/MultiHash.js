@@ -19,9 +19,41 @@ MultiHash.prototype =
     }
     l.push ( obj ) ;
   },
+  getKeysOf: function ( obj )
+  {
+    var list = [] ;
+    var keys = this.getKeys() ;
+    for ( var i = 0 ; i < keys.length ; i++ )
+    {
+      var l = this._hash[keys[i]]
+      if ( l.indexOf ( obj ) >= 0 )
+      {
+        list.push ( keys[i] ) ;
+      }
+    }
+    return list ;
+  },
   remove: function ( key, obj )
   {
-    var l = this._hash[key] ;
+    var l ;
+    var index ;
+    if ( ! key && obj )
+    {
+      var keys = this.getKeys() ;
+      for ( var i = 0 ; i < keys.length ; i++ )
+      {
+        l = this._hash[keys[i]]
+        index = l.indexOf ( obj ) ;
+        if ( index < 0 ) continue ;
+        l.splice ( index, 1 ) ;
+        if ( ! l.length )
+        {
+          delete this._hash[keys[i]] ;
+        }
+      }
+      return ;
+    }
+    l = this._hash[key] ;
     if ( ! obj )
     {
       if ( ! l ) return false ;
@@ -30,7 +62,7 @@ MultiHash.prototype =
     }
     l = this._hash[key] ;
     if ( ! l ) return false ;
-    var index = l.indexOf ( obj ) ;
+    index = l.indexOf ( obj ) ;
     if ( index >= 0 )
     {
       l.splice ( index, 1 ) ;

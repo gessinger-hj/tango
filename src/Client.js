@@ -303,7 +303,6 @@ Client.prototype.removeEventListener = function ( eventNameOrFunction )
   {
     eventNameOrFunction = [ eventNameOrFunction ] ;
   }
-
   if ( Array.isArray ( eventNameOrFunction ) )
   {
     for ( i = 0 ; i < eventNameOrFunction.length  ; i++ )

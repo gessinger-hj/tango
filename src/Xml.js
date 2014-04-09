@@ -848,8 +848,8 @@ XmlElement.prototype._evaluateProperty = function ( propertyValue, properties, e
   if ( operator === "in" )
   {
     if ( typeof value !== 'string' ) return ;
-    var list = Utils.splitCsv ( propertyValue ) ;
-    if ( list.indexOf ( value ) >= 0 )
+    var list = Utils.splitCsv ( value ) ;
+    if ( list.indexOf ( propertyValue ) >= 0 )
     {
       list.length = 0 ;
       return propertyValue ;
@@ -860,8 +860,8 @@ XmlElement.prototype._evaluateProperty = function ( propertyValue, properties, e
   if ( operator === "not-in" )
   {
     if ( typeof value !== 'string' ) return ;
-    var list = Utils.splitCsv ( propertyValue ) ;
-    if ( list.indexOf ( value ) < 0 )
+    var list = Utils.splitCsv ( value ) ;
+    if ( list.indexOf ( propertyValue ) < 0 )
     {
       list.length = 0 ;
       return propertyValue ;
@@ -1103,7 +1103,7 @@ if ( require.main === module )
   var xif = xml.add ( "if", { property:"partner", value:"gess", operator:"contains" } ) ;
   xif.add ( "optionalElement4" ) ;
 
-  var xif = xml.add ( "if", { property:"partner_list", value:"gess", operator:"not-in" } ) ;
+  var xif = xml.add ( "if", { property:"partner", value:"a,b,gess,c", operator:"in" } ) ;
   xif.add ( "optionalElement5" ) ;
 
   console.log ( xml.toString() ) ;
