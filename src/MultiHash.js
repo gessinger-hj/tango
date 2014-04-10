@@ -1,8 +1,7 @@
-var T = require ( "Tango" ) ;
 /**
  *  @constructor
  */
-MultiHash = function()
+var MultiHash = function()
 {
   this._hash = {} ;
   this.className = "MultiHash" ;
@@ -37,8 +36,9 @@ MultiHash.prototype =
   {
     var l ;
     var index ;
-    if ( ! key && obj )
+    if ( key && typeof key === 'object' )
     {
+      obj = key ;
       var keys = this.getKeys() ;
       for ( var i = 0 ; i < keys.length ; i++ )
       {
@@ -54,14 +54,13 @@ MultiHash.prototype =
       return ;
     }
     l = this._hash[key] ;
+    if ( ! l ) return false ;
     if ( ! obj )
     {
-      if ( ! l ) return false ;
+      l.length = 0 ;
       delete this._hash[key] ;
       return true ;
     }
-    l = this._hash[key] ;
-    if ( ! l ) return false ;
     index = l.indexOf ( obj ) ;
     if ( index >= 0 )
     {
@@ -95,7 +94,7 @@ MultiHash.prototype =
     for ( var k in this._hash )
     {
       var l = this._hash[k] ;
-      if ( ! T.isArray ( l ) ) continue ;
+      if ( ! Array.isArray ( l ) ) continue ;
       str += "\n  key=" + k + ",size=" + l.length ;
       for ( var i = 0 ; i < l.length ; i++ )
       {
@@ -108,10 +107,6 @@ MultiHash.prototype =
   {
     delete this._hash ;
   }
-  // toJSON: function()
-  // {
-  //   return { _hash: this._hash, className: this.className } ;
-  // }
 };
 if ( typeof tangojs === 'object' && tangojs ) tangojs.MultiHash = MultiHash ;
 else tangojs = { MultiHash:MultiHash } ;

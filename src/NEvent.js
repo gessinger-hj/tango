@@ -11,7 +11,7 @@ if ( !Array.isArray )
  */
 tangojs.NEvent = function ( name, type, data )
 {
-	this._init ( name, type,data ) ;
+	this._init ( name, type, data ) ;
 };
 tangojs.NEvent.prototype =
 {
@@ -37,7 +37,6 @@ tangojs.NEvent.prototype =
 	  finally
 	  {
 	    Date.prototype.toJSON = old ;
-	    // console.log ( exc ) ;
 	  }
 	},
 	deserialize: function ( serializedObject, deepClassInspection )
@@ -70,9 +69,8 @@ tangojs.NEvent.prototype =
 	    {
 		    function F() { } ;
 		    F.prototype = f.prototype ;
-    		return new F();
+    		that = new F();
   		}
-	    that = Object.create ( f.prototype ) ;
 
 	    for ( var k in obj )
 	    {

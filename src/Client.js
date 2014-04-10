@@ -259,9 +259,9 @@ Client.prototype.addEventListener = function ( eventNameList, callback )
   if ( ! eventNameList ) throw new Error ( "Client.addEventListener: Missing eventNameList." ) ;
   if ( typeof callback !== 'function' ) throw new Error ( "Client.addEventListener: callback must be a function." ) ;
   if ( typeof eventNameList === 'string' ) eventNameList = [ eventNameList ] ;
-  if ( ! T.isArray ( eventNameList ) )
+  if ( ! Array.isArray ( eventNameList ) )
   {
-    throw new Error ( "Client.addEventListener: Missing eventNameList must be an array." ) ;
+    throw new Error ( "Client.addEventListener: eventNameList must be a string or an array of strings." ) ;
   }
   var u = this.user ;
   var e = new NEvent ( "system", "addEventListener" ) ;
@@ -269,8 +269,7 @@ Client.prototype.addEventListener = function ( eventNameList, callback )
   {
     e.setUser ( this.user ) ;
   }
-  var e = new NEvent ( "system", "addEventListener" ) ;
-  e.data.eventList = eventNameList ;
+  e.data.eventNameList = eventNameList ;
   var i ;
   for ( i = 0 ; i < eventNameList.length ; i++ )
   {
@@ -303,21 +302,43 @@ Client.prototype.removeEventListener = function ( eventNameOrFunction )
   {
     eventNameOrFunction = [ eventNameOrFunction ] ;
   }
+  else
+  if ( typeof eventNameOrFunction === 'function' )
+  {
+    eventNameOrFunction = [ eventNameOrFunction ] ;
+  }
+  else
   if ( Array.isArray ( eventNameOrFunction ) )
   {
-    for ( i = 0 ; i < eventNameOrFunction.length  ; i++ )
+  }
+  else
+  {
+    throw new Error ( "Client.removeEventListener: eventNameOrFunction must be a function, a string or an array of strings." ) ;
+  }
+
+  var eventNameList = [] ;
+  for ( i = 0 ; i < eventNameOrFunction.length  ; i++ )
+  {
+    var item = eventNameOrFunction[i] ;
+    if ( typeof item === 'string' )
     {
-      var list = this.eventListenerFunctions.get ( eventNameOrFunction ) ;
-      if ( ! list ) continue ;
-      this.eventListenerFunctions.remove  ( eventNameOrFunction ) ;
+      eventNameList.push ( item ) ;
+      this.eventListenerFunctions.remove ( item ) ;
     }
+    else
+    if ( typeof item === 'function' )
+    {
+      var keys = this.eventListenerFunctions.getKeysOf ( item ) ;
+      for ( i = 0 ; i < keys.length ; i++ )
+      {
+        eventNameList.push ( keys[i] ) ;
+      }
+      this.eventListenerFunctions.remove ( item ) ;
+    }
+    if ( ! eventNameList.length ) return ;
     var e = new NEvent ( "system", "removeEventListener" ) ;
-    var u = this.user ;
-    if ( u )
-    {
-      e.setUser ( this.user ) ;
-    }
-    e.data.eventList = eventNameOrFunction ;
+    e.setUser ( this.user ) ;
+    e.data.eventNameList = eventNameList ;
     var s = this.getSocket() ;
     s.write ( e.serialize() ) ;
   }
