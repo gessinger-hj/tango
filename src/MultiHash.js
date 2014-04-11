@@ -16,6 +16,10 @@ MultiHash.prototype =
       l = [] ;
       this._hash[key] = l ;
     }
+    if ( l.indexOf ( obj ) >= 0 )
+    {
+      return ;
+    }
     l.push ( obj ) ;
   },
   getKeysOf: function ( obj )
