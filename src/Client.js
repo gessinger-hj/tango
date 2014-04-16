@@ -14,7 +14,7 @@ var counter = 0 ;
 var Client = function ( port, host )
 {
   this.port = port ;
-  if ( ! this.port ) this.port = T.getProperty ( "gepard.port" ) ;
+  if ( ! this.port ) this.port = T.getProperty ( "gepard.port", "17501" ) ;
   this.host = host ;
   if ( ! this.host ) this.host = T.getProperty ( "gepard.host" ) ;
   this.socket = null ;

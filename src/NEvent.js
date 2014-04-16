@@ -1,5 +1,3 @@
-if ( typeof tangojs === 'undefined' ) tangojs = {} ;
-
 if ( !Array.isArray )
 {
   Array.isArray = function(arg) {
@@ -9,15 +7,15 @@ if ( !Array.isArray )
 /**
  * @constructor
  */
-tangojs.NEvent = function ( name, type, data )
+var NEvent = function ( name, type, data )
 {
 	this._init ( name, type, data ) ;
 };
-tangojs.NEvent.prototype =
+NEvent.prototype =
 {
 	classNameMappings:
 	{
-  	NEvent: "tangojs.NEvent"
+  	NEvent: "NEvent"
 	},
 	serialize: function ( obj )
 	{
@@ -283,12 +281,14 @@ tangojs.NEvent.prototype =
 		return this.control.reason ;
 	}
 };
+if ( typeof tangojs === 'undefined' ) tangojs = {} ;
+tangojs.NEvent = NEvent ;
 tangojs.serialize = tangojs.NEvent.prototype.serialize ;
 tangojs.deserialize = tangojs.NEvent.prototype.deserialize ;
 
 if ( typeof document === 'undefined' )
 {
-	module.exports = tangojs.NEvent ;
+	module.exports = NEvent ;
 
 	if ( require.main === module )
 	{
@@ -313,7 +313,7 @@ if ( typeof document === 'undefined' )
 
 		var str = ne.serialize() ;
 	console.log ( "str=" + str ) ;
-new File ( "nevent.json" ).write ( str ) ;
+		new File ( "nevent.json" ).write ( str ) ;
 		var o = T.deserialize ( str ) ;
 		T.log ( o ) ;
 
