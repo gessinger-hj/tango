@@ -21,6 +21,16 @@ Broker = function ( port, ip )
   var thiz = this ;
   var ctx ;
   this.server = net.createServer() ;
+  this.server.on ( "error", function onerror ( p )
+  {
+T.lwhere (  ) ;
+console.log ( "p=" + p ) ;
+  });
+  this.server.on ( "close", function onclose ( p )
+  {
+T.lwhere (  ) ;
+console.log ( "p=" + p ) ;
+  });
   this.server.on ( "connection", function(socket)
   {
     if ( thiz.closing )
@@ -33,19 +43,17 @@ Broker = function ( port, ip )
     thiz._sockets[sid] = { sid:sid, socket:socket, info:"none" } ;
 
     Log.info ( 'Socket connected' );
+    socket.on ( "error", function socket_on_error ( p )
+    {
+      thiz.ejectSocket ( this ) ;
+    });
+    socket.on ( "close", function socket_on_close ( p )
+    {
+      thiz.ejectSocket ( this ) ;
+    });
     socket.on ( 'end', function socket_on_end()
     {
-      ctx = thiz._sockets[this.sid] ;
-
-      if ( ctx.eventNameList )
-      {
-        for  ( i = 0 ; i < ctx.eventNameList.length ; i++ )
-        {
-          thiz._eventNameToSockets.remove ( ctx.eventNameList[i], this ) ;
-        }
-      }
-      delete thiz._sockets[this.sid] ;
-      Log.info ( 'Socket disconnected' ) ;
+      thiz.ejectSocket ( this ) ;
     });
     socket.on ( "data", function socket_on_data( chunk )
     {
@@ -246,6 +254,22 @@ Broker = function ( port, ip )
       }
     });
   });
+};
+Broker.prototype.ejectSocket = function ( socket )
+{
+  var sid = socket.sid ;
+  if ( ! sid ) return ;
+  var ctx = this._sockets[sid] ;
+  if ( ! ctx ) return ;
+  if ( ctx.eventNameList )
+  {
+    for  ( i = 0 ; i < ctx.eventNameList.length ; i++ )
+    {
+      this._eventNameToSockets.remove ( ctx.eventNameList[i], socket ) ;
+    }
+  }
+  delete this._sockets[sid] ;
+  Log.info ( 'Socket disconnected' ) ;
 };
 Broker.prototype.closeAllSockets = function ( exceptSocket )
 {
