@@ -9,7 +9,8 @@ client.fire ( ne
        , { result: function(e)
            {
 console.log ( " ----------result: function()----------------" ) ;
-             T.log ( e ) ;
+            // var e = T.deserialize ( m ) ;
+console.log ( e.data.RESULT.toString() ) ;
              this.end() ;
            }
          , error: function(e)
@@ -21,7 +22,7 @@ console.log ( " ----------error: function()----------------" ) ;
          , write: function()
            {
 console.log ( " ----------write: function()----------------" ) ;
-              this.end() ;
+              // this.end() ;
            }
          }
        ) ;

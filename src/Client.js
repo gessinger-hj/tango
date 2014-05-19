@@ -149,18 +149,21 @@ Client.prototype.connect = function()
           for  ( j = 0 ; j < callbackList.length ; j++ )
           {
             callbackList[j].call ( thiz, e ) ;
-            if ( e.isResult() && e.isResultRequested() )
-            {
-              this.write ( e.serialize() ) ;
-            }
+            // if ( e.isResult() && e.isResultRequested() )
+            // {
+            //   this.write ( e.serialize() ) ;
+            // }
           }
         }
       }
     }
   } ) ;
-  this.socket.on ( 'end', function ()
+  this.socket.on ( 'end', function socket_on_end()
   {
     thiz._fireEvent ( "end" ) ;
+  });
+  this.socket.on ( 'error', function socket_on_error(p,q)
+  {
   });
 } ;
 Client.prototype._writeCallback = function()

@@ -7,10 +7,10 @@ var Log = require ( "LogFile" ) ;
 var Xml = require ( 'Xml' ).Xml ;
 var XmlTree = require ( 'Xml' ).XmlTree ;
 
-var c = new Client() ;
-c.addEventListener ( "DB:REQUEST", function(e)
+var client = new Client() ;
+client.addEventListener ( "DB:REQUEST", function(e)
 {
-  T.lwhere (  ) ;
+  // T.lwhere (  ) ;
   T.log ( e ) ;
   e.setIsResult() ;
 
@@ -19,11 +19,8 @@ c.addEventListener ( "DB:REQUEST", function(e)
   	user : "root",
   	password: ""
   });
-console.log ( "2 --------------------------" ) ;
-	  connection.connect();
-console.log ( "2a --------------------------" ) ;
-  	connection.query( "use cdcol" );
-console.log ( "3 --------------------------" ) ;
+  connection.connect();
+	connection.query( "use cdcol" );
 	var strQuery = "select * from cds";	
 	var tree = new XmlTree() ;
 	e.data.RESULT = tree ;
@@ -31,7 +28,6 @@ console.log ( "3 --------------------------" ) ;
   
 	connection.query( strQuery, function ( err, rows )
 	{
-T.lwhere (  ) ;
 		if ( err )
 		{
 			Log.error ( err ) ;
@@ -51,10 +47,16 @@ T.lwhere (  ) ;
 	      }
 	    }
 		}
+		// console.log ( e ) ;
+		// console.log ( tree.toString() ) ;
 		connection.end() ;
+	  if ( e.isResult() && e.isResultRequested() )
+	  {
+	    client.socket.write ( e.serialize() ) ;
+	  }
 	});
 });
-c.on('end', function()
+client.on('end', function()
 {
   console.log('socket disconnected');
 });
