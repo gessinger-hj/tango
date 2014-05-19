@@ -24,12 +24,10 @@ Broker = function ( port, ip )
   this.server.on ( "error", function onerror ( p )
   {
 T.lwhere (  ) ;
-console.log ( "p=" + p ) ;
   });
   this.server.on ( "close", function onclose ( p )
   {
 T.lwhere (  ) ;
-console.log ( "p=" + p ) ;
   });
   this.server.on ( "connection", function(socket)
   {
@@ -269,7 +267,7 @@ Broker.prototype.ejectSocket = function ( socket )
     }
   }
   delete this._sockets[sid] ;
-  Log.info ( 'Socket disconnected' ) ;
+  Log.info ( 'Socket disconnected, sid=' + sid ) ;
 };
 Broker.prototype.closeAllSockets = function ( exceptSocket )
 {
@@ -307,7 +305,7 @@ Broker.prototype.listen = function ( port, callback )
   this.server.listen ( this.port, callback ) ;
 };
 
-var host = T.getProperty ( "GEPARD_HOST" ) ;
+var host = T.getProperty ( "gepard.host" ) ;
 
 module.exports = Broker ;
 
