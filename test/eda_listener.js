@@ -1,9 +1,8 @@
-var net = require('net');
 var T = require ( "Tango" ) ;
-require ( "NEvent" ) ;
-require ( "Client" ) ;
+var NEvent = require ( "NEvent" ) ;
+var Client = require ( "Client" ) ;
 
-var c = new tangojs.Client() ;
+var c = new Client() ;
 c.addEventListener ( "send-mail", function(e)
 {
   console.log ( "-------------c.addEventListener send-mail-------------------" ) ;

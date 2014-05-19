@@ -267,9 +267,8 @@ Client.prototype.addEventListener = function ( eventNameList, callback )
   {
     throw new Error ( "Client.addEventListener: eventNameList must not be empty." ) ;
   }
-  var u = this.user ;
   var e = new NEvent ( "system", "addEventListener" ) ;
-  if ( u )
+  if ( this.user )
   {
     e.setUser ( this.user ) ;
   }
