@@ -1,14 +1,14 @@
 var T = require ( "Tango" ) ;
-require ( "NEvent" ) ;
-require ( "Client" ) ;
-require ( "File" ) ;
+var NEvent = require ( "NEvent" ) ;
+var Client = require ( "Client" ) ;
+var File = require ( "File" ) ;
 
 // var f = new tangojs.File ( "r.txt" ) ;
 // var buf = f.toBuffer() ;
 
-var c = new tangojs.Client() ;
+var c = new Client() ;
 
-var ne = new tangojs.NEvent ( "alarm", "file" ) ;
+var ne = new NEvent ( "alarm", "file" ) ;
 // ne.data.fileContent = buf ;
 // T.log ( ne ) ;
 c.fire ( ne
