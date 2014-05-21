@@ -18,10 +18,8 @@ client.addEventListener ( "DB:REQUEST", function(e)
 		Log.error ( e ) ;
     return ;
   }
-
-  var connection =  mysql.createConnection (
-  	"mysql://root:@localhost/"
-  );
+  var dburl = T.getProperty ( "dburl", "mysql://root:@localhost/" ) ;
+  var connection =  mysql.createConnection ( dburl ) ;
   // var connection =  mysql.createConnection (
   // {
   // 	host : "localhost",
