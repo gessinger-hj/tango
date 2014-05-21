@@ -19,10 +19,18 @@ else
 {
 	socket.on ( "connect", function()
 	{
+T.lwhere (  ) ;
 	  var e = new NEvent ( "system", "getInfoRequest" ) ;
 	  this.write ( e.serialize() ) ;
 	});
 }
+socket.on ( 'error', function socket_on_error( data ) {
+T.lwhere (  ) ;
+T.log ( data ) ;
+});
+socket.on ( 'end', function socket_on_end( data ) {
+T.lwhere (  ) ;
+});
 socket.on ( 'data', function ( data ) {
   var m = data.toString() ;
   if ( m.charAt ( 0 ) === '{' )

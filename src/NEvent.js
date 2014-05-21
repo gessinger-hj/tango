@@ -278,7 +278,7 @@ NEvent.prototype =
 	},
 	getStatusReason: function()
 	{
-		return this.control.reason ;
+		return this.control.status.reason ;
 	}
 };
 if ( typeof tangojs === 'undefined' ) tangojs = {} ;

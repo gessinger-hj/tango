@@ -13,7 +13,7 @@ var falarm = function(e)
 {
   console.log ( "-------------c.addEventListener alarm-------------------" ) ;
   T.log ( e ) ;
-  e.setIsResult() ;
+	c.sendResult ( e ) ;
 } ;
 c.addEventListener ( "alarm", falarm ) ;
 

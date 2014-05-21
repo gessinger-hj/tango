@@ -5,7 +5,7 @@ sqlite.open ( 'users.db', {}, function(err, db)
     console.log('Error: ' + err);
   if (!err)
   {
-    db.exec("SELECT * FROM sqlite_master", function(err, result)
+    db.exec("SELECT * FROM lorem", function(err, result)
     {
       if (err) 
         console.log('Error: ' + err);

@@ -12,9 +12,14 @@ console.log ( " ----------result: function()----------------" ) ;
             // var e = T.deserialize ( m ) ;
             if ( e.isBad() )
             {
-              T.log ( e ) ;
+// T.log ( e ) ;
+              var t = e.getStatusReason() ;
+              console.log ( t ) ;
             }
+            else
+            {
 console.log ( e.data.RESULT.toString() ) ;
+            }
              this.end() ;
            }
          , error: function(e)
@@ -25,7 +30,6 @@ console.log ( " ----------error: function()----------------" ) ;
            }
          , write: function()
            {
-console.log ( " ----------write: function()----------------" ) ;
               // this.end() ;
            }
          }

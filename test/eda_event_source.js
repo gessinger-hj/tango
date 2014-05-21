@@ -27,7 +27,7 @@ console.log ( " ----------error: function()----------------" ) ;
          , write: function()
            {
 console.log ( " ----------write: function()----------------" ) ;
-              this.end() ;
+              // this.end() ;
            }
          }
        ) ;
