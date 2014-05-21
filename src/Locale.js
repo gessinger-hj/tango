@@ -1,8 +1,89 @@
 var T = require ( "Tango" ) ;
+var File = require ( "File" ) ;
+
 /**
  *  @constructor
  */
-Locale = function ( optionalLocationCode )
+var LocaleFactoryClass = function()
+{
+  this.language = "en" ;
+  this.defaultLocaleCode = T.getProperty ( "LANG", "en_US" ) ;
+  if ( this.defaultLocaleCode.indexOf ( '.' ) > 0 )
+  {
+    this.defaultLocaleCode = this.defaultLocaleCode.substring ( 0, this.defaultLocaleCode.indexOf ( '.' ) ) ;
+  }
+  this.language = this.defaultLocaleCode.substring ( 0, this.defaultLocaleCode.indexOf ( '_' ) ) ;
+  this.defaultLocale = null ;
+};
+LocaleFactoryClass.prototype.isLocale = function ( obj )
+{
+  return obj instanceof Locale ;
+};
+LocaleFactoryClass.prototype.getInstance = function ( optionalLocaleCode )
+{
+  if ( ! optionalLocaleCode ) return this.getDefault() ;
+  return new Locale ( optionalLocaleCode ) ;
+};
+LocaleFactoryClass.prototype.getDefault = function ()
+{
+  if ( ! this.defaultLocale )
+  {
+    this.defaultLocale = new Locale() ;
+  }
+  return this.defaultLocale ;
+};
+LocaleFactoryClass.prototype.setDefault = function ( defaultLocale )
+{
+  var l = this.defaultLocale ;
+  if ( defaultLocale instanceof Locale )
+  {
+    this.defaultLocale = defaultLocale ;
+  }
+  if ( typeof defaultLocale === 'string' )
+  {
+    var ll = new Locale ( defaultLocale ) ;
+    if ( ll ) l = this.defaultLocale = ll ;
+  }
+  return l ;
+};
+LocaleFactoryClass.prototype.getLocaleCode = function()
+{
+  return this.defaultLocaleCode ;
+};
+LocaleFactoryClass.prototype.setLanguage = function ( lang )
+{
+  if ( lang ) this.language = lang  ;
+};
+LocaleFactoryClass.prototype.getLanguage = function()
+{
+  return this.language ;
+};
+LocaleFactoryClass.prototype.getLocalePath = function()
+{
+  return T.getConfigPath() ;
+};
+LocaleFactoryClass.prototype.getLocaleXml = function ( localeCode )
+{
+  if ( ! localeCode ) localeCode = this.defaultLocaleCode ;
+  var f = new File ( this.getLocalePath(), "Locale." + localeCode + ".xml" ) ;
+  if ( ! f.exists() )
+  {
+    if ( localeCode.length === 5 )
+    {
+      f = new File ( this.getLocalePath(), "Locale." + localeCode.substring ( 0, 2 ) + ".xml" ) ;
+    }
+  }
+  if ( ! f.exists() )
+  {
+    f = new File ( this.getLocalePath(), "Locale." + "en_US" + ".xml" ) ;
+  }
+  return f.toXml() ;
+};
+var LocaleFactory = new LocaleFactoryClass() ;
+/**
+ *  @constructor
+ */
+var Locale = function ( optionalLocationCode )
 {
   this.currencySymbol = undefined ;
   this.internationalCurrencySympol = undefined ;
@@ -12,7 +93,7 @@ Locale = function ( optionalLocationCode )
   this.CurrencySymbolInFront = undefined ;
   this.languageCode = null ;
   this.countryCode = null ;
-  this.xml = T.getConfig().getLocaleXml ( optionalLocationCode ) ;
+  this.xml = LocaleFactory.getLocaleXml ( optionalLocationCode ) ;
   this.setFormats() ;
 } ;
 Locale.prototype =
@@ -51,9 +132,9 @@ Locale.prototype =
   getLanguage: function()
   {
     if ( this.languageCode ) return this.languageCode ;
-    if ( ! this.xml ) return T.getConfig().getLanguage() ;
+    if ( ! this.xml ) return LocaleFactory.getLanguage() ;
     var l = this.xml.getContent ( "Language" ) ;
-    if ( ! l ) l = T.getConfig().getLanguage() ;
+    if ( ! l ) l = LocaleFactory.getLanguage() ;
     if ( l.indexOf ( '_' ) == 2 && l.length == 5 )
     {
       this.countryCode = l.substring ( 3 ) ;
@@ -303,12 +384,12 @@ Locale.prototype.getXml = function()
 {
   return this.xml ;
 };
-if ( typeof tangojs === 'object' && tangojs ) tangojs.Locale = Locale ;
+if ( typeof tangojs === 'object' && tangojs ) tangojs.LocaleFactory = LocaleFactory ;
 else tangojs = { Locale:Locale } ;
 
-module.exports = Locale ;
+module.exports = LocaleFactory ;
 if ( require.main === module )
 {
-  var l = new Locale ( "fr_FR" ) ;
+  var l = LocaleFactory.getInstance ( "fr_FR" ) ;
   console.log ( l.toString() ) ;
 };

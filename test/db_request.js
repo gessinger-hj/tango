@@ -10,6 +10,10 @@ client.fire ( ne
            {
 console.log ( " ----------result: function()----------------" ) ;
             // var e = T.deserialize ( m ) ;
+            if ( e.isBad() )
+            {
+              T.log ( e ) ;
+            }
 console.log ( e.data.RESULT.toString() ) ;
              this.end() ;
            }

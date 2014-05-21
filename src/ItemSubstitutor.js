@@ -151,7 +151,7 @@ ItemSubstitutor.prototype.formatDate = function ( h )
   }
   if ( locale )
   {
-    var loc = new Locale ( locale ) ;
+    var loc = Locale.getInstance ( locale ) ;
     if ( !type || type === "short" )
     {
       return tangojs.DateUtils.formatDateTimeShort ( d, loc ) ;

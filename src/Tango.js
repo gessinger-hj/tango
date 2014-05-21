@@ -30,7 +30,6 @@ if ( ! String.prototype.endsWith )
 var TangoClass = function()
 {
   this.jsClassName = "TangoClass" ;
-  this.config = new Config ( this ) ;
 };
 TangoClass.prototype.toString = function()
 {
@@ -274,21 +273,14 @@ TangoClass.prototype.getProperty = function ( name, defaultValue )
   return defaultValue ;
 };
 /** */
-TangoClass.prototype.getConfig = function()
-{
-  return this.config ;
-};
-/** */
-TangoClass.prototype.getLocale = function()
-{
-  return this.config.getLocale() ;
-};
-/** */
 TangoClass.prototype.log = function ( object )
 {
   console.log ( util.inspect ( object, { showHidden: false, depth: null } ) ) ;
 };
-
+TangoClass.prototype.getConfigPath = function()
+{
+  return __dirname ;
+};
 /** */
 TangoClass.prototype.splitJSONObjects = function ( str )
 {
@@ -450,68 +442,6 @@ TangoClass.prototype.deserialize = function ( serializedObject, deepClassInspect
     }
   }
   return that ;
-};
-/**
-  * @constructor
-  */
-Config = function ( tango )
-{
-  this.T = tango ;
-  this.language = "en" ;
-  this.defaultLocaleCode = this.T.getProperty ( "LANG", "en_US" ) ;
-  if ( this.defaultLocaleCode.indexOf ( '.' ) > 0 )
-  {
-    this.defaultLocaleCode = this.defaultLocaleCode.substring ( 0, this.defaultLocaleCode.indexOf ( '.' ) ) ;
-  }
-  this.language = this.defaultLocaleCode.substring ( 0, this.defaultLocaleCode.indexOf ( '_' ) ) ;
-  this.defaultLocale = null ;
-};
-Config.prototype.getLocale = function()
-{
-  if ( ! this.defaultLocale )
-  {
-    var Locale = require ( "Locale" ) ;
-    this.defaultLocale = new Locale() ;
-  }
-  return this.defaultLocale ;
-};
-Config.prototype.getLocaleCode = function()
-{
-  return this.defaultLocaleCode ;
-};
-Config.prototype.setLanguage = function ( lang )
-{
-  if ( lang ) this.language = lang  ;
-};
-Config.prototype.getLanguage = function()
-{
-  return this.defaultLocaleCode ;
-};
-Config.prototype.getConfigPath = function()
-{
-  return __dirname ;
-};
-Config.prototype.getLocalePath = function()
-{
-  return this.getConfigPath() ;
-};
-Config.prototype.getLocaleXml = function ( localeCode )
-{
-  var File = require ( "File" ) ;
-  if ( ! localeCode ) localeCode = this.defaultLocaleCode ;
-  var f = new File ( this.getLocalePath(), "Locale." + localeCode + ".xml" ) ;
-  if ( ! f.exists() )
-  {
-    if ( localeCode.length === 5 )
-    {
-      f = new File ( this.getLocalePath(), "Locale." + localeCode.substring ( 0, 2 ) + ".xml" ) ;
-    }
-  }
-  if ( ! f.exists() )
-  {
-    f = new File ( this.getLocalePath(), "Locale." + "en_US" + ".xml" ) ;
-  }
-  return f.toXml() ;
 };
 
 var Tango = new TangoClass() ;

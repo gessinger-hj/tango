@@ -24,6 +24,7 @@ Broker = function ( port, ip )
   this.server.on ( "error", function onerror ( p )
   {
 T.lwhere (  ) ;
+console.log ( "p=" + p ) ;
   });
   this.server.on ( "close", function onclose ( p )
   {

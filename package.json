@@ -26,6 +26,7 @@
     },
     "dependencies": {
         "sax":"0.6.x",
+        "mysql2":">=0.12.1",
         "promise": ">=4.0.0",
         "async":">=0.1.23"
     },

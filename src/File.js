@@ -4,7 +4,6 @@ var util = require ( "util" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var stream = require('stream');
 
-var xml = require ( 'Xml' ) ;
 var FileLineReader = require ( 'FileLineReader' ) ;
 
 /**
@@ -218,6 +217,7 @@ File.prototype.getAbsoluteFile = function()
 File.prototype.toXml = function ( elementCallback )
 {
 	var data = this.asString() ;
+	var xml = require ( 'Xml' ) ;
   var f = new xml.XmlFactory ( elementCallback ) ;
   return f.create ( data ) ;
 };

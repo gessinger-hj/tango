@@ -147,17 +147,17 @@ DateUtilsClass.prototype =
     var x ;
     if ( localeCode )
     {
-      x = T.getConfig().getLocaleXml ( localeCode ) ;
+      x = Locale.getLocaleXml ( localeCode ) ;
     }
     else
     {
-      x = T.getConfig().getLocale().getXml() ;
+      x = Locale.getLocale().getXml() ;
     }
     return x.getNumber ( "FirstDayOfWeek", 2 ) ;
   },
   getDayNames: function ( lang )
   {
-    if ( ! lang ) lang = T.getConfig().getLocale().getLanguage() ;
+    if ( ! lang ) lang = Locale.getLanguage() ;
     var a = this._dayNames[lang] ;
     if ( ! a ) a = this._dayNames["en"] ;
     return a ;
@@ -175,7 +175,7 @@ DateUtilsClass.prototype =
   },
   getMonthNames: function ( lang )
   {
-    if ( ! lang ) lang = T.getConfig().getLocale().getLanguage() ;
+    if ( ! lang ) lang = Locale.getLanguage() ;
     var a = this._monthNames[lang] ;
     if ( ! a ) a = this._monthNames["en"] ;
     return a ;
@@ -310,43 +310,43 @@ DateUtilsClass.prototype =
   formatDateShort: function ( date, locale )
   {
     if ( ! date ) date = new Date() ;
-    if ( ! locale ) locale = T.getConfig().getLocale() ;
+    if ( ! locale ) locale = Locale.getDefault() ;
     return this.formatDate ( date, locale, this.SHORT, false ) ;
   },
   formatDateTimeShort: function ( date, locale )
   {
     if ( ! date ) date = new Date() ;
-    if ( ! locale ) locale = T.getConfig().getLocale() ;
+    if ( ! locale ) locale = Locale.getDefault() ;
     return this.formatDate ( date, locale, this.SHORT, true ) ;
   },
   formatDateMedium: function ( date, locale )
   {
     if ( ! date ) date = new Date() ;
-    if ( ! locale ) locale = T.getConfig().getLocale() ;
+    if ( ! locale ) locale = Locale.getDefault() ;
     return this.formatDate ( date, locale, this.MEDIUM, false ) ;
   },
   formatDateTimeMedium: function ( date, locale )
   {
     if ( ! date ) date = new Date() ;
-    if ( ! locale ) locale = T.getConfig().getLocale() ;
+    if ( ! locale ) locale = Locale.getDefault() ;
     return this.formatDate ( date, locale, this.MEDIUM, true ) ;
   },
   formatDateLong: function ( date, locale )
   {
     if ( ! date ) date = new Date() ;
-    if ( ! locale ) locale = T.getConfig().getLocale() ;
+    if ( ! locale ) locale = Locale.getDefault() ;
     return this.formatDate ( date, locale, this.LONG, false ) ;
   },
   formatDateTimeLong: function ( date, locale )
   {
     if ( ! date ) date = new Date() ;
-    if ( ! locale ) locale = T.getConfig().getLocale() ;
+    if ( ! locale ) locale = Locale.getDefault() ;
     return this.formatDate ( date, locale, this.LONG, true ) ;
   },
   formatDate: function ( date, format, monthNames, dayNames )
   {
-    var locale = T.getConfig().getLocale() ;
-    if ( format instanceof Locale )
+    var locale = Locale.getDefault() ;
+    if ( Locale.isLocale ( format ) )
     {
       locale = format ;
       var withTime = dayNames === true ;
@@ -404,7 +404,7 @@ DateUtilsClass.prototype =
 			}
 			return tt ;
 		}
-    var lang = T.getConfig().getLocale().getLanguage() ;
+    var lang = Locale.getDefault().getLanguage() ;
     var mn = this.getMonthNames ( lang ) ;
     var dn = this.getDayNames ( lang ) ;
     if ( monthNames ) mn = monthNames ;
@@ -712,8 +712,8 @@ if ( require.main === module )
   console.log ( "3 s=" + s ) ;
   s = DateUtils.formatDateTimeMedium ( d ) ;
   console.log ( "4 s=" + s ) ;
-  s = DateUtils.formatDateTimeLong ( new Date(), new Locale ( "fr_FR" ) ) ;
+  s = DateUtils.formatDateTimeLong ( new Date(), Locale.getInstance ( "fr_FR" ) ) ;
   console.log ( "5 s=" + s ) ;
-  console.log ( new Locale ( "fr_FR" ).toString() ) ;
+  console.log ( Locale.getInstance ( "fr_FR" ).toString() ) ;
   console.log ( DateUtils.formatDate ( new Date(), "yyyy-MM-ddTHH:mm:ss.SSS" ) ) ;
 }

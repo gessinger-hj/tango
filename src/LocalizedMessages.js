@@ -1,6 +1,7 @@
 var T = require ( "Tango" ) ;
 require ( 'Xml' ) ;
-require ( 'File' ) ;
+var File = require ( 'File' ) ;
+var Locale = require ( 'Locale' ) ;
 
 /**
 	* @constructor
@@ -19,7 +20,7 @@ var LocalizedMessages = function ( file, localeString )
 LocalizedMessages.prototype.setLocaleCode = function ( localeString )
 {
   this._LocaleString = localeString ;
-  if ( ! this._LocaleString ) this._LocaleString = T.getConfig().getLocaleCode() ;
+  if ( ! this._LocaleString ) this._LocaleString = Locale.getLocaleCode() ;
   var pos = this._LocaleString.indexOf ( '_' ) ;
   if ( pos > 0 )
   {
