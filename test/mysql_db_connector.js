@@ -18,7 +18,7 @@ client.addEventListener ( "DB:REQUEST", function(e)
 		Log.error ( e ) ;
     return ;
   }
-  var dburl = T.getProperty ( "dburl", "mysql://root:@localhost/" ) ;
+  var dburl = T.getProperty ( "dburl", "mysql://root:@localhost/cdcol" ) ;
   var connection =  mysql.createConnection ( dburl ) ;
   // var connection =  mysql.createConnection (
   // {
@@ -27,9 +27,9 @@ client.addEventListener ( "DB:REQUEST", function(e)
   // 	password: ""
   // });
   connection.connect();
-	connection.query( "use cdcol" );
+	// connection.query( "use cdcol" );
 	// var str = "select * from cds where titel='Glee'";	
-	var str = "select * from cds where Xtitel=?";	
+	var str = "select * from cds where titel=?";	
 	var tree = new XmlTree() ;
 	e.data.RESULT = tree ;
 	var tab = tree.add ( "cds" ) ;
