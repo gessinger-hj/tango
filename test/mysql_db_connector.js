@@ -19,11 +19,15 @@ client.addEventListener ( "DB:REQUEST", function(e)
     return ;
   }
 
-  var connection =  mysql.createConnection({
-  	host : "localhost",
-  	user : "root",
-  	password: ""
-  });
+  var connection =  mysql.createConnection (
+  	"mysql://root:@localhost/"
+  );
+  // var connection =  mysql.createConnection (
+  // {
+  // 	host : "localhost",
+  // 	user : "root",
+  // 	password: ""
+  // });
   connection.connect();
 	connection.query( "use cdcol" );
 	// var str = "select * from cds where titel='Glee'";	
