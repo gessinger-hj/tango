@@ -1,4 +1,4 @@
-var mysql = require ( 'mysql' ) ;
+var mysql = require ( 'mysql2' ) ;
 
 var T = require ( "Tango" ) ;
 var NEvent = require ( "NEvent" ) ;
@@ -12,7 +12,12 @@ client.addEventListener ( "DB:REQUEST", function(e)
 {
   // T.lwhere (  ) ;
   T.log ( e ) ;
-  e.setIsResult() ;
+  if ( ! e.isResultRequested() )
+  {
+		Log.error ( "No result requested in event." ) ;
+		Log.error ( e ) ;
+    return ;
+  }
 
   var connection =  mysql.createConnection({
   	host : "localhost",
@@ -21,16 +26,19 @@ client.addEventListener ( "DB:REQUEST", function(e)
   });
   connection.connect();
 	connection.query( "use cdcol" );
-	var strQuery = "select * from cds";	
+	// var str = "select * from cds where titel='Glee'";	
+	var str = "select * from cds where Xtitel=?";	
 	var tree = new XmlTree() ;
 	e.data.RESULT = tree ;
 	var tab = tree.add ( "cds" ) ;
   
-	connection.query( strQuery, function ( err, rows )
+	connection.execute ( str, [ "Glee" ], function ( err, rows )
 	{
 		if ( err )
 		{
-			Log.error ( err ) ;
+			Log.error ( "" + err + " in \n" + str ) ;
+      e.control.status = { code:1, name:"error", reason:"" + err } ;
+			connection.end() ;
 	 	}
 	 	else
 	 	{
@@ -46,14 +54,11 @@ client.addEventListener ( "DB:REQUEST", function(e)
 	        xr.add ( k, v ) ;
 	      }
 	    }
+			connection.end() ;
 		}
 		// console.log ( e ) ;
 		// console.log ( tree.toString() ) ;
-		connection.end() ;
-	  if ( e.isResult() && e.isResultRequested() )
-	  {
-	    client.socket.write ( e.serialize() ) ;
-	  }
+		client.sendResult ( e ) ;
 	});
 });
 client.on('end', function()

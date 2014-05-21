@@ -241,6 +241,17 @@ Client.prototype.fireEvent = function ( params, callback )
   }
 };
 /** */
+Client.prototype.sendResult = function ( message )
+{
+  if ( ! message.isResultRequested() )
+  {
+    Log.error ( "No result requested" ) ;
+    Log.error ( message ) ;
+    return ;
+  }
+  message.setIsResult() ;
+  this.socket.write ( message.serialize() ) ;
+};
 Client.prototype.end = function()
 {
   if ( this.socket ) this.socket.end() ;
