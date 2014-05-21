@@ -7,7 +7,7 @@ var Logger = require ( "LogFile" ) ;
 //or native libpq bindings
 //var pg = require('pg').native
 
-var conString = "postgres://gess:luap1997@localhost:5432/tango";
+var conString = "postgres://gess:luap1997@localhost:5432/gess";
 
 var client = new pg.Client(conString);
 // client.connect(function(err) {
