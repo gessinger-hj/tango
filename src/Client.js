@@ -18,8 +18,8 @@ var Client = function ( port, host )
   this.host = host ;
   if ( ! this.host ) this.host = T.getProperty ( "gepard.host" ) ;
   this.socket = null ;
-  this.pendingEventList = [] ;
   this.user = null ;
+  this.pendingEventList = [] ;
   this.pendingResultList = {} ;
   this.callbacks = {} ;
   T.mixin ( Events.EventMulticasterTrait, this ) ;
@@ -149,10 +149,6 @@ Client.prototype.connect = function()
           for  ( j = 0 ; j < callbackList.length ; j++ )
           {
             callbackList[j].call ( thiz, e ) ;
-            // if ( e.isResult() && e.isResultRequested() )
-            // {
-            //   this.write ( e.serialize() ) ;
-            // }
           }
         }
       }
@@ -186,7 +182,6 @@ Client.prototype.fire = function ( params, callback )
 Client.prototype.fireEvent = function ( params, callback )
 {
   var e = null ;
-  var u = this.user ;
   if ( params instanceof NEvent )
   {
     e = params ;
@@ -197,12 +192,10 @@ Client.prototype.fireEvent = function ( params, callback )
     e.setData ( params.data ) ;
     if ( params.user ) u = params.user ;
   }
-  if ( u )
+  if ( this.user )
   {
-    e.setUser ( u ) ;
+    e.setUser ( this.user ) ;
   }
-  var resultCallback ;
-  var errorCallback ;
   var ctx = {} ;
   if ( callback )
   {

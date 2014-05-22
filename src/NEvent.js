@@ -219,6 +219,16 @@ NEvent.prototype =
   	this.control.proxyIdentifier = proxyIdentifier ;
 	},
 	/** */
+	getWebIdentifier: function()
+	{
+  	return this.control.webIdentifier ;
+	},
+	/** */
+	setWebIdentifier: function ( webIdentifier )
+	{
+  	this.control.webIdentifier = webIdentifier ;
+	},
+	/** */
 	getName: function()
 	{
   	return this.name ;
@@ -266,7 +276,10 @@ NEvent.prototype =
 	},
 	setUniqueId: function ( uid )
 	{
-		this.control.uniqueId = uid ;
+		if ( ! this.control.uniqueId )
+		{
+			this.control.uniqueId = uid ;
+		}
 	},
 	getUniqueId: function()
 	{

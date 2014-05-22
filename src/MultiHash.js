@@ -114,6 +114,8 @@ MultiHash.prototype =
 };
 if ( typeof tangojs === 'object' && tangojs ) tangojs.MultiHash = MultiHash ;
 else tangojs = { MultiHash:MultiHash } ;
-module.exports = MultiHash ;
-
+if ( typeof document === 'undefined' && typeof module !== 'undefined' && typeof require !== 'undefined' )
+{
+  module.exports = MultiHash ;
+}
 
