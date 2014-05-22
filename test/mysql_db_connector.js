@@ -59,7 +59,8 @@ client.addEventListener ( "DB:REQUEST", function(e)
 			connection.end() ;
 		}
 		// console.log ( e ) ;
-		// console.log ( tree.toString() ) ;
+		console.log ( tree.toString() ) ;
+    e.control.status = { code:0 } ;
 		client.sendResult ( e ) ;
 	});
 });
