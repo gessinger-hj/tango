@@ -2,7 +2,7 @@ var pg = require('pg');
 var txml = require ( 'Xml' ) ; 
 var Promise = require('promise');
 var T = require('Tango');
-var Logger = require ( "LogFile" ) ;
+var Log = require ( "LogFile" ) ;
 
 //or native libpq bindings
 //var pg = require('pg').native
@@ -90,7 +90,7 @@ promise.then
   {
     console.log ( "4 ------------------" ) ;
     console.log ( p ) ;
-    Logger.log ( p ) ;
+    Log.log ( p ) ;
     console.log ( p.constructor ) ;
     console.trace("XXXXXXXXXXXXXXX") ;
   }
