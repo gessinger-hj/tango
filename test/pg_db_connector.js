@@ -1,5 +1,5 @@
-var mysql = require ( 'mysql2' ) ;
-var pg = require('pg'); 
+var mysql = null ;
+var pg = null ; 
 
 var T = require ( "Tango" ) ;
 var NEvent = require ( "NEvent" ) ;
@@ -26,6 +26,8 @@ client.addEventListener ( "DB:REQUEST", function(e)
 	var connection = null ;
   if ( dburl.indexOf ( "postgres" ) === 0 )
   {
+		if ( ! pg )    pg = require('pg');
+		
 		connection = new pg.Client ( dburl ) ;
 		var tree = new XmlTree() ;
 		e.data.RESULT = tree ;
@@ -73,6 +75,7 @@ client.addEventListener ( "DB:REQUEST", function(e)
   else
   if ( dburl.indexOf ( "mysql" ) === 0 )
   {
+		if ( ! mysql ) mysql = require ( 'mysql2' ) ;
 	  connection =  mysql.createConnection ( dburl ) ;
 	  // var connection =  mysql.createConnection (
 	  // {
