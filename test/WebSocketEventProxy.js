@@ -136,6 +136,12 @@ WebSocketEventProxy.prototype._create = function()
 };
 WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 {
+	if ( ne.getType() === "client_info" )
+	{
+		ne.setType ( "client_info_response" ) ;
+		ctx.socket.sendText ( ne.serialize() ) ;
+		return ;
+	}
 	if ( ne.getType() === 'addEventListener' )
 	{
 	  eventNameList = ne.data.eventNameList ;

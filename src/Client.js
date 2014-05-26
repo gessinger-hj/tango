@@ -44,7 +44,6 @@ Client.prototype.connect = function()
     einfo.data.hostname = os.hostname() ;
     einfo.data.connectionTime = new Date() ;
     einfo.data.application = process.argv[1] ;
-
     this.write ( einfo.serialize() ) ;
 
     var i ;
