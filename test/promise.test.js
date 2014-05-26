@@ -39,28 +39,29 @@ var promise = new Promise(function (resolve, reject) {
 		else resolve ( res ) ;
 	});
 });
-promise.then(function (fileContent)
-		{
-	  	console.log ( "1 -----------------" ) ;
-	  	console.log ( fileContent.toString() ) ;
-	  }
-	  ,function(p)
-	  {
-	  	console.log ( "2 -----------------" ) ;
-	  	LogFile.log ( p ) ;
-	  	throw new Error ( "Exception from err" ) ;
-	  })
-		.catch ( function(p)
-  	{
-	  	console.log ( "3 -----------------" ) ;
-	  	console.log ( "--------catch---------" ) ;
-	  	console.log ( "p=" + p ) ;
-	  	LogFile.log ( p ) ;
-	  })
-	  .done(function(p)
-	  {
-	  	console.log ( "4 -----------------" ) ;
-	  })
+promise
+.then(function (fileContent)
+{
+	console.log ( "1 -----------------" ) ;
+	console.log ( fileContent.toString() ) ;
+}
+,function(p)
+{
+	console.log ( "2 -----------------" ) ;
+	LogFile.log ( p ) ;
+	throw new Error ( "Exception from err" ) ;
+})
+.catch ( function(p)
+{
+	console.log ( "3 -----------------" ) ;
+	console.log ( "--------catch---------" ) ;
+	console.log ( "p=" + p ) ;
+	LogFile.log ( p ) ;
+})
+.done(function(p)
+{
+	console.log ( "4 -----------------" ) ;
+})
   ;
 
 // var read = Promise.denodeify(require('fs').readFile)

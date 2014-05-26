@@ -610,6 +610,22 @@ XmlElement.prototype.add = function ( p1, p2, attr )
   return e ;
 } ;
 /** */
+XmlElement.prototype.addCDATA = function ( p1, p2, attr )
+{
+  if ( p1 instanceof XmlElement )
+  {
+    this.children.push ( p1 ) ;
+    p1.isCDATA = true ;
+    p1.setParent ( this ) ;
+    return p1 ;
+  }
+  var e = new XmlElement ( p1, p2, attr ) ;
+  e.isCDATA = true ;
+  this.children.push ( e ) ;
+  e.setParent ( this ) ;
+  return e ;
+} ;
+/** */
 XmlElement.prototype.insertAt = function ( e, index )
 {
   if ( index < 0 )

@@ -62,7 +62,14 @@ client.addEventListener ( "DB:REQUEST", function(e)
 		      {
 		        var v = r[k] ;
 		        if ( v === null ) continue ;
-		        xr.add ( k, v ) ;
+		        if ( typeof v === 'string' && v.indexOf ( "<" ) >= 0 )
+		        {
+		        	xr.addCDATA ( k, v ) ;
+		        }
+		        else
+		        {
+			        xr.add ( k, v ) ;
+		        }
 		      }
 		    }
 		    connection.end();
@@ -110,7 +117,14 @@ client.addEventListener ( "DB:REQUEST", function(e)
 		      {
 		        var v = r[k] ;
 		        if ( v === null ) continue ;
-		        xr.add ( k, v ) ;
+		        if ( typeof v === 'string' && v.indexOf ( "<" ) >= 0 )
+		        {
+		        	xr.addCDATA ( k, v ) ;
+		        }
+		        else
+		        {
+			        xr.add ( k, v ) ;
+		        }
 		      }
 		    }
 				connection.end() ;

@@ -1,12 +1,13 @@
+if ( typeof tangojs === 'undefined' ) tangojs = {} ;
 /**
  *  @constructor
  */
-var MultiHash = function()
+tangojs.MultiHash = function()
 {
   this._hash = {} ;
   this.className = "MultiHash" ;
 };
-MultiHash.prototype =
+tangojs.MultiHash.prototype =
 {
   put: function ( key, obj )
   {
@@ -112,10 +113,8 @@ MultiHash.prototype =
     delete this._hash ;
   }
 };
-if ( typeof tangojs === 'object' && tangojs ) tangojs.MultiHash = MultiHash ;
-else tangojs = { MultiHash:MultiHash } ;
 if ( typeof document === 'undefined' && typeof module !== 'undefined' && typeof require !== 'undefined' )
 {
-  module.exports = MultiHash ;
+  module.exports = tangojs.MultiHash ;
 }
 
