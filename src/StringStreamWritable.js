@@ -9,7 +9,7 @@ StringStreamWritable = function ( enc )
 {
   if ( ! enc ) enc = "utf8" ;
   if (!(this instanceof StringStreamWritable)) {
-    return new StringStreamWritable ( "utf8" ) ;
+    return new StringStreamWritable ( enc ) ;
   }
   stream.Writable.call ( this, arguments ) ;
   this._buffer = new Buffer('') ;
