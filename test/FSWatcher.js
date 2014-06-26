@@ -136,8 +136,20 @@ module.exports = FSWatcher ;
 
 if ( require.main === module )
 {
-  // var w = new FSWatcher ( "./rating.guiding.rul.tmp" ) ;
-  var w = new FSWatcher ( "." ) ;
+  var w ;
+//  var w = new FSWatcher ( "./rating.guiding.rul.tmp" ) ;
+ /*
+  w = new FSWatcher ( "/vol1/wevli230/home/ciss/ciss/logs" ) ;
+  w.on ( "change", function onchange ( name )
+  {
+  	console.log ( "change: name=" + name ) ;
+  })
+  w.on ( "rename", function onrename ( name )
+  {
+   	console.log ( "rename: name=" + name ) ;
+  })
+//  w.watch() ;
+  w = new FSWatcher ( "/vol1/wevli230/home/ciss/ciss_rating/MRT/rating.guiding.rul.tmp" ) ;
   w.on ( "error", function onerror ( e )
   {
 console.log ( "" + this ) ;
@@ -148,15 +160,17 @@ console.log ( "" + this ) ;
   })
   w.on ( "rename", function onrename ( name )
   {
-  	console.log ( "rename: name=" + name ) ;
+   	console.log ( "rename: name=" + name ) ;
+   	console.log ( "this.exists()=" + this.exists() ) ;
   })
-  // w.on ( "create", function oncreate ( name )
-  // {
-  // 	console.log ( "create: name=" + name ) ;
-  // })
-  // w.on ( "delete", function ondelete ( name )
-  // {
-  // 	console.log ( "delete: name=" + name ) ;
-  // })
+  w.on ( "create", function oncreate ( name )
+  {
+  	console.log ( "create: name=" + name ) ;
+  })
+  w.on ( "delete", function ondelete ( name )
+  {
+  	console.log ( "delete: name=" + name ) ;
+  })
   w.watch() ;
+*/
 };
