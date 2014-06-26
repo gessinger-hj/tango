@@ -287,10 +287,15 @@ NEvent.prototype =
 	},
 	isBad: function()
 	{
+		if ( ! this.control ) return false ;
+		if ( ! this.control.status ) return false ;
+		if ( this.control.status.code === 'undefined' ) return false ;
 		return this.control.status.code !== 0 ;
 	},
 	getStatusReason: function()
 	{
+		if ( ! this.control ) return ;
+		if ( ! this.control.status ) return ;
 		return this.control.status.reason ;
 	}
 };

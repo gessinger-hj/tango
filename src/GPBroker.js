@@ -1,4 +1,5 @@
-var net = require('net');
+var net = require ( 'net' ) ;
+var util = require ( 'util' ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var NEvent = require ( "NEvent" ) ;
 var T = require ( "Tango" ) ;
