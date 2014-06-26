@@ -958,7 +958,6 @@ var XmlTree = function ( name )
   T.initSuper ( this, XmlElement, name ) ;
 };
 
-// XmlTree.inherits ( XmlElement ) ;
 T.inherits ( XmlTree, XmlElement ) ;
 
 XmlTree.prototype._setCollectedElements = function ( list )

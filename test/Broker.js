@@ -1,10 +1,8 @@
-#!/home/gess/bin/node
-
 var net = require('net');
+var EventEmitter = require ( "events" ).EventEmitter ;
 var NEvent = require ( "NEvent" ) ;
 var T = require ( "Tango" ) ;
 var MultiHash = require ( "MultiHash" ) ;
-var Events = require ( "Events" ) ;
 var Log = require ( "LogFile" ) ;
 
 /**
@@ -12,7 +10,7 @@ var Log = require ( "LogFile" ) ;
   */
 Broker = function ( port, ip )
 {
-  T.mixin ( Events.EventMulticasterTrait, this ) ;
+  EventEmitter.call ( this ) ;
   this._sockets = {} ;
   this._eventNameToSockets = new MultiHash() ;
   this.port = port ;
@@ -23,14 +21,13 @@ Broker = function ( port, ip )
   this.server = net.createServer() ;
   this.server.on ( "error", function onerror ( p )
   {
-T.lwhere (  ) ;
-console.log ( "p=" + p ) ;
+    Log.error ( p ) ;
   });
   this.server.on ( "close", function onclose ( p )
   {
-T.lwhere (  ) ;
+    Log.info ( p ) ;
   });
-  this.server.on ( "connection", function(socket)
+  this.server.on ( "connection", function server_on_connection ( socket )
   {
     if ( thiz.closing )
     {
@@ -54,7 +51,7 @@ T.lwhere (  ) ;
     {
       thiz.ejectSocket ( this ) ;
     });
-    socket.on ( "data", function socket_on_data( chunk )
+    socket.on ( "data", function socket_on_data ( chunk )
     {
       if ( thiz.closing )
       {
@@ -63,7 +60,6 @@ T.lwhere (  ) ;
       var mm = chunk.toString() ;
       var i ;
       var eventNameList ;
-      var eRej ;
       var eOut ;
       var str ;
       var key ;
@@ -108,11 +104,10 @@ T.lwhere (  ) ;
           {
             if ( e.getType() === "shutdown" )
             {
-              var eAck = new NEvent ( "system", "ack" ) ;
-              eAck.control.status = { code:0, name:"connected" } ;
-              this.write ( eAck.serialize() ) ;
+              e.control.status = { code:0, name:"ack" } ;
+              this.write ( e.serialize() ) ;
               thiz.closeAllSockets ( this ) ;
-              this.server.unref() ;
+              thiz.server.unref() ;
               return ;
             }
             else
@@ -126,8 +121,9 @@ T.lwhere (  ) ;
             else
             if ( e.getType() === "getInfoRequest" )
             {
-              eOut = new NEvent ( "system", "getInfoResult" ) ;
-              eOut.data.currentEventNames = thiz._eventNameToSockets.getKeys() ;
+              e.setType ( "getInfoResult" ) ;
+              e.control.status = { code:0, name:"ack" } ;
+              e.data.currentEventNames = thiz._eventNameToSockets.getKeys() ;
               var mhclone = new MultiHash() ;
               for ( key in thiz._eventNameToSockets._hash )
               {
@@ -138,16 +134,16 @@ T.lwhere (  ) ;
                   mhclone.put ( key, afrom[ii].sid ) ;
                 }
               }
-              eOut.data.mapping = mhclone._hash ;
+              e.data.mapping = mhclone._hash ;
               var kk ;
-              eOut.data.connectionList = [] ;
+              e.data.connectionList = [] ;
               for ( kk in thiz._sockets )
               {
                 var client_info = thiz._sockets[kk].client_info ;
                 if ( ! client_info ) continue ;
-                eOut.data.connectionList.push ( client_info ) ;
+                e.data.connectionList.push ( client_info ) ;
               }
-              this.write ( eOut.serialize() ) ;
+              this.write ( e.serialize() ) ;
               continue ;
             }
             else
@@ -156,9 +152,9 @@ T.lwhere (  ) ;
               eventNameList = e.data.eventNameList ;
               if ( ! eventNameList || ! eventNameList.length )
               {
-                eRej = new NEvent ( "system", "reject" ) ;
-                eRej.control.status = { code:1, name:"error", reason:"Missing eventNameList" } ;
-                this.write ( eRej.serialize() ) ;
+                e.control.status = { code:1, name:"error", reason:"Missing eventNameList" } ;
+                Log.error ( e.toString() ) ;
+                this.write ( e.serialize() ) ;
                 continue ;
               }
               ctx = thiz._sockets[this.sid] ;
@@ -177,9 +173,8 @@ T.lwhere (  ) ;
               {
                 thiz._eventNameToSockets.put ( eventNameList[i], this ) ;
               }
-              var eAck = new NEvent ( "system", "ack" ) ;
-              eAck.control.status = { code:0, name:"connected" } ;
-              this.write ( eAck.serialize() ) ;
+              e.control.status = { code:0, name:"ack" } ;
+              this.write ( e.serialize() ) ;
               continue ;
             }
             else
@@ -189,16 +184,12 @@ T.lwhere (  ) ;
               ctx = thiz._sockets[this.sid] ;
               if ( ! eventNameList || ! eventNameList.length )
               {
-                eventNameList  = ctx.eventNameList ;
+                eventNameList = ctx.eventNameList ;
               }
               if ( ! eventNameList || ! eventNameList.length )
               {
-                eRej = new NEvent ( "system", "reject" ) ;
-                eRej.control.status = { code:1, name:"error", reason:"Missing eventNameList" } ;
-                this.write ( eRej.serialize(), function()
-                {
-                  // this.end() ;
-                } ) ;
+                e.control.status = { code:1, name:"error", reason:"Missing eventNameList" } ;
+                Log.error ( e.toString() ) ;
                 continue ;
               }
               var toBeRemoved = [] ;
@@ -229,12 +220,12 @@ T.lwhere (  ) ;
           var socketList = thiz._eventNameToSockets.get ( e.getName() ) ;
           if ( ! socketList )
           {
-            eRej = new NEvent ( "system", "reject" ) ;
-            eRej.control.status = { code:1, name:"warning", reason:"No listener found for event: " + e.getName() } ;
-            eRej.control.requestedName = e.getName() ;
-            eRej.setUniqueId ( e.getUniqueId() ) ;
-            eRej.setProxyIdentifier ( e.getProxyIdentifier() ) ;
-            this.write ( eRej.serialize() ) ;
+            if ( e.isResultRequested() )
+            {
+              e.control.status = { code:1, name:"warning", reason:"No listener found for event: " + e.getName() } ;
+              e.control.requestedName = e.getName() ;
+              this.write ( e.serialize() ) ;
+            }
             Log.error ( "No listener found for " + e.getName() ) ;
             Log.error ( e.toString() ) ;
             continue ;
@@ -254,6 +245,7 @@ T.lwhere (  ) ;
     });
   });
 };
+util.inherits ( Broker, EventEmitter ) ;
 Broker.prototype.ejectSocket = function ( socket )
 {
   var sid = socket.sid ;

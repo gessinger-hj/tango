@@ -24,7 +24,7 @@ console.log ( " ----------error: function()----------------" ) ;
              T.log ( e ) ;
              this.end() ;
            }
-         , write: function()
+         , Xwrite: function()
            {
 console.log ( " ----------write: function()----------------" ) ;
               // this.end() ;

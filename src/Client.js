@@ -81,7 +81,7 @@ Client.prototype.connect = function()
       thiz.pendingEventListenerList.length = 0 ;
     }
   } ) ;
-  this.socket.on ( 'data', function(data)
+  this.socket.on ( 'data', function socket_on_data ( data )
   {
     var mm = data.toString() ;
     if ( ! this.partialMessage ) this.partialMessage = "" ;
@@ -139,11 +139,23 @@ Client.prototype.connect = function()
         }
         else
         {
+          if ( e.isBad() )
+          {
+            var uid = e.getUniqueId() ;
+            var ctx = thiz.callbacks[uid] ;
+            delete thiz.callbacks[uid] ;
+            var rcb = ctx.error ;
+            if ( rcb )
+            {
+              rcb.call ( thiz, e ) ;
+            }
+            continue ;
+          }
           var callbackList = thiz.eventListenerFunctions.get ( e.getName() ) ;
           if ( ! callbackList )
           {
-            LF.logln ( "callbackList for " + e.getName() + " not found." ) ;
-            LF.log ( e ) ;
+            Log.logln ( "callbackList for " + e.getName() + " not found." ) ;
+            Log.log ( e.toString() ) ;
           }
           for  ( j = 0 ; j < callbackList.length ; j++ )
           {
