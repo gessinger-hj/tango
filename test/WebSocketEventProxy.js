@@ -1,6 +1,6 @@
 var NEvent = require ( "NEvent" ) ;
 var Log = require ( "LogFile" ) ;
-var Client = require ( "Client" ) ;
+var GPClient = require ( "GPClient" ) ;
 
 var MultiHash = require ( "MultiHash" ) ;
 var T = require ( "Tango" ) ;
@@ -87,7 +87,7 @@ WebSocketEventProxy.prototype._create = function()
 			}
 			if ( ! thiz.client )
 			{
-				thiz.client = new Client() ;
+				thiz.client = new GPClient() ;
 				thiz.client.on ( 'end', function()
 				{
 				  thiz.client = null ;

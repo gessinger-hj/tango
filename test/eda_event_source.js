@@ -1,12 +1,12 @@
 var T = require ( "Tango" ) ;
 var NEvent = require ( "NEvent" ) ;
-var Client = require ( "Client" ) ;
+var GPClient = require ( "GPClient" ) ;
 var File = require ( "File" ) ;
 
 // var f = new tangojs.File ( "r.txt" ) ;
 // var buf = f.toBuffer() ;
 
-var c = new Client() ;
+var c = new GPClient() ;
 
 var ne = new NEvent ( "alarm", "file" ) ;
 // ne.data.fileContent = buf ;

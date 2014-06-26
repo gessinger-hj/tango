@@ -8,7 +8,7 @@ var Log = require ( "LogFile" ) ;
 /**
   * @constructor
   */
-Broker = function ( port, ip )
+GPBroker = function ( port, ip )
 {
   EventEmitter.call ( this ) ;
   this._sockets = {} ;
@@ -245,8 +245,8 @@ Broker = function ( port, ip )
     });
   });
 };
-util.inherits ( Broker, EventEmitter ) ;
-Broker.prototype.ejectSocket = function ( socket )
+util.inherits ( GPBroker, EventEmitter ) ;
+GPBroker.prototype.ejectSocket = function ( socket )
 {
   var sid = socket.sid ;
   if ( ! sid ) return ;
@@ -262,7 +262,7 @@ Broker.prototype.ejectSocket = function ( socket )
   delete this._sockets[sid] ;
   Log.info ( 'Socket disconnected, sid=' + sid ) ;
 };
-Broker.prototype.closeAllSockets = function ( exceptSocket )
+GPBroker.prototype.closeAllSockets = function ( exceptSocket )
 {
   if ( this.closing )
   {
@@ -283,7 +283,7 @@ Broker.prototype.closeAllSockets = function ( exceptSocket )
   }
 };
 
-Broker.prototype.listen = function ( port, callback )
+GPBroker.prototype.listen = function ( port, callback )
 {
   if ( port ) this.port = port ;
   if ( ! this.port )
@@ -300,10 +300,10 @@ Broker.prototype.listen = function ( port, callback )
 
 var host = T.getProperty ( "gepard.host" ) ;
 
-module.exports = Broker ;
+module.exports = GPBroker ;
 
 if ( require.main === module )
 {
-  var b = new Broker() ;
+  var b = new GPBroker() ;
   b.listen() ;
 }

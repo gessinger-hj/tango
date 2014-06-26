@@ -1,8 +1,8 @@
 var T = require ( "Tango" ) ;
 var NEvent = require ( "NEvent" ) ;
-var Client = require ( "Client" ) ;
+var GPClient = require ( "GPClient" ) ;
 
-var c = new Client() ;
+var c = new GPClient() ;
 c.addEventListener ( "send-mail", function(e)
 {
   console.log ( "-------------c.addEventListener send-mail-------------------" ) ;
