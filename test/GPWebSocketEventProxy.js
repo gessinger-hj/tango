@@ -6,20 +6,20 @@ var MultiHash = require ( "MultiHash" ) ;
 var T = require ( "Tango" ) ;
 var ws = require ( "nodejs-websocket" ) ;
 
-var WebSocketEventProxy = function ( port )
+var GPWebSocketEventProxy = function ( port )
 {
-	this.className = "WebSocketEventProxy" ;
+	this.className = "GPWebSocketEventProxy" ;
   this._sockets = {} ;
   this._eventNameToSocketContext = new MultiHash() ;
 	this.client = null ;
 	this.port = port ;
 	this._create() ;
 }
-WebSocketEventProxy.prototype.toString = function()
+GPWebSocketEventProxy.prototype.toString = function()
 {
 	return "(" + this.className + ")[port=" + this.port + "]" ;
 };
-WebSocketEventProxy.prototype.sendToWebSocket = function ( e )
+GPWebSocketEventProxy.prototype.sendToWebSocket = function ( e )
 {
 	var pid = e.getProxyIdentifier() ;
 	var ctx = this._sockets[pid]
@@ -28,7 +28,7 @@ WebSocketEventProxy.prototype.sendToWebSocket = function ( e )
 		ctx.socket.sendText ( e.serialize() ) ;
 	}
 };
-WebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
+GPWebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 {
 	var se = e.serialize() ;
 	var i, ctx ;
@@ -43,7 +43,7 @@ WebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 		}
 	}
 };
-WebSocketEventProxy.prototype.removeWebsocket = function ( socket )
+GPWebSocketEventProxy.prototype.removeWebsocket = function ( socket )
 {
 	var ctx = this._sockets[socket.key] ;
 	var eventNamesToBeRemoved = [] ;
@@ -66,7 +66,7 @@ WebSocketEventProxy.prototype.removeWebsocket = function ( socket )
 	}
 };
 
-WebSocketEventProxy.prototype._create = function()
+GPWebSocketEventProxy.prototype._create = function()
 {
 	var wssOptions = {} ;
 	var thiz = this ;
@@ -134,7 +134,7 @@ WebSocketEventProxy.prototype._create = function()
 		}) ;
 	}) ;
 };
-WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
+GPWebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 {
 	if ( ne.getType() === "client_info" )
 	{
@@ -226,7 +226,7 @@ WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 		}
 	}
 };
-WebSocketEventProxy.prototype.listen = function ( port )
+GPWebSocketEventProxy.prototype.listen = function ( port )
 {
 	if ( port )
 	{
@@ -238,15 +238,15 @@ WebSocketEventProxy.prototype.listen = function ( port )
 	}
 	this.server.listen ( port, this.listenSocketBound.bind ( this ) ) ;
 };
-WebSocketEventProxy.prototype.listenSocketBound = function()
+GPWebSocketEventProxy.prototype.listenSocketBound = function()
 {
 	Log.notice ( "Server bound to port=" + this.port ) ;
 };
-module.exports = WebSocketEventProxy ;
+module.exports = GPWebSocketEventProxy ;
 
 if ( require.main === module )
 {
-	var ep = new WebSocketEventProxy() ;
+	var ep = new GPWebSocketEventProxy() ;
 	var WEBSOCKET_PORT = T.getProperty ( "gepard.websocket.port", 17502 ) ;
 	ep.listen ( WEBSOCKET_PORT ) ;
 }
