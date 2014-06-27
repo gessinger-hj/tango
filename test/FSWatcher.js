@@ -50,6 +50,10 @@ FSWatcher.prototype.exists = function()
 		return false ;
 	}
 };
+FSWatcher.prototype.getFullname = function()
+{
+	return this.fullname ;
+};
 FSWatcher.prototype.isFile = function()
 {
 	try
@@ -138,17 +142,17 @@ module.exports = FSWatcher ;
 if ( require.main === module )
 {
   var w ;
-//  var w = new FSWatcher ( "./rating.guiding.rul.tmp" ) ;
- /*
-  w = new FSWatcher ( "/vol1/wevli230/home/ciss/ciss/logs" ) ;
-  w.on ( "change", function onchange ( name )
+ 	w = new FSWatcher ( "./rating.guiding.rul.tmp" ) ;
+  // w = new FSWatcher ( "/vol1/wevli230/home/ciss/ciss/logs" ) ;
+  w.on ( "create", function onchange ( name )
   {
   	console.log ( "change: name=" + name ) ;
   })
-  w.on ( "rename", function onrename ( name )
+  w.on ( "delete", function onrename ( name )
   {
    	console.log ( "rename: name=" + name ) ;
   })
+ /*
 //  w.watch() ;
   w = new FSWatcher ( "/vol1/wevli230/home/ciss/ciss_rating/MRT/rating.guiding.rul.tmp" ) ;
   w.on ( "error", function onerror ( e )
