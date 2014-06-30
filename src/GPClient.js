@@ -2,10 +2,10 @@ var net = require('net');
 var os = require('os');
 var T = require ( "Tango" ) ;
 var NEvent = require ( "NEvent" ) ;
-var Events = require ( "Events" ) ;
 var MultiHash = require ( "MultiHash" ) ;
 var Log = require ( "LogFile" ) ;
 var User = require ( "User" ) ;
+var Events = require ( "Events" ) ;
 
 var counter = 0 ;
 /**
