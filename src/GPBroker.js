@@ -19,6 +19,7 @@ GPBroker = function ( port, ip )
   this.closing = false ;
   var thiz = this ;
   var ctx ;
+  this._multiplexerList = [] ;
   this.server = net.createServer() ;
   this.server.on ( "error", function onerror ( p )
   {
@@ -103,12 +104,21 @@ GPBroker = function ( port, ip )
           }
           if ( e.getName() === 'system' )
           {
+            if ( e.getType() === "addMultiplexer" )
+            {
+              thiz._multiplexerList.push ( this ) ;
+              ctx = thiz._sockets[this.sid] ;
+              ctx.isMultiplexer = true ;
+              return ;
+            }
             if ( e.getType() === "shutdown" )
             {
+              Log.notice ( 'server shutting down' ) ;
               e.control.status = { code:0, name:"ack" } ;
               this.write ( e.serialize() ) ;
               thiz.closeAllSockets ( this ) ;
               thiz.server.unref() ;
+              Log.notice ( 'server shut down' ) ;
               return ;
             }
             else
@@ -227,18 +237,36 @@ GPBroker = function ( port, ip )
               e.control.requestedName = e.getName() ;
               this.write ( e.serialize() ) ;
             }
+            var done2 = false ;
+            for ( i = 0 ; i < thiz._multiplexerList.length ; i++ )
+            {
+              done2 = true ;
+              if ( this === thiz._multiplexerList[i] ) continue ;
+              thiz._multiplexerList[i].write ( e.serialize() ) ;
+            }
+            if ( done2 ) continue ;
             Log.error ( "No listener found for " + e.getName() ) ;
             Log.error ( e.toString() ) ;
             continue ;
           }
           e.setSourceIdentifier ( this.sid ) ;
           var str = e.serialize() ;
+          var done = false ;
           for ( var i = 0 ; i < socketList.length ; i++ )
           {
             socketList[i].write ( str ) ;
             if ( e.isResultRequested() )
             {
+              done = true ;
               break ;
+            }
+          }
+          if ( ! done )
+          {
+            for ( i = 0 ; i < thiz._multiplexerList.length ; i++ )
+            {
+              if ( this === thiz._multiplexerList[i] ) continue ;
+              thiz._multiplexerList[i].write ( e.serialize() ) ;
             }
           }
         }
@@ -253,6 +281,13 @@ GPBroker.prototype.ejectSocket = function ( socket )
   if ( ! sid ) return ;
   var ctx = this._sockets[sid] ;
   if ( ! ctx ) return ;
+
+  var index = this._multiplexerList.indexOf ( socket ) ;
+  if ( index >= 0 )
+  {
+    this._multiplexerList.splice ( index, 1 ) ;
+  }
+
   if ( ctx.eventNameList )
   {
     for  ( i = 0 ; i < ctx.eventNameList.length ; i++ )

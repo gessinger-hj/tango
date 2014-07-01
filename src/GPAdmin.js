@@ -29,7 +29,7 @@ T.lwhere (  ) ;
 T.log ( data ) ;
 });
 socket.on ( 'end', function socket_on_end( data ) {
-T.lwhere (  ) ;
+// T.lwhere (  ) ;
 });
 socket.on ( 'data', function ( data ) {
   var m = data.toString() ;

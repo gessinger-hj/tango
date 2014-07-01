@@ -3,19 +3,24 @@ var NEvent = require ( "NEvent" ) ;
 var GPClient = require ( "GPClient" ) ;
 
 var c = new GPClient() ;
-c.addEventListener ( "send-mail", function(e)
+c.addEventListener ( "notify", function(e)
 {
-  console.log ( "-------------c.addEventListener send-mail-------------------" ) ;
+  console.log ( "-------------c.addEventListener notify-------------------" ) ;
   T.log ( e ) ;
 });
-// c.addEventListener ( [ "send-mail", "alarm" ], function(e)
-var falarm = function(e)
-{
-  console.log ( "-------------c.addEventListener alarm-------------------" ) ;
-  T.log ( e ) ;
-	c.sendResult ( e ) ;
-} ;
-c.addEventListener ( "alarm", falarm ) ;
+// c.addEventListener ( "send-mail", function(e)
+// {
+//   console.log ( "-------------c.addEventListener send-mail-------------------" ) ;
+//   T.log ( e ) ;
+// });
+// // c.addEventListener ( [ "send-mail", "alarm" ], function(e)
+// var falarm = function(e)
+// {
+//   console.log ( "-------------c.addEventListener alarm-------------------" ) ;
+//   T.log ( e ) ;
+// 	c.sendResult ( e ) ;
+// } ;
+// c.addEventListener ( "alarm", falarm ) ;
 
 // c.addEventListener ( "alarm", function(e)
 // {

@@ -1,6 +1,6 @@
 var Path = require ( "path" ) ;
 var T = require ( "Tango" ) ;
-require ( "File" ) ;
+var File = require ( "File" ) ;
 var fs = require ( "fs" ) ;
 var util = require ( "util" ) ;
 
@@ -348,7 +348,9 @@ LogFile.prototype._writeToOutputBuffer = function ( s
         this._file = new File ( this._fileName ) ;
         try
         {
-          this._out = this._file.getWriteStream() ; ;
+          this._out = this._file.getWriteStream() ;
+  // return fs.createWriteStream ( this.path, { encoding: enc } ) ;
+
         }
         catch ( exc )
         {

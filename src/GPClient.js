@@ -5,14 +5,17 @@ var NEvent = require ( "NEvent" ) ;
 var MultiHash = require ( "MultiHash" ) ;
 var Log = require ( "LogFile" ) ;
 var User = require ( "User" ) ;
-var Events = require ( "Events" ) ;
+var EventEmitter = require ( "events" ).EventEmitter ;
+var util = require ( "util" ) ;
 
 var counter = 0 ;
 /**
   * @constructor
+  * @extends EventEmitter
   */
 var GPClient = function ( port, host )
 {
+  EventEmitter.call ( this ) ;
   this.port = port ;
   if ( ! this.port ) this.port = T.getProperty ( "gepard.port", "17501" ) ;
   this.host = host ;
@@ -22,10 +25,10 @@ var GPClient = function ( port, host )
   this.pendingEventList = [] ;
   this.pendingResultList = {} ;
   this.callbacks = {} ;
-  T.mixin ( Events.EventMulticasterTrait, this ) ;
   this.pendingEventListenerList = [] ;
   this.eventListenerFunctions = new MultiHash() ;
 } ;
+util.inherits ( GPClient, EventEmitter ) ;
 /** */
 GPClient.prototype.setUser = function ( user )
 {
@@ -167,7 +170,7 @@ GPClient.prototype.connect = function()
   } ) ;
   this.socket.on ( 'end', function socket_on_end()
   {
-    thiz._fireEvent ( "end" ) ;
+    thiz.emit ( "end" ) ;
   });
   this.socket.on ( 'error', function socket_on_error(p,q)
   {
@@ -265,11 +268,6 @@ GPClient.prototype.end = function()
   this.pendingResultList = {} ;
   this.pendingEventListenerList = [] ;
   this.eventListenerFunctions.flush() ;
-};
-/** */
-GPClient.prototype.on = function ( name, callback )
-{
-  this.addListener ( this, callback, name ) ;
 };
 /** */
 GPClient.prototype.addEventListener = function ( eventNameList, callback )
