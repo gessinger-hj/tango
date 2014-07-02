@@ -172,8 +172,9 @@ GPClient.prototype.connect = function()
   {
     thiz.emit ( "end" ) ;
   });
-  this.socket.on ( 'error', function socket_on_error(p,q)
+  this.socket.on ( 'error', function socket_on_error ( e )
   {
+    thiz.emit ( "error", e ) ;
   });
 } ;
 GPClient.prototype._writeCallback = function()

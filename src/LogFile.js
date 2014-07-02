@@ -1,6 +1,5 @@
 var Path = require ( "path" ) ;
 var T = require ( "Tango" ) ;
-var File = require ( "File" ) ;
 var fs = require ( "fs" ) ;
 var util = require ( "util" ) ;
 
@@ -36,7 +35,6 @@ var LogFile = function()
   this._LEVEL_NAME = "info" ;
   this._LogCallback = null ;
 };
-
 LogLevel =
 {
   LOG       : 0x00001000 ,
@@ -349,8 +347,6 @@ LogFile.prototype._writeToOutputBuffer = function ( s
         try
         {
           this._out = this._file.getWriteStream() ;
-  // return fs.createWriteStream ( this.path, { encoding: enc } ) ;
-
         }
         catch ( exc )
         {
@@ -686,6 +682,50 @@ LogFile.prototype.unredirectOutput = function ( channelFlags )
     }
   }
 };
+var File = function ( path, name )
+{
+  if ( path instanceof File )
+  {
+    path = path.toString() ;
+  }
+  this.path = path ;
+  if ( name )
+  {
+    this.path += "/" + name ;
+  }
+  if ( ! this.path )
+  {
+    this.path = process.cwd() ;
+  }
+  this.path = Path.normalize ( this.path ) ;
+};
+File.prototype.toString = function()
+{
+  return this.path ;
+};
+File.prototype.getWriteStream = function ( enc, mode )
+{
+  if ( ! enc && enc !== null ) enc = "utf8" ;
+  if ( !enc ) enc = null ;
+  if ( mode )
+  {
+    return fs.createWriteStream ( this.path, { encoding: enc, flags: mode } ) ;
+  }
+  return fs.createWriteStream ( this.path, { encoding: enc } ) ;
+};
+File.prototype.exists = function()
+{
+  try
+  {
+    var st = fs.statSync ( this.toString() ) ;
+    return true ;
+  }
+  catch ( exc )
+  {
+    return false ;
+  }
+};
+
 var TLOG = new LogFile() ;
 
 if ( typeof tangojs === 'object' && tangojs ) tangojs.LogFile = TLOG ;
@@ -695,7 +735,7 @@ module.exports = TLOG ;
 
 if ( require.main === module )
 {
-  TLOG.init ( "appl=TLOG,level=debug,xfile=TLOG.log:max=100:v=10" ) ;
+  // TLOG.init ( "appl=TLOG,level=debug,xfile=TLOG.log:max=100:v=10" ) ;
   // var XX = function()
   // {
   //   var e = new Error ( "error --------------------");
@@ -712,7 +752,7 @@ if ( require.main === module )
 
   // var i = 0 ;
   // TLOG.init ( "level=dbg,file=TLOG.log:max=1m:v=4" ) ;
-  // TLOG.init ( "level=dbg,file=TLOG-%DATE%.log" ) ;
+  TLOG.init ( "level=dbg,file=TLOG-%DATE%.log" ) ;
   // for ( i = 0 ; i < 10 ; i++ )
   // {
   // TLOG.logln ( "xxxxxxxxxxxxxxxxxxxxx") ;
@@ -742,6 +782,6 @@ if ( require.main === module )
   // TLOG.unredirectOutput() ;
   console.log ( "4 ---- console.log ---------" ) ;
   process.stdout.write ( "5 ---- write ---------\n" ) ;
-TLOG.flush() ;
+// TLOG.flush() ;
 // process.exit(0) ;
 }

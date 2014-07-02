@@ -1,5 +1,4 @@
 var T = require ( "Tango" ) ;
-var File = require ( "File" ) ;
 
 /**
  *  @constructor
@@ -65,6 +64,8 @@ LocaleFactoryClass.prototype.getLocalePath = function()
 LocaleFactoryClass.prototype.getLocaleXml = function ( localeCode )
 {
   if ( ! localeCode ) localeCode = this.defaultLocaleCode ;
+  var File = require ( "File" ) ;
+
   var f = new File ( this.getLocalePath(), "Locale." + localeCode + ".xml" ) ;
   if ( ! f.exists() )
   {
