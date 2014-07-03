@@ -6,9 +6,28 @@ var T = require ( "Tango" ) ;
 var port = T.getProperty ( "gepard.port", 17501 ) ;
 var host = T.getProperty ( "gepard.host" ) ;
 
-var socket1 = net.connect ( { port: port, host: "localhost" } ) ;
-var socket2 = net.connect ( { port: port, host: "wevli077" } ) ;
+var socket1 ;
+var socket2 ;
+try
+{
+	socket1 = net.connect ( { port: port, host: "wevli154" } ) ;
+}
+catch ( exc )
+{
+	console.log ( "socket1 --------------" ) ;
+	console.log ( exc ) ;
+}
+try
+{
+	 socket2 = net.connect ( { port: port, host: "wevli077" } ) ;
+}
+catch ( exc )
+{
+	console.log ( "socket2 --------------" ) ;
+	console.log ( exc ) ;
+}
 
+console.log ( "---------------------" ) ;
 var socket1_connected = false ;
 var socket2_connected = false ;
 var to_socket1_list = [] ;

@@ -6,6 +6,7 @@ var MultiHash = require ( "MultiHash" ) ;
 var T = require ( "Tango" ) ;
 var ws = require ( "nodejs-websocket" ) ;
 
+
 var GPWebSocketEventProxy = function ( port )
 {
 	this.className = "GPWebSocketEventProxy" ;
@@ -45,10 +46,15 @@ GPWebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 };
 GPWebSocketEventProxy.prototype.removeWebsocket = function ( socket )
 {
+
 	var ctx = this._sockets[socket.key] ;
 	var eventNamesToBeRemoved = [] ;
 	if ( ctx )
 	{
+		socket.removeAllListeners ( "text" ) ;
+		socket.removeAllListeners ( "error" ) ;
+		socket.removeAllListeners ( "close" ) ;
+
 		var currentKeys = this._eventNameToSocketContext.getKeys() ;
 		this._eventNameToSocketContext.remove ( ctx ) ;
 		for ( i = 0 ; i < currentKeys.length ; i++ )
@@ -75,6 +81,7 @@ GPWebSocketEventProxy.prototype._create = function()
 		var eventNameList ;
 		var i = 0 ;
 		var index = 0 ;
+
 		conn.on ( "text", function ( message )
 		{
 			var ne = NEvent.prototype.deserialize ( message ) ;
@@ -90,7 +97,9 @@ GPWebSocketEventProxy.prototype._create = function()
 				thiz.client = new GPClient() ;
 				thiz.client.on ( 'end', function()
 				{
+					// thiz.client.removeAllListeners() ;
 				  thiz.client = null ;
+					Log.warning ( 'gepard socket died unexpectedly' ) ;
 				});
 			}
 			if ( ne.getName() === 'system' )
@@ -115,11 +124,6 @@ GPWebSocketEventProxy.prototype._create = function()
 	          	{
 	          	}
 	        	}) ;
-						thiz.client.on('end', function()
-						{
-							thiz.client = null ;
-						  Log.warning ( 'gepard socket died unexpectedly' ) ;
-						});
 				}
 		}) ;
 		conn.on ( "error", function ( e )

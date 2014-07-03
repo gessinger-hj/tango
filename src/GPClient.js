@@ -146,6 +146,11 @@ GPClient.prototype.connect = function()
           {
             var uid = e.getUniqueId() ;
             var ctx = thiz.callbacks[uid] ;
+            if ( ! ctx )
+            {
+              Log.warning ( e ) ;
+              continue ;
+            }
             delete thiz.callbacks[uid] ;
             var rcb = ctx.error ;
             if ( rcb )

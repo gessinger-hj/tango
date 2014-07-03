@@ -8,6 +8,11 @@ c.addEventListener ( "notify", function(e)
   console.log ( "-------------c.addEventListener notify-------------------" ) ;
   T.log ( e ) ;
 });
+c.addEventListener ( "notification", function(e)
+{
+  console.log ( "-------------c.addEventListener notification-------------------" ) ;
+  T.log ( e ) ;
+});
 // c.addEventListener ( "send-mail", function(e)
 // {
 //   console.log ( "-------------c.addEventListener send-mail-------------------" ) ;
