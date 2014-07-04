@@ -46,7 +46,6 @@ GPWebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 };
 GPWebSocketEventProxy.prototype.removeWebsocket = function ( socket )
 {
-
 	var ctx = this._sockets[socket.key] ;
 	var eventNamesToBeRemoved = [] ;
 	if ( ctx )
@@ -82,6 +81,7 @@ GPWebSocketEventProxy.prototype._create = function()
 		var i = 0 ;
 		var index = 0 ;
 
+		Log.info ( 'web connects' ) ;
 		conn.on ( "text", function ( message )
 		{
 			var ne = NEvent.prototype.deserialize ( message ) ;
@@ -240,11 +240,11 @@ GPWebSocketEventProxy.prototype.listen = function ( port )
 	{
     this.port = T.getProperty ( "gepard.websocket.port", 17502 ) ;
 	}
-	this.server.listen ( port, this.listenSocketBound.bind ( this ) ) ;
+	this.server.listen ( this.port, this.listenSocketBound.bind ( this ) ) ;
 };
 GPWebSocketEventProxy.prototype.listenSocketBound = function()
 {
-	Log.notice ( "Server bound to port=" + this.port ) ;
+	Log.notice ( "GPWebSocketEventProxy bound to port=" + this.port ) ;
 };
 module.exports = GPWebSocketEventProxy ;
 

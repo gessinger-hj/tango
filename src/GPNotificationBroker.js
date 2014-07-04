@@ -28,7 +28,6 @@ GPNotificationBroker.prototype.init = function()
 	});
 	thiz.client.addEventListener ( "notify", function(e)
 	{
-	T.log ( e ) ;
 		var i ;
 		e.setName ( "notification" ) ;
 		if ( e.data.state === "start" && e.data.id )
@@ -58,7 +57,7 @@ GPNotificationBroker.prototype.init = function()
 		      thiz.pendingProgressNotificationEventList.splice ( i, 1 ) ;
 		   	}
 	    }
-			delete pendingProgressNotifications[e.data.id] ;
+			delete thiz.pendingProgressNotifications[e.data.id] ;
 		}
 		thiz.client.fireEvent ( e ) ;
 	});
