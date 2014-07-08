@@ -117,11 +117,11 @@ WatchResource.prototype.setParent = function ( sentinel )
 {
   this.parent = sentinel ;
 };
-var MRTResource = function()
+var MRTResource = function ( log_dir, MRT_dir )
 {
   WatchResource.apply ( this, arguments ) ;
-  this.MRT_dir = "/vol1/wevli154/home/ciss/ciss_rating/MRT" ;
-  this.log_dir = "/vol1/wevli154/home/ciss/ciss/logs" ;
+  this.MRT_dir = log_dir ;
+  this.log_dir = MRT_dir ;
 };
 util.inherits ( MRTResource, WatchResource ) ;
 MRTResource.prototype.setParent = function ( sentinel )
@@ -301,10 +301,15 @@ DirectoryResource.prototype.removeOutdated = function()
   }
   return toBeRemoved ;
 };
-/*
-module.exports = new ResourceSentinel() ;
-*/
-// if ( require.main === module )
+
+module.exports =
+{ ResourceSentinel: ResourceSentinel
+, DirectoryResource: DirectoryResource
+, WatchResource: WatchResource
+, MRTResource: MRTResource
+} ;
+
+if ( require.main === module )
 {
   var RS = new ResourceSentinel() ;
   RS.init() ;
@@ -327,7 +332,10 @@ module.exports = new ResourceSentinel() ;
   })
   RS.addChange ( r ) ;
 
-  var rr = new MRTResource() ;
+  var MRT_dir = "/vol1/wevli154/home/ciss/ciss_rating/MRT" ;
+  var log_dir = "/vol1/wevli154/home/ciss/ciss/logs" ;
+
+  var rr = new MRTResource ( log_dir, MRT_dir ) ;
   RS.add ( rr ) ;
   // r = new DirectoryResource ( ".", /^log_\d*_MRTExport_.*_.*\.log$/, "MRTExport" ) ;
   // r.setCanOutdate ( false ) ;

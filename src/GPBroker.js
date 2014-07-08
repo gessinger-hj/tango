@@ -245,8 +245,8 @@ GPBroker = function ( port, ip )
               thiz._multiplexerList[i].write ( e.serialize() ) ;
             }
             if ( done2 ) continue ;
-            Log.error ( "No listener found for " + e.getName() ) ;
-            Log.error ( e.toString() ) ;
+            Log.info ( "No listener found for " + e.getName() ) ;
+            Log.info ( e.toString() ) ;
             continue ;
           }
           e.setSourceIdentifier ( this.sid ) ;

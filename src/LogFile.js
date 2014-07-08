@@ -735,6 +735,8 @@ module.exports = TLOG ;
 
 if ( require.main === module )
 {
+  T.setProperty ( "tango.env", "level=info,redirect=3") ;
+  TLOG.init() ;
   // TLOG.init ( "appl=TLOG,level=debug,xfile=TLOG.log:max=100:v=10" ) ;
   // var XX = function()
   // {
