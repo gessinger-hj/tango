@@ -31,22 +31,22 @@ var LogFile = function()
 
   this._stdout = process.stdout ;
   this._out = this._stdout ;
-  this._LEVEL = LogLevel.INFO ;
+  this.LogLevel =
+  {
+    LOG       : 0x00001000 ,
+    EMERGENCY : 0x00000100 ,
+    ALERT     : 0x00000080 ,
+    CRITICAL  : 0x00000040 ,
+    ERROR     : 0x00000020 ,
+    WARNING   : 0x00000010 ,
+    NOTICE    : 0x00000008 ,
+    INFO      : 0x00000004 ,
+    DEBUG     : 0x00000002 ,
+    OFF       : 0x00000000
+  };
+  this._LEVEL = this.LogLevel.INFO ;
   this._LEVEL_NAME = "info" ;
   this._LogCallback = null ;
-};
-LogLevel =
-{
-  LOG       : 0x00001000 ,
-  EMERGENCY : 0x00000100 ,
-  ALERT     : 0x00000080 ,
-  CRITICAL  : 0x00000040 ,
-  ERROR     : 0x00000020 ,
-  WARNING   : 0x00000010 ,
-  NOTICE    : 0x00000008 ,
-  INFO      : 0x00000004 ,
-  DEBUG     : 0x00000002 ,
-  OFF       : 0x00000000
 };
 LogFile.prototype.setLogger = function ( loggerInterface )
 {
@@ -143,7 +143,11 @@ LogFile.prototype.init = function ( s )
     {
       if ( val.length > 0 && val.charAt ( 0 ) != ':' )
       {
-        var posMaxSize  = val.indexOf ( ":max" ) ;
+        if ( val.indexOf ( "%" ) >= 0 )
+        {
+          val = val.replace ( "%APPNAME%", appName ) ;
+        }
+        var posMaxSize    = val.indexOf ( ":max" ) ;
         var posMaxVersion = val.indexOf ( ":v" ) ;
 
         var posMaxSizeEq = -1 ;
@@ -157,23 +161,23 @@ LogFile.prototype.init = function ( s )
         {
           if ( posMaxSize > posMaxVersion )
           {
-            strMaxSize  = val.substring ( posMaxSizeEq+1 ) ;
-            strMaxVersion = val.substring ( posMaxVersionEq+1, posMaxSize ) ;
-            this._fileName   = val.substring ( 0, posMaxVersion ) ;
+            strMaxSize     = val.substring ( posMaxSizeEq+1 ) ;
+            strMaxVersion  = val.substring ( posMaxVersionEq+1, posMaxSize ) ;
+            this._fileName = val.substring ( 0, posMaxVersion ) ;
           }
           else
           {
-            strMaxVersion = val.substring ( posMaxVersionEq+1 ) ;
-            strMaxSize  = val.substring ( posMaxSizeEq+1, posMaxVersion ) ;
-            this._fileName   = val.substring ( 0, posMaxSize ) ;
+            strMaxVersion  = val.substring ( posMaxVersionEq+1 ) ;
+            strMaxSize     = val.substring ( posMaxSizeEq+1, posMaxVersion ) ;
+            this._fileName = val.substring ( 0, posMaxSize ) ;
           }
         }
         else
         if ( posMaxSize > 0 )
         {
-          strMaxSize  = val.substring ( posMaxSizeEq+1 ) ;
-          strMaxVersion = "2" ;
-          this._fileName   = val.substring ( 0, posMaxSize ) ;
+          strMaxSize     = val.substring ( posMaxSizeEq+1 ) ;
+          strMaxVersion  = "2" ;
+          this._fileName = val.substring ( 0, posMaxSize ) ;
         }
         else
         if ( posMaxVersion > 0 )
@@ -182,7 +186,6 @@ LogFile.prototype.init = function ( s )
           strMaxSize  = "1000000" ;
           this._fileName   = val.substring ( 0, posMaxVersion ) ;
         }
-
         var MaxSizeFactor = 1 ;
         if ( strMaxSize != null )
         {
@@ -207,14 +210,14 @@ LogFile.prototype.init = function ( s )
           this._MaxSize = parseInt ( strMaxSize ) ;
           if ( isNaN ( this._MaxSize) )
           {
-          	this._MaxSize = 0 ;
+            this._MaxSize = 0 ;
             strMaxVersion = "0" ;
           }
-		      this._MaxVersion = parseInt ( strMaxVersion ) ;
-		      if ( isNaN ( this._MaxVersion) )
-		      {
+          this._MaxVersion = parseInt ( strMaxVersion ) ;
+          if ( isNaN ( this._MaxVersion) )
+          {
             this._MaxSize = 0 ;
-		      }
+          }
           this._MaxSize *= MaxSizeFactor ;
         }
         else this._fileName = val ;
@@ -268,10 +271,10 @@ LogFile.prototype.init = function ( s )
 
       var VAL = val.toUpperCase() ;
       if ( VAL === 'DBG' ) VAL = 'DEBUG' ;
-      var level = LogLevel[VAL] ;
+      var level = this.LogLevel[VAL] ;
       if ( typeof level === 'undefined' )
       {
-        this._LEVEL = LogLevel.NOTICE ;
+        this._LEVEL = this.LogLevel.NOTICE ;
         this._LEVEL_NAME = "notice" ;
       }
       else
@@ -307,6 +310,25 @@ LogFile.prototype.init = function ( s )
   {
     this._writeToBuffer ( "Application '" + this._appName + "' initialized with: " + initString + "\n", true ) ;
   }
+};
+LogFile.prototype.setLevel = function ( level )
+{
+  for ( var n in this.LogLevel )
+  {
+    if ( this.LogLevel[n] === level )
+    {
+      this._LEVEL_NAME = n ;
+      this._LEVEL = level ;
+    }
+  }
+};
+LogFile.prototype.getLevel = function()
+{
+  return this._LEVEL ;
+};
+LogFile.prototype.getLevelName = function()
+{
+  return this._LEVEL_NAME ;
 };
 LogFile.prototype._writeToBuffer = function ( s, printTime, ln, type )
 {
@@ -502,56 +524,75 @@ LogFile.prototype.openNewFileIntern = function()
 LogFile.prototype.debug = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
-	if ( this._LEVEL > LogLevel.DEBUG ) return ;
+	if ( this._LEVEL > this.LogLevel.DEBUG ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.debug ( str ) ; return ; }
-  this._writeToBuffer ( str, true, true, "[DEBUG]" ) ;
+  var t = T.where ( 1 ) ;
+  t = t.replace ( /\\/g, "/") ;
+  var pos1 = t.indexOf ( "(" ) ;
+  var fname = "" ;
+  if ( pos1 >= 0 )
+  {
+    var fname = t.substring ( 0, pos1 ).trim() ;
+    if ( fname.indexOf ( "at ") === 0 )
+    {
+      fname = fname.substring ( 3 ) ;
+    }
+    var pos2 = t.indexOf ( ")", pos1 ) ;
+    t = t.substring ( pos1 + 1, pos2 ) ;
+    pos1 = t.lastIndexOf ( "/" ) ;
+    if ( pos1 >= 0 )
+    {
+      t = t.substring ( pos1 + 1 ) ;
+    }
+  }
+  this._writeToBuffer ( str, true, true, "[DEBUG][" + t + " (" + fname + "())]" ) ;
 };
 LogFile.prototype.info = function ( str )
 {
   if ( ! this._isInitialized ) this.init() ;
-  if ( this._LEVEL > LogLevel.INFO ) return ;
+  if ( this._LEVEL > this.LogLevel.INFO ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.info ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[INFO]" ) ;
 };
 LogFile.prototype.notice = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
-	if ( this._LEVEL > LogLevel.NOTICE ) return ;
+	if ( this._LEVEL > this.LogLevel.NOTICE ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.notice ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[NOTICE]" ) ;
 };
 LogFile.prototype.warning = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
-	if ( this._LEVEL > LogLevel.WARNING ) return ;
+	if ( this._LEVEL > this.LogLevel.WARNING ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.warning ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[WARNING]" ) ;
 };
 LogFile.prototype.error = function ( str )
 {
   if ( ! this._isInitialized ) this.init() ;
-  if ( this._LEVEL > LogLevel.ERROR ) return ;
+  if ( this._LEVEL > this.LogLevel.ERROR ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.error ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[ERROR]" ) ;
 };
 LogFile.prototype.critical = function ( str )
 {
   if ( ! this._isInitialized ) this.init() ;
-  if ( this._LEVEL > LogLevel.CRITICAL ) return ;
+  if ( this._LEVEL > this.LogLevel.CRITICAL ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.critical ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[CRITICAL]" ) ;
 };
 LogFile.prototype.alert = function ( str )
 {
   if ( ! this._isInitialized ) this.init() ;
-  if ( this._LEVEL > LogLevel.ALERT ) return ;
+  if ( this._LEVEL > this.LogLevel.ALERT ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.alert ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[ALERT]" ) ;
 };
 LogFile.prototype.emergency = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
-	if ( this._LEVEL > LogLevel.EMERGENCY ) return ;
+	if ( this._LEVEL > this.LogLevel.EMERGENCY ) return ;
   if ( this._LogCallback != null ) { this._LogCallback.emergency ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[EMERGENCY]" ) ;
 };
@@ -735,8 +776,8 @@ module.exports = TLOG ;
 
 if ( require.main === module )
 {
-  T.setProperty ( "tango.env", "level=info,redirect=3") ;
-  TLOG.init() ;
+  // T.setProperty ( "tango.env", "level=info,redirect=3,file=%APPNAME%.log") ;
+  // TLOG.init() ;
   // TLOG.init ( "appl=TLOG,level=debug,xfile=TLOG.log:max=100:v=10" ) ;
   // var XX = function()
   // {
@@ -754,7 +795,7 @@ if ( require.main === module )
 
   // var i = 0 ;
   // TLOG.init ( "level=dbg,file=TLOG.log:max=1m:v=4" ) ;
-  TLOG.init ( "level=dbg,file=TLOG-%DATE%.log" ) ;
+  TLOG.init ( "level=notice,Xfile=TLOG-%DATE%.log" ) ;
   // for ( i = 0 ; i < 10 ; i++ )
   // {
   // TLOG.logln ( "xxxxxxxxxxxxxxxxxxxxx") ;
@@ -771,7 +812,7 @@ if ( require.main === module )
   TLOG.emergency ( "----------------" ) ;
   TLOG.alert ( "----------------" ) ;
   TLOG.critical ( "----------------" ) ;
-
+TLOG.setLevel ( TLOG.LogLevel.DEBUG ) ;
   TLOG.error ( "----------------" ) ;
   TLOG.warning ( "----------------" ) ;
   TLOG.info ( "----------------" ) ;

@@ -163,11 +163,12 @@ TangoClass.prototype.lwhere = function ( str )
     }
   }
 }
-TangoClass.prototype.where = function()
+TangoClass.prototype.where = function ( indexOfLine )
 {
   if (!hasStacks) {
       return;
   }
+  if ( ! indexOfLine ) indexOfLine = 0 ;
   try
   {
     throw new Error();
@@ -175,7 +176,7 @@ TangoClass.prototype.where = function()
   catch (e)
   {
     var lines = e.stack.split ("\n") ;
-    var firstLine = lines[0].indexOf("@") > 0 ? lines[1] : lines[2];
+    var firstLine = lines[0].indexOf("@") > 0 ? lines[indexOfLine+1] : lines[indexOfLine+2];
     if ( firstLine.indexOf ( "at " ) === 0 ) firstLine = firstLine.substring ( 3 ) ;
     return firstLine ;
   }

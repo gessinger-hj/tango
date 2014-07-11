@@ -4,11 +4,11 @@ var GPBroker = require ( "GPBroker" ) ;
 T.setProperty ( "tango.env", "level=info,redirect=3") ;
 
 new GPBroker().listen() ;
-var ResourceSentinel = require ( "ResourceSentinel.js" ).ResourceSentinel ;
-var DirectoryResource = require ( "ResourceSentinel.js" ).DirectoryResource ;
-var MRTResource = require ( "ResourceSentinel.js" ).MRTResource ;
+var GPResourceSentinel = require ( "GPResourceSentinel" ).GPResourceSentinel ;
+var DirectoryResource = require ( "GPResourceSentinel" ).DirectoryResource ;
+var MRTResource = require ( "GPResourceSentinel" ).MRTResource ;
 
-var RS = new ResourceSentinel() ;
+var RS = new GPResourceSentinel() ;
 RS.init() ;
 var r ;
 // ------------------- log_1051360_MRTExport_20140626_17_07_41.log ------------------------

@@ -8,6 +8,7 @@ var File = require ( "File" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var util = require ( "util" ) ;
 var Timer = require ( "Timer" ) ;
+var Log = require ( "LogFile" ) ;
 
 var ResourceSentinel = function ( port, host )
 {
@@ -59,6 +60,7 @@ ResourceSentinel.prototype.addChange = function ( resource )
   var e ;
   resource.on ( "change", function onchange ( name, resourceId, displayName )
   {
+    Log.debug ( "[name, resourceId, displayName]=[" + name + "," + resourceId + "," + displayName + "]" ) ;
     e = new NEvent ( "notification" ) ;
     e.data = thiz.make_data ( name, "show", resourceId ) ;
     e.data.type = this.getNotificationType() ;
@@ -311,43 +313,56 @@ module.exports =
 
 if ( require.main === module )
 {
+  Log.init() ;
+  Log.setLevel ( Log.LogLevel.DEBUG ) ;
+  var XmlElement = require ( "Xml" ).XmlElement ;
+  var XmlTree = require ( "Xml" ).XmlTree ;
+
+  var config = T.getProperty ( "watch.config" ) ;
+  if ( config )
+  {
+    xConfig = new File ( config ).toXml() ;
+  }
+  else
+  {
+    xConfig = new XmlTree() ;
+    var xItemList = xConfig.add ( "ItemList" ) ;
+    var xItem = xItemList.add ( "Item" ) ;
+    xItem.addAttribute ( "dir", "." ) ;
+    xItem.addAttribute ( "pattern", ".*" ) ;
+    xItem.addAttribute ( "namePattern", "(.*)" ) ;
+  }
   var RS = new ResourceSentinel() ;
   RS.init() ;
-  var r ;
-  var t = "log_1051360_MRTExport_20140626_17_07_41.log" ;
-  // var r = new DirectoryResource ( ".", /^log_\d*_[^_]*_.*\.log$/, /^log_\d*_([^_]*)_.*\.log$/ ) ;
-  var r = new DirectoryResource ( "/home/ciss/ciss/logs", /^log_\d*_[^_]*_.*\.log$/, /^log_\d*_([^_]*)_.*\.log$/ ) ;
-//   r.on ( "change", function onchange ( name )
-//   {
-// console.log ( "name=" + name ) ;
-//   } ) ;
 
-  r.setAcceptCallback ( function ( name )
+  var dlist = [] ;
+  xConfig.elem ( "ItemList" ).elements ( function(x)
   {
-    if ( name.indexOf ( "MRTExport" ) >= 0 )
-    {
-      return false ;
-    }
-    return true ;
-  })
-  RS.addChange ( r ) ;
+    var r = new DirectoryResource ( x.getAttribute ( "dir" )
+                                  , new RegExp ( x.getAttribute ( "pattern" ) )
+                                  , new RegExp ( x.getAttribute ( "namePattern" ) )
+                                  ) ;
+    dlist.push ( r ) ;
+  });
 
-  var MRT_dir = "/vol1/wevli154/home/ciss/ciss_rating/MRT" ;
-  var log_dir = "/vol1/wevli154/home/ciss/ciss/logs" ;
+  for ( var i = 0 ; i < dlist.length ; i++ )
+  {
+  //   dlist[i].on ( "change", function onchange ( name )
+  //   {
+  // console.log ( "name=" + name ) ;
+  //   } ) ;
+    RS.addChange ( dlist[i] ) ;
+  }
 
-  var rr = new MRTResource ( log_dir, MRT_dir ) ;
-  RS.add ( rr ) ;
-  // r = new DirectoryResource ( ".", /^log_\d*_MRTExport_.*_.*\.log$/, "MRTExport" ) ;
-  // r.setCanOutdate ( false ) ;
-  // r.setResourceId ( "MRTExport" ) ;
-  // r.setNotificationType ( "progress" ) ;
+  // r.setAcceptCallback ( function ( name )
+  // {
+  //   if ( name.indexOf ( "MRTExport" ) >= 0 )
+  //   {
+  //     return false ;
+  //   }
+  //   return true ;
+  // })
   // RS.addChange ( r ) ;
-
-  // r = new DirectoryResource ( "./rating.guiding.rul.tmp", /rating.guiding.rul.tmp/, "MRTExport" ) ;
-  // r.setCanOutdate ( false ) ;
-  // r.setResourceId ( "MRTExport" ) ;
-  // r.setNotificationType ( "progress" ) ;
-  // RS.addCreateAndDelete ( r ) ;
 }
 
 
