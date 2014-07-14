@@ -5,7 +5,6 @@ var GPClient = require ( "GPClient" ) ;
 var GPNotificationBroker = function ( port, host )
 {
 	this.client = new GPClient ( port, host ) ;
-	this.pendingProgressNotificationEventList = [] ;
 	this.pendingProgressNotificationList = [] ;
 	this.pendingProgressNotifications = {} ;
 };
@@ -21,15 +20,17 @@ GPNotificationBroker.prototype.init = function()
 	{
 		for ( var i = 0 ; i < thiz.pendingProgressNotificationEventList.length ; i++ )
 		{
-			e.data.state = "stop" ;
-			thiz.client.fireEvent ( e ) ;
+			var ee = new NEvent ( "notification" ) ;
+			ee.data.state = "stop" ;
+			thiz.client.fireEvent ( ee ) ;
 		}
 		thiz.pendingProgressNotifications.length = 0 ;
 	});
 	thiz.client.addEventListener ( "notify", function(e)
 	{
 		var i ;
-		e.setName ( "notification" ) ;
+		var ee = new NEvent ( "notification" ) ;
+		ee.data = e.data ;
 		if ( e.data.state === "start" && e.data.id )
 		{
 			if ( thiz.pendingProgressNotifications[e.data.id] )
@@ -37,7 +38,6 @@ GPNotificationBroker.prototype.init = function()
 				return ;
 			}
 			thiz.pendingProgressNotificationList.push ( e.data ) ;
-			thiz.pendingProgressNotificationEventList.push ( e ) ;
 			thiz.pendingProgressNotifications[e.data.id] = e.data ;
 		}
 		else
@@ -50,16 +50,9 @@ GPNotificationBroker.prototype.init = function()
 		      thiz.pendingProgressNotificationList.splice ( i, 1 ) ;
 		   	}
 	    }
-		  for ( i = 0 ; i < thiz.pendingProgressNotificationEventList.length ; i++ )
-		  {
-		   	if ( thiz.pendingProgressNotificationEventList[i].data.id === e.data.id )
-		   	{
-		      thiz.pendingProgressNotificationEventList.splice ( i, 1 ) ;
-		   	}
-	    }
 			delete thiz.pendingProgressNotifications[e.data.id] ;
 		}
-		thiz.client.fireEvent ( e ) ;
+		thiz.client.fireEvent ( ee ) ;
 	});
 };
 module.exports = GPNotificationBroker ;

@@ -91,8 +91,8 @@ GPClient.prototype.connect = function()
     mm = this.partialMessage + mm ;
     this.partialMessage = "" ;
     var messageList = T.splitJSONObjects ( mm ) ;
-
     var j = 0 ;
+    var k = 0 ;
     for ( j = 0 ; j < messageList.length ; j++ )
     {
       var m = messageList[j] ;
@@ -165,9 +165,9 @@ GPClient.prototype.connect = function()
             Log.logln ( "callbackList for " + e.getName() + " not found." ) ;
             Log.log ( e.toString() ) ;
           }
-          for  ( j = 0 ; j < callbackList.length ; j++ )
+          for  ( k = 0 ; k < callbackList.length ; k++ )
           {
-            callbackList[j].call ( thiz, e ) ;
+            callbackList[k].call ( thiz, e ) ;
           }
         }
       }

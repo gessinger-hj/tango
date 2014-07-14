@@ -409,6 +409,7 @@ LogFile.prototype._writeToOutputBuffer = function ( s
     ln = true ;
   }
   this._out.write ( s ) ;
+// console.log ( s ) ;
   if ( ln ) this._out.write ( "\n" ) ;
   // out.flush() ;
   if ( s != null ) this._CurSize += dateLen + s.length + (ln ? 1 : 0) ;

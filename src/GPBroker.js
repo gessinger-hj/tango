@@ -55,11 +55,11 @@ GPBroker = function ( port, ip )
     });
     socket.on ( "data", function socket_on_data ( chunk )
     {
+      var mm = chunk.toString() ;
       if ( thiz.closing )
       {
         return ;
       }
-      var mm = chunk.toString() ;
       var i ;
       var eventNameList ;
       var eOut ;
@@ -236,6 +236,7 @@ GPBroker = function ( port, ip )
               e.control.status = { code:1, name:"warning", reason:"No listener found for event: " + e.getName() } ;
               e.control.requestedName = e.getName() ;
               this.write ( e.serialize() ) ;
+              continue ;
             }
             var done2 = false ;
             for ( i = 0 ; i < thiz._multiplexerList.length ; i++ )

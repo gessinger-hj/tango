@@ -9,6 +9,7 @@ var EventEmitter = require ( "events" ).EventEmitter ;
 var util = require ( "util" ) ;
 var Timer = require ( "Timer" ) ;
 var Log = require ( "LogFile" ) ;
+var Path = require ( "path" ) ;
 
 var ResourceSentinel = function ( port, host )
 {
@@ -60,12 +61,12 @@ ResourceSentinel.prototype.addChange = function ( resource )
   var e ;
   resource.on ( "change", function onchange ( name, resourceId, displayName )
   {
-    Log.debug ( "[name, resourceId, displayName]=[" + name + "," + resourceId + "," + displayName + "]" ) ;
-    e = new NEvent ( "notification" ) ;
+    e = new NEvent ( "notify" ) ;
     e.data = thiz.make_data ( name, "show", resourceId ) ;
     e.data.type = this.getNotificationType() ;
     e.data.text = displayName ? displayName : name ;
     e.data.millis = 5000 ;
+console.log ( "change: " + resourceId ) ;
     thiz.gpclient.fire ( e ) ;
   }) ;
 };
@@ -83,11 +84,12 @@ ResourceSentinel.prototype.removeOutdated = function()
       for ( var j = 0 ; j < resourceIdList.length ; j++ )
       {
         var p = resourceIdList[j] ;
-        e = new NEvent ( "notification" ) ;
+        e = new NEvent ( "notify" ) ;
         e.data = this.make_data ( p.name, "stop", p.resourceId ) ;
         e.data.type = "notify" ;
         e.data.text = p.displayName ? p.displayName : p.name ;
         e.data.millis = 5000 ;
+console.log ( "remove: " + p.resourceId ) ;
         this.gpclient.fire ( e ) ;
       }
     }
@@ -170,7 +172,7 @@ MRTResource.prototype.setParent = function ( sentinel )
 var DirectoryResource = function ( dirname, pattern, displayPattern )
 {
   WatchResource.apply ( this, arguments ) ;
-  this.dirname = dirname ;
+  this.dirname = Path.resolve ( dirname ) ;
   if ( ! pattern )
   {
     pattern = /.*/ ;
@@ -314,7 +316,7 @@ module.exports =
 if ( require.main === module )
 {
   Log.init() ;
-  Log.setLevel ( Log.LogLevel.DEBUG ) ;
+  // Log.setLevel ( Log.LogLevel.DEBUG ) ;
   var XmlElement = require ( "Xml" ).XmlElement ;
   var XmlTree = require ( "Xml" ).XmlTree ;
 
@@ -328,7 +330,7 @@ if ( require.main === module )
     xConfig = new XmlTree() ;
     var xItemList = xConfig.add ( "ItemList" ) ;
     var xItem = xItemList.add ( "Item" ) ;
-    xItem.addAttribute ( "dir", "." ) ;
+    xItem.addAttribute ( "dir", "../test" ) ;
     xItem.addAttribute ( "pattern", ".*" ) ;
     xItem.addAttribute ( "namePattern", "(.*)" ) ;
   }

@@ -6,5 +6,5 @@ var GPBroker = require ( "GPBroker" ) ;
 T.setProperty ( "tango.env", "level=info,redirect=3") ;
 
 new GPBroker().listen() ;
-new GPNotificationBroker().init() ;
 new GPWebSocketEventProxy().listen() ;
+new GPNotificationBroker().init() ;
