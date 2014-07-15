@@ -1,18 +1,22 @@
 var T = require ( "Tango" ) ;
+var Log = require ( "LogFile" ) ;
 var GPBroker = require ( "GPBroker" ) ;
 
-T.setProperty ( "tango.env", "level=info,redirect=3") ;
+Log.init ( "level=info,Xedirect=3,file=%APPNAME%.log:max=1m:v=4") ;
 
 new GPBroker().listen() ;
 var GPResourceSentinel = require ( "GPResourceSentinel" ).GPResourceSentinel ;
 var DirectoryResource = require ( "GPResourceSentinel" ).DirectoryResource ;
 var MRTResource = require ( "GPResourceSentinel" ).MRTResource ;
 
+var MRT_dir = "/home/ciss2/ciss_rating/MRT" ;
+var log_dir = "/home/ciss2/ciss/logs" ;
+
 var RS = new GPResourceSentinel() ;
 RS.init() ;
 var r ;
 // ------------------- log_1051360_MRTExport_20140626_17_07_41.log ------------------------
-var r = new DirectoryResource ( "/home/ciss/ciss/logs", /^log_\d*_[^_]*_.*\.log$/, /^log_\d*_([^_]*)_.*\.log$/ ) ;
+var r = new DirectoryResource ( log_dir, /^log_\d*_[^_]*_.*\.log$/, /^log_\d*_([^_]*)_.*\.log$/ ) ;
 
 r.setAcceptCallback ( function ( name )
 {
@@ -23,9 +27,6 @@ r.setAcceptCallback ( function ( name )
   return true ;
 })
 RS.addChange ( r ) ;
-
-var MRT_dir = "/vol1/wevli154/home/ciss/ciss_rating/MRT" ;
-var log_dir = "/vol1/wevli154/home/ciss/ciss/logs" ;
 
 var rr = new MRTResource ( log_dir, MRT_dir ) ;
 RS.add ( rr ) ;

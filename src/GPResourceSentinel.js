@@ -11,7 +11,7 @@ var Timer = require ( "Timer" ) ;
 var Log = require ( "LogFile" ) ;
 var Path = require ( "path" ) ;
 
-var ResourceSentinel = function ( port, host )
+var GPResourceSentinel = function ( port, host )
 {
   this.port = port ; 
   this.host = host ; 
@@ -24,11 +24,11 @@ var ResourceSentinel = function ( port, host )
     thiz.removeOutdated() ;
   });
 };
-ResourceSentinel.prototype.init = function()
+GPResourceSentinel.prototype.init = function()
 {
   this.gpclient = new GPClient ( this.port, this.host ) ;
 };
-ResourceSentinel.prototype.make_data = function ( name, state, id )
+GPResourceSentinel.prototype.make_data = function ( name, state, id )
 {
   var data = { id: this.hostname + ":" + process.pid + ":" + id
              , state: state
@@ -40,7 +40,7 @@ ResourceSentinel.prototype.make_data = function ( name, state, id )
              } ;
   return data ;
 };
-ResourceSentinel.prototype.add = function ( resource )
+GPResourceSentinel.prototype.add = function ( resource )
 {
   resource.setParent ( this ) ;
   if ( ! this.resourceList.length )
@@ -49,7 +49,7 @@ ResourceSentinel.prototype.add = function ( resource )
   }
   this.resourceList.push ( resource ) ;
 };
-ResourceSentinel.prototype.addChange = function ( resource )
+GPResourceSentinel.prototype.addChange = function ( resource )
 {
   resource.setParent ( this ) ;
   var thiz = this ;
@@ -66,11 +66,11 @@ ResourceSentinel.prototype.addChange = function ( resource )
     e.data.type = this.getNotificationType() ;
     e.data.text = displayName ? displayName : name ;
     e.data.millis = 5000 ;
-console.log ( "change: " + resourceId ) ;
+    Log.debug ( e.data ) ;
     thiz.gpclient.fire ( e ) ;
   }) ;
 };
-ResourceSentinel.prototype.removeOutdated = function()
+GPResourceSentinel.prototype.removeOutdated = function()
 {
   for ( var i = 0 ; i < this.resourceList.length ; i++ )
   {
@@ -89,7 +89,7 @@ ResourceSentinel.prototype.removeOutdated = function()
         e.data.type = "notify" ;
         e.data.text = p.displayName ? p.displayName : p.name ;
         e.data.millis = 5000 ;
-console.log ( "remove: " + p.resourceId ) ;
+        Log.debug ( e.data ) ;
         this.gpclient.fire ( e ) ;
       }
     }
@@ -124,8 +124,8 @@ WatchResource.prototype.setParent = function ( sentinel )
 var MRTResource = function ( log_dir, MRT_dir )
 {
   WatchResource.apply ( this, arguments ) ;
-  this.MRT_dir = log_dir ;
-  this.log_dir = MRT_dir ;
+  this.MRT_dir = MRT_dir ;
+  this.log_dir = log_dir ;
 };
 util.inherits ( MRTResource, WatchResource ) ;
 MRTResource.prototype.setParent = function ( sentinel )
@@ -137,11 +137,12 @@ MRTResource.prototype.setParent = function ( sentinel )
 
   var thiz = this ;
   this.w = new FSWatcher ( this.MRT_dir + "/rating.guiding.rul.tmp" ) ;
-
+  var e ;
   this.w.on ( "create", function oncreate ( name )
   {
     e = new NEvent ( "notify" ) ;
     e.data = thiz.parent.make_data ( name, "start", "MRTExport" ) ;
+    Log.debug ( e.data ) ;
     thiz.parent.gpclient.fire ( e ) ;
   });
   this.w.on ( "delete", function ondelete ( name )
@@ -149,12 +150,14 @@ MRTResource.prototype.setParent = function ( sentinel )
     previous_file_name = "" ;
     e = new NEvent ( "notify" ) ;
     e.data = thiz.parent.make_data ( name, "stop", "MRTExport" ) ;
+    Log.debug ( e.data ) ;
     thiz.parent.gpclient.fire ( e ) ;
   });
   this.w.watch() ;
   this.w2 = new FSWatcher ( this.log_dir ) ;
   this.w2.on ( "change", function onchange ( name )
   {
+    Log.debug ( "name=" + name ) ;
     if ( regexp_MRTExport.test ( name ) )
     {
       if ( previous_file_name === name )
@@ -164,6 +167,7 @@ MRTResource.prototype.setParent = function ( sentinel )
       previous_file_name = name ;
       e = new NEvent ( "notify" ) ;
       e.data = thiz.parent.make_data ( name, "start", "MRTExport" ) ;
+      Log.debug ( e.data ) ;
       thiz.parent.gpclient.fire ( e ) ;
     }
   })
@@ -307,7 +311,7 @@ DirectoryResource.prototype.removeOutdated = function()
 };
 
 module.exports =
-{ ResourceSentinel: ResourceSentinel
+{ GPResourceSentinel: GPResourceSentinel
 , DirectoryResource: DirectoryResource
 , WatchResource: WatchResource
 , MRTResource: MRTResource
@@ -316,6 +320,7 @@ module.exports =
 if ( require.main === module )
 {
   Log.init() ;
+  Log.setLevel ( Log.LogLevel.DEBUG ) ;
   // Log.setLevel ( Log.LogLevel.DEBUG ) ;
   var XmlElement = require ( "Xml" ).XmlElement ;
   var XmlTree = require ( "Xml" ).XmlTree ;
@@ -330,11 +335,11 @@ if ( require.main === module )
     xConfig = new XmlTree() ;
     var xItemList = xConfig.add ( "ItemList" ) ;
     var xItem = xItemList.add ( "Item" ) ;
-    xItem.addAttribute ( "dir", "../test" ) ;
+    xItem.addAttribute ( "dir", "../src" ) ;
     xItem.addAttribute ( "pattern", ".*" ) ;
     xItem.addAttribute ( "namePattern", "(.*)" ) ;
   }
-  var RS = new ResourceSentinel() ;
+  var RS = new GPResourceSentinel() ;
   RS.init() ;
 
   var dlist = [] ;
@@ -356,15 +361,26 @@ if ( require.main === module )
     RS.addChange ( dlist[i] ) ;
   }
 
-  // r.setAcceptCallback ( function ( name )
-  // {
-  //   if ( name.indexOf ( "MRTExport" ) >= 0 )
-  //   {
-  //     return false ;
-  //   }
-  //   return true ;
-  // })
-  // RS.addChange ( r ) ;
+  // var MRT_dir = "/home/ciss/ciss_rating/MRT" ;
+  // var log_dir = "/home/ciss/ciss/logs" ;
+
+  var MRT_dir = "./MRT" ;
+  var log_dir = "./logs" ;
+
+  var r = new DirectoryResource ( log_dir, /^log_\d*_[^_]*_.*\.log$/, /^log_\d*_([^_]*)_.*\.log$/ ) ;
+
+  r.setAcceptCallback ( function ( name )
+  {
+    if ( name.indexOf ( "MRTExport" ) >= 0 )
+    {
+      return false ;
+    }
+    return true ;
+  })
+  RS.addChange ( r ) ;
+
+  var rr = new MRTResource ( log_dir, MRT_dir ) ;
+  RS.add ( rr ) ;
 }
 
 
