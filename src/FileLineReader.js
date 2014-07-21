@@ -1,26 +1,22 @@
-module.exports = function(Tango) {
-   var util = require ( "util" ) ;
-   var fs = require ( "fs" ) ;
-   var LineReader = require ( './LineReader.js' ) ;
+var util = require ( "util" ) ;
+var fs = require ( "fs" ) ;
+var LineReader = require ( './LineReader.js' ) ;
 
-   /**
-    *  @constructor
-    */
-   var FileLineReader = function ( fileName )
-   {
-   	var options =
-   	{
-   		flags: 'r'
-   	, encoding: "utf8"
-   	, fd: null
-   	, autoClose: true
-   	} ;
-   	var rs = fs.createReadStream ( fileName, options ) ;
-     LineReader.call ( this, rs ) ;
-   }
-   util.inherits ( FileLineReader, LineReader ) ;
+/**
+ *  @constructor
+ */
+var FileLineReader = function ( fileName )
+{
+	var options =
+	{
+		flags: 'r'
+	, encoding: "utf8"
+	, fd: null
+	, autoClose: true
+	} ;
+	var rs = fs.createReadStream ( fileName, options ) ;
+  LineReader.call ( this, rs ) ;
+}
+util.inherits ( FileLineReader, LineReader ) ;
 
-
-   return FileLineReader ;
-   
-} ;
+module.exports = FileLineReader ;

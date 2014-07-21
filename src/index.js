@@ -1,5 +1,4 @@
-var TangoClass = require('./TangoClass.js') ;
-var Tango = new TangoClass() ;
+var Tango = require('./Tango.js') ;
 
 var fs = require('fs') ;
 
@@ -12,7 +11,7 @@ for(var i in files) {
    }
    
    //console.log(files[i]) ;
-   Tango[name] = require('./'+name)(Tango) ;
+   Tango[name] = require('./'+name) ;
 }
 
 

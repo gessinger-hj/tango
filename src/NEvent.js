@@ -1,4 +1,4 @@
-var tangojs = require('tango') ;
+var tangojs = require('./Tango.js') ;
 
 if ( !Array.isArray )
 {
@@ -301,10 +301,6 @@ NEvent.prototype =
 		return this.control.status.reason ;
 	}
 };
-if ( typeof tangojs === 'undefined' ) tangojs = {} ;
-tangojs.NEvent = NEvent ;
-tangojs.serialize = tangojs.NEvent.prototype.serialize ;
-tangojs.deserialize = tangojs.NEvent.prototype.deserialize ;
 
 if ( typeof document === 'undefined' )
 {
@@ -341,4 +337,10 @@ if ( typeof document === 'undefined' )
 	// 	console.log ( "o.getCreatedAt()=" + o.getCreatedAt() ) ;
 	// 	console.log ( "o.getName()=" + o.getName() ) ;
 	}
+}
+else {
+   if ( typeof tangojs === 'undefined' ) tangojs = {} ;
+   tangojs.NEvent = NEvent ;
+   tangojs.serialize = tangojs.NEvent.prototype.serialize ;
+   tangojs.deserialize = tangojs.NEvent.prototype.deserialize ;
 }

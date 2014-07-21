@@ -447,4 +447,4 @@ TangoClass.prototype.deserialize = function ( serializedObject, deepClassInspect
   return that ;
 };
 
-module.exports = TangoClass ;
+module.exports = new TangoClass ;

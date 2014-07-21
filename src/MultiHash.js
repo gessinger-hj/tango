@@ -1,7 +1,7 @@
 /**
  *  @constructor
  */
- var MultiHash = function()
+var MultiHash = function()
 {
   this._hash = {} ;
   this.className = "MultiHash" ;
@@ -114,4 +114,5 @@ MultiHash.prototype =
 };
 
 module.exports = MultiHash ;
+
 
