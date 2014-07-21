@@ -1,7 +1,7 @@
 var splitCsv = require ( "Utils" ).splitCsv ;
 var parseNameValues = require ( "Utils" ).parseNameValues ;
 var T = require ( "Tango" ) ;
-require ( "DateUtils" ) ;
+var DateUtils = require ( "DateUtils" ) ;
 /**
   * @constructor
   **/
@@ -133,7 +133,7 @@ ItemSubstitutor.prototype.formatDate = function ( h )
   var date = h["DATE"] ;
   if ( ! date )
   {
-    date = tangojs.DateUtils.formatDate ( new Date(), "yyyyMMddHHmmss" ) ;
+    date = DateUtils.formatDate ( new Date(), "yyyyMMddHHmmss" ) ;
   }
   var format = h["FORMAT"] ;
   var locale = h["LOCALE"] ;
@@ -141,32 +141,32 @@ ItemSubstitutor.prototype.formatDate = function ( h )
   var d ;
   if ( date.length === 8 || date.length === 14 )
   {
-    d = tangojs.DateUtils.parseDate ( date ) ;
+    d = DateUtils.parseDate ( date ) ;
   }
   else
   {
     var idate = parseInt ( date ) ;
     d = new Date() ;
-    d = tangojs.DateUtils.addDay ( d, idate ) ;
+    d = DateUtils.addDay ( d, idate ) ;
   }
   if ( locale )
   {
     var loc = Locale.getInstance ( locale ) ;
     if ( !type || type === "short" )
     {
-      return tangojs.DateUtils.formatDateTimeShort ( d, loc ) ;
+      return DateUtils.formatDateTimeShort ( d, loc ) ;
     }
     if ( type === "medium" )
     {
-      return tangojs.DateUtils.formatDateTimeMedium ( d, loc ) ;
+      return DateUtils.formatDateTimeMedium ( d, loc ) ;
     }
     if ( type === "long" )
     {
-      return tangojs.DateUtils.formatDateTimeLong ( d, loc ) ;
+      return DateUtils.formatDateTimeLong ( d, loc ) ;
     }
   }
   if ( ! format ) format = this._DefaultDateFormat ;
-  return tangojs.DateUtils.formatDate ( d, format ) ;
+  return DateUtils.formatDate ( d, format ) ;
 };
 
 ItemSubstitutor.prototype.firstTimeOfDayOf = function ( h )
@@ -183,7 +183,7 @@ ItemSubstitutor.prototype.timeOfDayOf = function ( h, first )
   var day = h["DAY"] ;
   if ( ! day )
   {
-    day = tangojs.DateUtils.formatDate ( new Date(), "yyyyMMddHHmmss" ) ;
+    day = DateUtils.formatDate ( new Date(), "yyyyMMddHHmmss" ) ;
   }
   var format = h["FORMAT"] ;
   var localeCode = h["LOCALE"] ;
@@ -193,25 +193,25 @@ ItemSubstitutor.prototype.timeOfDayOf = function ( h, first )
     var d ;
     if ( day.length === 8 || day.length === 14 )
     {
-      d = tangojs.DateUtils.parseDate ( day ) ;
+      d = DateUtils.parseDate ( day ) ;
     }
     else
     {
       var iday = parseInt ( day ) ;
       d = new Date() ;
-      d = tangojs.DateUtils.addDay ( d, iday ) ;
+      d = DateUtils.addDay ( d, iday ) ;
     }
     if ( first )
     {
-      d = tangojs.DateUtils.roundDownToDay ( d, localeCode ) ;
+      d = DateUtils.roundDownToDay ( d, localeCode ) ;
     }
     else
     {
-      d = tangojs.DateUtils.addDay ( d, 7 ) ;
-      d = tangojs.DateUtils.roundDownToDay ( d, localeCode ) ;
+      d = DateUtils.addDay ( d, 7 ) ;
+      d = DateUtils.roundDownToDay ( d, localeCode ) ;
       d.setSeconds ( d.getSeconds() - 1 ) ;
     }
-    rc = tangojs.DateUtils.formatDate ( d, format ) ;
+    rc = DateUtils.formatDate ( d, format ) ;
   }
   return rc ;
 };
@@ -229,7 +229,7 @@ ItemSubstitutor.prototype.timeOfWeekOf = function ( h, first )
   var week = h["WEEK"] ;
   if ( ! week )
   {
-    week = tangojs.DateUtils.formatDate ( new Date(), "yyyyMMddHHmmss" ) ;
+    week = DateUtils.formatDate ( new Date(), "yyyyMMddHHmmss" ) ;
   }
   var format = h["FORMAT"] ;
   var localeCode = h["LOCALE"] ;
@@ -239,25 +239,25 @@ ItemSubstitutor.prototype.timeOfWeekOf = function ( h, first )
     var d ;
     if ( week.length === 8 || week.length === 14 )
     {
-      d = tangojs.DateUtils.parseDate ( week ) ;
+      d = DateUtils.parseDate ( week ) ;
     }
     else
     {
       var iweek = parseInt ( week ) ;
       d = new Date() ;
-      d = tangojs.DateUtils.addDay ( d, iweek * 7 ) ;
+      d = DateUtils.addDay ( d, iweek * 7 ) ;
     }
     if ( first )
     {
-      d = tangojs.DateUtils.roundDownToWeek ( d, localeCode ) ;
+      d = DateUtils.roundDownToWeek ( d, localeCode ) ;
     }
     else
     {
-      d = tangojs.DateUtils.addDay ( d, 7 ) ;
-      d = tangojs.DateUtils.roundDownToWeek ( d, localeCode ) ;
+      d = DateUtils.addDay ( d, 7 ) ;
+      d = DateUtils.roundDownToWeek ( d, localeCode ) ;
       d.setSeconds ( d.getSeconds() - 1 ) ;
     }
-    rc = tangojs.DateUtils.formatDate ( d, format ) ;
+    rc = DateUtils.formatDate ( d, format ) ;
   }
   return rc ;
 };
@@ -275,7 +275,7 @@ ItemSubstitutor.prototype.timeOfMonthOf = function ( h, first )
   var month = h["MONTH"] ;
   if ( ! month )
   {
-    month = tangojs.DateUtils.formatDate ( new Date(), "yyyyMMddHHmmss" ) ;
+    month = DateUtils.formatDate ( new Date(), "yyyyMMddHHmmss" ) ;
   }
   var format = h["FORMAT"] ;
   if ( ! format ) format = this._DefaultDateFormat ;
@@ -285,25 +285,25 @@ ItemSubstitutor.prototype.timeOfMonthOf = function ( h, first )
     var d ;
     if ( month.length === 8 || month.length === 14 )
     {
-      d = tangojs.DateUtils.parseDate ( month ) ;
+      d = DateUtils.parseDate ( month ) ;
     }
     else
     {
       var imonth = parseInt ( month ) ;
       d = new Date() ;
-      d = tangojs.DateUtils.addMonth ( d, imonth ) ;
+      d = DateUtils.addMonth ( d, imonth ) ;
     }
     if ( first )
     {
-      d = tangojs.DateUtils.roundDownToMonth ( d ) ;
+      d = DateUtils.roundDownToMonth ( d ) ;
     }
     else
     {
-      d = tangojs.DateUtils.addMonth ( d, 1 ) ;
-      d = tangojs.DateUtils.roundDownToMonth ( d ) ;
+      d = DateUtils.addMonth ( d, 1 ) ;
+      d = DateUtils.roundDownToMonth ( d ) ;
       d.setSeconds ( d.getSeconds() - 1 ) ;
     }
-    rc = tangojs.DateUtils.formatDate ( d, format ) ;
+    rc = DateUtils.formatDate ( d, format ) ;
   }
   return rc ;
 }

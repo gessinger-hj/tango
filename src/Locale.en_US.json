@@ -5,6 +5,7 @@
   "PatternSeparator": ";",
   "ZeroDigit": "0",
   "GroupingSeparator": ",",
+  "CurrencySymbolInFront": true,
   "TextDirection": "ltr",
   "InternationalCurrencySymbol": "USD",
   "DecimalSeparator": ".",
@@ -62,8 +63,7 @@
       "M/d/yy HH:mm:ss",
       "MMM d, yyyy HH:mm:ss",
       "MMMM d, yyyy HH:mm:ss"
-    ],
-    "CurrencySymbolInFront": true
+    ]
   },
   "Language": "en",
   "CountryCode": "US",

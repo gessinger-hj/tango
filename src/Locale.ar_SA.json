@@ -5,6 +5,7 @@
   "PatternSeparator": ";",
   "ZeroDigit": "0",
   "GroupingSeparator": ",",
+  "CurrencySymbolInFront": true,
   "TextDirection": "rtl",
   "InternationalCurrencySymbol": "SAR",
   "DecimalSeparator": ".",
@@ -62,8 +63,7 @@
       "dd/MM/yy HH:mm:ss",
       "dd/MM/yyyy HH:mm:ss",
       "dd MMMM, yyyy HH:mm:ss"
-    ],
-    "CurrencySymbolInFront": true
+    ]
   },
   "Language": "ar",
   "CountryCode": "SA",

@@ -408,14 +408,8 @@ LogFile.prototype._writeToOutputBuffer = function ( s
     }
     ln = true ;
   }
-  if ( ! this._file )
-  {
-    console.log ( s ) ;
-    return ;
-  }
   this._out.write ( s ) ;
   if ( ln ) this._out.write ( "\n" ) ;
-  // out.flush() ;
   if ( s != null ) this._CurSize += dateLen + s.length + (ln ? 1 : 0) ;
   else             this._CurSize += dateLen + (ln ? 1 : 0) ;
 };
@@ -636,6 +630,7 @@ LogFile.prototype.flush = function()
 };
 LogFile.prototype.redirectOutput = function ( channelFlags )
 {
+  if ( ! this._outputToFile ) return ;
   if ( ! channelFlags )
   {
     channelFlags = 3 ;

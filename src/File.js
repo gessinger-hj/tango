@@ -446,6 +446,13 @@ File.prototype.lines = function ( callback )
 	}
 	return lr ;
 };
+File.prototype.toJson = function()
+{
+  var str = fs.readFileSync ( this.path, 'utf8' ) ;
+  var o = JSON.parse ( str ) ;
+  return o ;
+};
+
 if ( typeof tangojs === 'object' && tangojs ) tangojs.File = File ;
 else tangojs = { File:File } ;
 

@@ -68,23 +68,23 @@ DateUtilsClass.prototype =
     if ( f ) return f ;
     return this._dateTimeFormatShort["en"] ;
   },
-  setFormats: function ( webConfig )
-  {
-    if ( ! webConfig.getXml() ) return ;
-    var str = webConfig.getXml().getContent ( "FormatSymbols/Date" ) ;
-    if ( ! str ) return ;
-    var a = eval ( str ) ;
-    var lang = a[0] ;
-    this._userLanguage = lang ;
-    this._monthNames[lang] = a[1] ;
-    this._dayNames[lang] = a[2] ;
-    this._dateFormatShort[lang] = a[3] ;
-    this._dateFormatMedium[lang] = a[4] ;
-    this._dateFormatLong[lang] = a[5] ;
-    this._dateTimeFormatShort[lang] = a[6] ;
-    this._dateTimeFormatMedium[lang] = a[7] ;
-    this._dateTimeFormatLong[lang] = a[8] ;
-  },
+  // setFormats: function ( webConfig )
+  // {
+  //   if ( ! webConfig.getXml() ) return ;
+  //   var str = webConfig.getXml().getContent ( "FormatSymbols/Date" ) ;
+  //   if ( ! str ) return ;
+  //   var a = eval ( str ) ;
+  //   var lang = a[0] ;
+  //   this._userLanguage = lang ;
+  //   this._monthNames[lang] = a[1] ;
+  //   this._dayNames[lang] = a[2] ;
+  //   this._dateFormatShort[lang] = a[3] ;
+  //   this._dateFormatMedium[lang] = a[4] ;
+  //   this._dateFormatLong[lang] = a[5] ;
+  //   this._dateTimeFormatShort[lang] = a[6] ;
+  //   this._dateTimeFormatMedium[lang] = a[7] ;
+  //   this._dateTimeFormatLong[lang] = a[8] ;
+  // },
   getWeekOfYear: function ( date )
   {
     var iYear = date.getFullYear();
@@ -144,16 +144,16 @@ DateUtilsClass.prototype =
   },
   getFirstDayOfWeek: function ( localeCode )
   {
-    var x ;
+    var json ;
     if ( localeCode )
     {
-      x = Locale.getLocaleXml ( localeCode ) ;
+      json = Locale.getLocaleJson ( localeCode ) ;
     }
     else
     {
-      x = Locale.getLocale().getXml() ;
+      json = Locale.getInstance().getJson() ;
     }
-    return x.getNumber ( "FirstDayOfWeek", 2 ) ;
+    return parseInt ( json.FirstDayOfWeek ) ;
   },
   getDayNames: function ( lang )
   {
@@ -716,4 +716,5 @@ if ( require.main === module )
   console.log ( "5 s=" + s ) ;
   console.log ( Locale.getInstance ( "fr_FR" ).toString() ) ;
   console.log ( DateUtils.formatDate ( new Date(), "yyyy-MM-ddTHH:mm:ss.SSS" ) ) ;
+  console.log ( "DateUtils.getFirstDayOfWeek()=" + DateUtils.getFirstDayOfWeek() ) ;
 }

@@ -5,6 +5,7 @@
   "PatternSeparator": ";",
   "ZeroDigit": "0",
   "GroupingSeparator": ",",
+  "CurrencySymbolInFront": true,
   "TextDirection": "ltr",
   "InternationalCurrencySymbol": "GBP",
   "DecimalSeparator": ".",
@@ -62,8 +63,7 @@
       "dd/MM/yy HH:mm:ss",
       "dd-MMM-yyyy HH:mm:ss",
       "dd MMMM yyyy HH:mm:ss"
-    ],
-    "CurrencySymbolInFront": true
+    ]
   },
   "Language": "en",
   "CountryCode": "GB",

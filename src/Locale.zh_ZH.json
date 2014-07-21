@@ -5,6 +5,7 @@
   "PatternSeparator": ";",
   "ZeroDigit": "0",
   "GroupingSeparator": ",",
+  "CurrencySymbolInFront": true,
   "TextDirection": "ltr",
   "InternationalCurrencySymbol": "XXX",
   "DecimalSeparator": ".",
@@ -62,8 +63,7 @@
       "yy-M-d HH:mm:ss",
       "yyyy-M-d HH:mm:ss",
       "yyyy\u0027年\u0027M\u0027月\u0027d\u0027日\u0027 HH:mm:ss"
-    ],
-    "CurrencySymbolInFront": true
+    ]
   },
   "Language": "zh",
   "CountryCode": "ZH",

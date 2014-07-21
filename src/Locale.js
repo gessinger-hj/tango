@@ -1,4 +1,6 @@
 var T = require ( "Tango" ) ;
+var fs = require ( "fs" ) ;
+var Path = require ( "path" ) ;
 
 /**
  *  @constructor
@@ -61,25 +63,43 @@ LocaleFactoryClass.prototype.getLocalePath = function()
 {
   return T.getConfigPath() ;
 };
-LocaleFactoryClass.prototype.getLocaleXml = function ( localeCode )
+LocaleFactoryClass.prototype.getLocaleJson = function ( localeCode )
 {
   if ( ! localeCode ) localeCode = this.defaultLocaleCode ;
-  var File = require ( "File" ) ;
 
-  var f = new File ( this.getLocalePath(), "Locale." + localeCode + ".xml" ) ;
+  var f = new File ( this.getLocalePath(), "Locale." + localeCode + ".json" ) ;
   if ( ! f.exists() )
   {
     if ( localeCode.length === 5 )
     {
-      f = new File ( this.getLocalePath(), "Locale." + localeCode.substring ( 0, 2 ) + ".xml" ) ;
+      f = new File ( this.getLocalePath(), "Locale." + localeCode.substring ( 0, 2 ) + ".json" ) ;
     }
   }
   if ( ! f.exists() )
   {
-    f = new File ( this.getLocalePath(), "Locale." + "en_US" + ".xml" ) ;
+    f = new File ( this.getLocalePath(), "Locale." + "en_US" + ".json" ) ;
   }
-  return f.toXml() ;
+  return f.toJson() ;
 };
+// LocaleFactoryClass.prototype.getLocaleXml = function ( localeCode )
+// {
+//   if ( ! localeCode ) localeCode = this.defaultLocaleCode ;
+//   var File = require ( "File" ) ;
+
+//   var f = new File ( this.getLocalePath(), "Locale." + localeCode + ".xml" ) ;
+//   if ( ! f.exists() )
+//   {
+//     if ( localeCode.length === 5 )
+//     {
+//       f = new File ( this.getLocalePath(), "Locale." + localeCode.substring ( 0, 2 ) + ".xml" ) ;
+//     }
+//   }
+//   if ( ! f.exists() )
+//   {
+//     f = new File ( this.getLocalePath(), "Locale." + "en_US" + ".xml" ) ;
+//   }
+//   return f.toXml() ;
+// };
 var LocaleFactory = new LocaleFactoryClass() ;
 /**
  *  @constructor
@@ -94,7 +114,7 @@ var Locale = function ( optionalLocationCode )
   this.CurrencySymbolInFront = undefined ;
   this.languageCode = null ;
   this.countryCode = null ;
-  this.xml = LocaleFactory.getLocaleXml ( optionalLocationCode ) ;
+  this.json = LocaleFactory.getLocaleJson ( optionalLocationCode ) ;
   this.setFormats() ;
 } ;
 Locale.prototype =
@@ -102,19 +122,9 @@ Locale.prototype =
   SHORT: 1,
   MEDIUM: 2,
   LONG: 3,
-//   setInternationalCurrencySymbol: function ( symbol )
-//   {
-//     this.internationalCurrencySymbol = symbol ;
-//     var url = ACSys.getMainUrl()+"&action=GetCurrencySymbol&ICS=" + this.internationalCurrencySymbol ;
-//     var x = new ACXml ( ACSys.getXml ( url ) ) ;
-//     this.currencySymbol = x.getContent ( "CurrencySymbol" ) ;
-// //    this.CurrencySymbolInFront = x.getBool ( "CurrencySymbolInFront", true ) ;
-//   },
   setFormats: function()
   {
-    var str = this.xml.getContent ( "FormatSymbols/Date" ) ;
-    if ( ! str ) return ;
-    var a = eval ( str ) ;
+    var a = this.json.FormatSymbols.Date ;
     var lang = a[0] ;
     this._userLanguage = lang ;
     this._monthNames = a[1] ;
@@ -128,13 +138,13 @@ Locale.prototype =
   },
   flush: function()
   {
-    this.xml = undefined ;
+    this.json = undefined ;
   },
   getLanguage: function()
   {
     if ( this.languageCode ) return this.languageCode ;
-    if ( ! this.xml ) return LocaleFactory.getLanguage() ;
-    var l = this.xml.getContent ( "Language" ) ;
+    if ( ! this.json ) return LocaleFactory.getLanguage() ;
+    var l = this.json.Language ;
     if ( ! l ) l = LocaleFactory.getLanguage() ;
     if ( l.indexOf ( '_' ) == 2 && l.length == 5 )
     {
@@ -151,8 +161,8 @@ Locale.prototype =
   getCountryCode: function()
   {
     if ( this.countryCode ) return this.countryCode ;
-    if ( ! this.xml ) return "DE" ;
-    var l = this.xml.getContent ( "Language", "de_DE" ) ;
+    if ( ! this.json ) return "DE" ;
+    var l = this.json.Language ? this.json.Language : "de_DE" ;
     if ( l.indexOf ( '_' ) == 2 && l.length == 5 )
     {
       this.countryCode = l.substring ( 3 ) ;
@@ -183,63 +193,63 @@ Locale.prototype =
   isCurrencySymbolInFront: function()
   {
     if ( typeof ( this.CurrencySymbolInFront ) != "undefined" ) return this.CurrencySymbolInFront ;
-    if ( ! this.xml ) return true ;
-    this.CurrencySymbolInFront = this.xml.getBool ( "CurrencySymbolInFront", true ) ;
+    if ( ! this.json ) return true ;
+    this.CurrencySymbolInFront = this.json.CurrencySymbolInFront == "true" ;
     return this.CurrencySymbolInFront ;
   },
   getCurrencySymbol: function()
   {
     if ( this.currencySymbol ) return this.currencySymbol ;
-    if ( ! this.xml )
+    if ( ! this.json )
     {
       this.currencySymbol = "\u20AC" ;
       return this.currencySymbol ;
     }
-    this.currencySymbol = this.xml.getContent ( "CurrencySymbol", "\u20AC" ) ;
+    this.currencySymbol = this.json.CurrencySymbol ? this.json.CurrencySymbol : "\u20AC" ;
     return this.currencySymbol ;
   },
   getInternationalCurrencySymbol: function()
   {
     if ( this.internationalCurrencySymbol ) return this.internationalCurrencySymbol ;
-    if ( ! this.xml )
+    if ( ! this.json )
     {
       this.internationalCurrencySymbol = "EUR" ;
       return this.internationalCurrencySymbol ;
     }
-    this.internationalCurrencySymbol = this.xml.getContent ( "InternationalCurrencySymbol", "EUR" ) ;
+    this.internationalCurrencySymbol = this.json.InternationalCurrencySymbol ? this.json.InternationalCurrencySymbol : "EUR" ;
     return this.internationalCurrencySymbol ;
   },
   getMonetaryDecimalSeparator: function()
   {
     if ( this.MonetaryDecimalSeparator ) return this.MonetaryDecimalSeparator ;
-    if ( ! this.xml )
+    if ( ! this.json )
     {
       this.MonetaryDecimalSeparator = "." ;
       return this.MonetaryDecimalSeparator ;
     }
-    this.MonetaryDecimalSeparator = this.xml.getContent ( "MonetaryDecimalSeparator", "," ) ;
+    this.MonetaryDecimalSeparator = this.json.MonetaryDecimalSeparator ? this.json.MonetaryDecimalSeparator : "," ;
     return this.MonetaryDecimalSeparator ;
   },
   getDecimalSeparator: function()
   {
     if ( this.DecimalSeparator ) return this.DecimalSeparator ;
-    if ( ! this.xml )
+    if ( ! this.json )
     {
       this.DecimalSeparator = "." ;
       return this.DecimalSeparator ;
     }
-    this.DecimalSeparator = this.xml.getContent ( "DecimalSeparator", "," ) ;
+    this.DecimalSeparator = this.json.DecimalSeparator ? this.json.DecimalSeparator : "," ;
     return this.DecimalSeparator ;
   },
   getGroupingSeparator: function()
   {
     if ( this.GroupingSeparator ) return this.GroupingSeparator ;
-    if ( ! this.xml )
+    if ( ! this.json )
     {
       this.GroupingSeparator = "," ;
       return this.GroupingSeparator ;
     }
-    this.GroupingSeparator = this.xml.getContent ( "GroupingSeparator", "." ) ;
+    this.GroupingSeparator = this.json.GroupingSeparator ? this.json.GroupingSeparator : "." ;
     return this.GroupingSeparator ;
   },
   formatMoneyWithCurrency: function ( amount )
@@ -381,12 +391,47 @@ Locale.prototype.getDefault = function()
   return this.defaultLocale ;
 };
 /** */
-Locale.prototype.getXml = function()
+Locale.prototype.getJson = function()
 {
-  return this.xml ;
+  return this.json ;
+};
+var File = function ( path, name )
+{
+  if ( path instanceof File )
+  {
+    path = path.toString() ;
+  }
+  this.path = path ;
+  if ( name )
+  {
+    this.path += "/" + name ;
+  }
+  if ( ! this.path )
+  {
+    this.path = process.cwd() ;
+  }
+  this.path = Path.normalize ( this.path ) ;
+};
+File.prototype.exists = function()
+{
+  try
+  {
+    var st = fs.statSync ( this.toString() ) ;
+    return true ;
+  }
+  catch ( exc )
+  {
+    return false ;
+  }
+};
+File.prototype.toJson = function()
+{
+  var str = fs.readFileSync ( this.path, 'utf8' ) ;
+  var o = JSON.parse ( str ) ;
+  return o ;
 };
 if ( typeof tangojs === 'object' && tangojs ) tangojs.LocaleFactory = LocaleFactory ;
-else tangojs = { Locale:Locale } ;
+else tangojs = { LocaleFactory:LocaleFactory } ;
 
 module.exports = LocaleFactory ;
 if ( require.main === module )
