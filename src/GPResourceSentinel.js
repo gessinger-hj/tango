@@ -23,6 +23,7 @@ var GPResourceSentinel = function ( port, host )
   {
     thiz.removeOutdated() ;
   });
+  this.mainEventName = "notify" ;
 };
 GPResourceSentinel.prototype.init = function()
 {
@@ -61,17 +62,18 @@ GPResourceSentinel.prototype.addChange = function ( resource )
   var e ;
   resource.on ( "change", function onchange ( name, resourceId, displayName )
   {
-    e = new NEvent ( "notify" ) ;
+    e = new NEvent ( thiz.mainEventName ) ;
     e.data = thiz.make_data ( name, "show", resourceId ) ;
     e.data.type = this.getNotificationType() ;
     e.data.text = displayName ? displayName : name ;
     e.data.millis = 5000 ;
-    Log.debug ( e.data ) ;
+    Log.debug ( e.data.id ) ;
     thiz.gpclient.fire ( e ) ;
   }) ;
 };
 GPResourceSentinel.prototype.removeOutdated = function()
 {
+  var thiz = this ;
   for ( var i = 0 ; i < this.resourceList.length ; i++ )
   {
     if ( ! this.resourceList[i].canOutdate() )
@@ -84,12 +86,12 @@ GPResourceSentinel.prototype.removeOutdated = function()
       for ( var j = 0 ; j < resourceIdList.length ; j++ )
       {
         var p = resourceIdList[j] ;
-        e = new NEvent ( "notify" ) ;
+        e = new NEvent ( thiz.mainEventName ) ;
         e.data = this.make_data ( p.name, "stop", p.resourceId ) ;
         e.data.type = "notify" ;
         e.data.text = p.displayName ? p.displayName : p.name ;
         e.data.millis = 5000 ;
-        Log.debug ( e.data ) ;
+        Log.debug ( e.data.id ) ;
         this.gpclient.fire ( e ) ;
       }
     }
@@ -140,7 +142,7 @@ MRTResource.prototype.setParent = function ( sentinel )
   var e ;
   this.w.on ( "create", function oncreate ( name )
   {
-    e = new NEvent ( "notify" ) ;
+    e = new NEvent ( thiz.parent.mainEventName ) ;
     e.data = thiz.parent.make_data ( name, "start", "MRTExport" ) ;
     Log.debug ( e.data ) ;
     thiz.parent.gpclient.fire ( e ) ;
@@ -148,7 +150,7 @@ MRTResource.prototype.setParent = function ( sentinel )
   this.w.on ( "delete", function ondelete ( name )
   {
     previous_file_name = "" ;
-    e = new NEvent ( "notify" ) ;
+    e = new NEvent ( thiz.parent.mainEventName ) ;
     e.data = thiz.parent.make_data ( name, "stop", "MRTExport" ) ;
     Log.debug ( e.data ) ;
     thiz.parent.gpclient.fire ( e ) ;
@@ -165,7 +167,7 @@ MRTResource.prototype.setParent = function ( sentinel )
         return ;
       }
       previous_file_name = name ;
-      e = new NEvent ( "notify" ) ;
+      e = new NEvent ( thiz.parent.mainEventName ) ;
       e.data = thiz.parent.make_data ( name, "start", "MRTExport" ) ;
       Log.debug ( e.data ) ;
       thiz.parent.gpclient.fire ( e ) ;
@@ -320,11 +322,9 @@ module.exports =
 if ( require.main === module )
 {
   Log.init() ;
-  Log.setLevel ( Log.LogLevel.DEBUG ) ;
   // Log.setLevel ( Log.LogLevel.DEBUG ) ;
   var XmlElement = require ( "Xml" ).XmlElement ;
   var XmlTree = require ( "Xml" ).XmlTree ;
-
   var config = T.getProperty ( "watch.config" ) ;
   if ( config )
   {
@@ -335,13 +335,13 @@ if ( require.main === module )
     xConfig = new XmlTree() ;
     var xItemList = xConfig.add ( "ItemList" ) ;
     var xItem = xItemList.add ( "Item" ) ;
-    xItem.addAttribute ( "dir", "../src" ) ;
+    xItem.addAttribute ( "dir", "../../../dev" ) ;
     xItem.addAttribute ( "pattern", ".*" ) ;
     xItem.addAttribute ( "namePattern", "(.*)" ) ;
   }
   var RS = new GPResourceSentinel() ;
   RS.init() ;
-
+RS.mainEventName = "notification" ;
   var dlist = [] ;
   xConfig.elem ( "ItemList" ).elements ( function(x)
   {
@@ -360,27 +360,6 @@ if ( require.main === module )
   //   } ) ;
     RS.addChange ( dlist[i] ) ;
   }
-
-  // var MRT_dir = "/home/ciss/ciss_rating/MRT" ;
-  // var log_dir = "/home/ciss/ciss/logs" ;
-
-  var MRT_dir = "./MRT" ;
-  var log_dir = "./logs" ;
-
-  var r = new DirectoryResource ( log_dir, /^log_\d*_[^_]*_.*\.log$/, /^log_\d*_([^_]*)_.*\.log$/ ) ;
-
-  r.setAcceptCallback ( function ( name )
-  {
-    if ( name.indexOf ( "MRTExport" ) >= 0 )
-    {
-      return false ;
-    }
-    return true ;
-  })
-  RS.addChange ( r ) ;
-
-  var rr = new MRTResource ( log_dir, MRT_dir ) ;
-  RS.add ( rr ) ;
 }
 
 

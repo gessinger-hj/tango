@@ -408,6 +408,10 @@ LogFile.prototype._writeToOutputBuffer = function ( s
     }
     ln = true ;
   }
+  if ( typeof s === 'object' )
+  {
+    s = util.inspect ( s, { showHidden: false, depth: null } )
+  }
   this._out.write ( s ) ;
   if ( ln ) this._out.write ( "\n" ) ;
   if ( s != null ) this._CurSize += dateLen + s.length + (ln ? 1 : 0) ;

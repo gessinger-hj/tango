@@ -232,12 +232,12 @@ GPClient.prototype.fireEvent = function ( params, callback )
       ctx.write = callback ;
     }
   }
-  if ( ! this.socket )
+  var s = this.getSocket() ;
+  if ( this.pendingEventList.length )
   {
     ctx.e = e ;
     this.pendingEventList.push ( ctx ) ;
   }
-  var s = this.getSocket() ;
   if ( ! this.pendingEventList.length )
   {
     counter++ ;
