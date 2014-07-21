@@ -1,4 +1,4 @@
-var T = require ( "Tango" ) ;
+var T = require ( "./Tango.js" ) ;
 function splitCsv ( str, del )
 {
   var startIndex = 0 ;

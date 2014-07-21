@@ -1,7 +1,7 @@
-var T = require ( "Tango" ) ;
-require ( 'Xml' ) ;
-var File = require ( 'File' ) ;
-var Locale = require ( 'Locale' ) ;
+var T = require ( "./Tango.js" ) ;
+require ( './Xml.js' ) ;
+var File = require ( './File.js' ) ;
+var Locale = require ( './Locale.js' ) ;
 
 /**
 	* @constructor
@@ -122,8 +122,6 @@ LocalizedMessages.prototype.substituteDollarParameter = function ( str, args )
   }
   return str ;
 };
-if ( typeof tangojs === 'object' && tangojs ) tangojs.LocalizedMessages = LocalizedMessages ;
-else tangojs = { LocalizedMessages:LocalizedMessages } ;
 
 module.exports = LocalizedMessages ;
 if ( require.main === module )

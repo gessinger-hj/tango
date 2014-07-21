@@ -1,7 +1,7 @@
 /**
  *  @constructor
  */
-Timer = function ( timeoutMillis, callback )
+var Timer = function ( timeoutMillis, callback )
 {
   if ( typeof ( callback.timedout ) == 'function' )
   {
@@ -123,7 +123,5 @@ if ( require.main === module )
   t.setRepeats ( false ) ;
   t.start() ;
 }
-if ( typeof tangojs === 'object' && tangojs ) tangojs.Timer = Timer ;
-else tangojs = { Timer:Timer } ;
 
 module.exports = Timer ;

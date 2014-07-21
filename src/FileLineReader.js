@@ -1,6 +1,6 @@
 var util = require ( "util" ) ;
 var fs = require ( "fs" ) ;
-var LineReader = require ( 'LineReader' ) ;
+var LineReader = require ( './LineReader.js' ) ;
 
 /**
  *  @constructor
@@ -18,8 +18,5 @@ var FileLineReader = function ( fileName )
   LineReader.call ( this, rs ) ;
 }
 util.inherits ( FileLineReader, LineReader ) ;
-
-if ( typeof tangojs === 'object' && tangojs ) tangojs.FileLineReader = FileLineReader ;
-else tangojs = { FileLineReader:FileLineReader } ;
 
 module.exports = FileLineReader ;

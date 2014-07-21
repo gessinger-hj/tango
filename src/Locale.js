@@ -1,4 +1,4 @@
-var T = require ( "Tango" ) ;
+var T = require ( "./Tango.js" ) ;
 var fs = require ( "fs" ) ;
 var Path = require ( "path" ) ;
 
@@ -430,8 +430,6 @@ File.prototype.toJson = function()
   var o = JSON.parse ( str ) ;
   return o ;
 };
-if ( typeof tangojs === 'object' && tangojs ) tangojs.LocaleFactory = LocaleFactory ;
-else tangojs = { LocaleFactory:LocaleFactory } ;
 
 module.exports = LocaleFactory ;
 if ( require.main === module )

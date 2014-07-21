@@ -454,8 +454,6 @@ Substitutor.prototype._substitute = function ( r, w, map, useEnv, delimiter, dep
 	}
   return count ;
 }
-if ( typeof tangojs === 'object' && tangojs ) tangojs.Substitutor = Substitutor ;
-else tangojs = { Substitutor:Substitutor } ;
 
 module.exports = Substitutor ;
 

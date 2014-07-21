@@ -4,6 +4,7 @@
  * @exports Tango
  */
 var util = require  ( "util" ) ;
+
 if ( ! String.prototype.startsWith )
 {
   String.prototype.startsWith = function ( needle )
@@ -23,6 +24,7 @@ if ( ! String.prototype.endsWith )
     return false ;
   };
 };
+
 /**
  * @constructor
  */
@@ -445,8 +447,4 @@ TangoClass.prototype.deserialize = function ( serializedObject, deepClassInspect
   return that ;
 };
 
-var Tango = new TangoClass() ;
-if ( typeof tangojs === 'object' && tangojs ) tangojs.Tango = Tango ;
-else tangojs = { Tango:Tango } ;
-
-module.exports = Tango ;
+module.exports = new TangoClass ;

@@ -1,5 +1,5 @@
-var T = require ( "Tango" ) ;
-var Locale = require ( "Locale" ) ;
+var T = require ( "./Tango.js" ) ;
+var Locale = require ( "./Locale.js" ) ;
 /**
  *  Global singleton <b>DateUtils</b>
  *  @constructor
@@ -692,9 +692,6 @@ DateUtilsClass.prototype.MLZ = function (x)
 };
 
 var DateUtils = new DateUtilsClass() ;
-
-if ( typeof tangojs === 'object' && tangojs ) tangojs.DateUtils = DateUtils ;
-else tangojs = { DateUtils:DateUtils } ;
 
 module.exports = DateUtils ;
 

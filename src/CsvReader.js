@@ -1,7 +1,7 @@
 var util = require ( "util" ) ;
 var fs = require ( "fs" ) ;
 var stream = require ( 'stream' ) ;
-var Utils = require ( "Utils" ) ;
+var Utils = require ( "./Utils.js" ) ;
 /**
  *  @constructor
  */
@@ -30,8 +30,5 @@ var CsvReader = function ( lineReader )
 	});
 }
 util.inherits ( CsvReader, stream.Readable ) ;
-
-if ( typeof tangojs === 'object' && tangojs ) tangojs.CsvReader = CsvReader ;
-else tangojs = { CsvReader:CsvReader } ;
 
 module.exports = CsvReader ;

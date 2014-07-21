@@ -4,7 +4,7 @@ var util = require ( "util" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var stream = require('stream');
 
-var FileLineReader = require ( 'FileLineReader' ) ;
+var FileLineReader = require ( './FileLineReader.js' ) ;
 
 /**
  *  @constructor
@@ -452,9 +452,6 @@ File.prototype.toJson = function()
   var o = JSON.parse ( str ) ;
   return o ;
 };
-
-if ( typeof tangojs === 'object' && tangojs ) tangojs.File = File ;
-else tangojs = { File:File } ;
 
 module.exports = File ;
 if ( require.main === module )

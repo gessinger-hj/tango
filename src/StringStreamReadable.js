@@ -35,8 +35,6 @@ StringStreamReadable.prototype.flush = function()
 {
   delete this._buffer ;
 };
-if ( typeof tangojs === 'object' && tangojs ) tangojs.StringStreamReadable = StringStreamReadable ;
-else tangojs = { StringStreamReadable:StringStreamReadable } ;
 
 module.exports = StringStreamReadable ;
 

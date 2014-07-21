@@ -1,7 +1,5 @@
-if ( typeof tangojs === 'undefined' ) tangojs = {} ;
-
-tangojs.counter = 0 ;
-tangojs.WebClient = function ( port )
+var counter = 0 ;
+var WebClient = function ( port )
 {
   this.port = port ;
   this.webSocket = null ;
@@ -13,14 +11,14 @@ tangojs.WebClient = function ( port )
   this.pendingEventListenerList = [] ;
   this.url = "ws://" + document.domain + ":" + this.port ;
 };
-tangojs.WebClient.prototype._initialize = function()
+WebClient.prototype._initialize = function()
 {
 };
-tangojs.WebClient.prototype.createUniqueEventId = function()
+WebClient.prototype.createUniqueEventId = function()
 {
-  return this.url + "_" + new Date().getTime() + "-" + (tangojs.counter++) ;
+  return this.url + "_" + new Date().getTime() + "-" + (counter++) ;
 };
-tangojs.WebClient.prototype.connect = function()
+WebClient.prototype.connect = function()
 {
   var thiz = this ;
   this.webSocket = new WebSocket ( this.url ) ;
@@ -138,7 +136,7 @@ tangojs.WebClient.prototype.connect = function()
     }
   };
 };
-tangojs.WebClient.prototype.getSocket = function()
+WebClient.prototype.getSocket = function()
 {
   if ( ! this.webSocket )
   {
@@ -146,7 +144,7 @@ tangojs.WebClient.prototype.getSocket = function()
   }
   return this.webSocket ;
 };
-tangojs.WebClient.prototype.fireEvent = function ( params, callback )
+WebClient.prototype.fireEvent = function ( params, callback )
 {
   var e = null ;
   if ( params instanceof NEvent )
@@ -194,7 +192,7 @@ tangojs.WebClient.prototype.fireEvent = function ( params, callback )
     s.send ( e.serialize() ) ;
   }
 };
-tangojs.WebClient.prototype.addEventListener = function ( eventNameList, callback )
+WebClient.prototype.addEventListener = function ( eventNameList, callback )
 {
   if ( ! eventNameList ) throw new Error ( "Client.addEventListener: Missing eventNameList." ) ;
   if ( typeof callback !== 'function' ) throw new Error ( "Client.addEventListener: callback must be a function." ) ;
@@ -236,7 +234,7 @@ tangojs.WebClient.prototype.addEventListener = function ( eventNameList, callbac
     s.send ( e.serialize() ) ;
   }
 };
-tangojs.WebClient.prototype.removeEventListener = function ( eventNameOrFunction )
+WebClient.prototype.removeEventListener = function ( eventNameOrFunction )
 {
   var i ;
   if ( typeof eventNameOrFunction === 'string' )
@@ -284,7 +282,7 @@ tangojs.WebClient.prototype.removeEventListener = function ( eventNameOrFunction
     s.send ( e.serialize() ) ;
   }
 };
-tangojs.WebClient.prototype.sendResult = function ( message )
+WebClient.prototype.sendResult = function ( message )
 {
   if ( ! message.isResultRequested() )
   {
@@ -295,7 +293,7 @@ tangojs.WebClient.prototype.sendResult = function ( message )
   message.setIsResult() ;
   this.webSocket.send ( message.serialize() ) ;
 };
-tangojs.WebClient.prototype.splitJSONObjects = function ( str )
+WebClient.prototype.splitJSONObjects = function ( str )
 {
   var list = [] ;
   var pcounter = 1 ;

@@ -1,10 +1,10 @@
 var util = require ( "util" ) ;
 var sax = require('sax');
-var T = require ( "Tango" ) ;
-var Utils = require ( "Utils" ) ;
-var DateUtils = require ( "DateUtils" ) ;
+var T = require ( "./Tango.js" ) ;
+var Utils = require ( "./Utils.js" ) ;
+var DateUtils = require ( "./DateUtils.js" ) ;
 
-var StringStreamWritable = require ( "StringStreamWritable" ) ;
+var StringStreamWritable = require ( "./StringStreamWritable.js" ) ;
 var stream = require('stream');
 
 /**
@@ -1080,20 +1080,7 @@ module.exports = {
   XmlTree: XmlTree,
   XmlFactory: XmlFactory
 } ;
-if ( typeof tangojs === 'object' && tangojs )
-{
-  tangojs.XmlElement = XmlElement ;
-  tangojs.XmlTree = XmlTree ;
-  tangojs.XmlFactory = XmlFactory ;
-}
-else
-{
-  tangojs = {
-    XmlElement: XmlElement,
-    XmlTree: XmlTree,
-    XmlFactory: XmlFactory
-  } ;
-}
+
 
 if ( require.main === module )
 {

@@ -8,7 +8,7 @@
   7268 -rw-rw-r-- 1 ciss vge   7430144 Jun 25 12:53 rating.price_parameter.rul.tmp
 */
 
-var T = require ( "Tango" ) ;
+var T = require ( "./Tango.js" ) ;
 var fs = require ( "fs" ) ;
 var util = require ( "util" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;

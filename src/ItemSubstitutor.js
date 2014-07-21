@@ -1,7 +1,8 @@
-var splitCsv = require ( "Utils" ).splitCsv ;
-var parseNameValues = require ( "Utils" ).parseNameValues ;
-var T = require ( "Tango" ) ;
-var DateUtils = require ( "DateUtils" ) ;
+var utils = require ( "./Utils.js" );
+var splitCsv = utils.splitCsv ;
+var parseNameValues = utils.parseNameValues ;
+var T = require ( "./Tango.js" ) ;
+var DateUtils = require ( "./DateUtils.js" ) ;
 /**
   * @constructor
   **/
@@ -307,8 +308,6 @@ ItemSubstitutor.prototype.timeOfMonthOf = function ( h, first )
   }
   return rc ;
 }
-if ( typeof tangojs === 'object' && tangojs ) tangojs.ItemSubstitutor = ItemSubstitutor ;
-else tangojs = { ItemSubstitutor:ItemSubstitutor } ;
 
 module.exports = ItemSubstitutor ;
 

@@ -51,7 +51,5 @@ LineReader.prototype._read = function ( size )
 {
   this.pause() ;
 };
-if ( typeof tangojs === 'object' && tangojs ) tangojs.LineReader = LineReader ;
-else tangojs = { LineReader:LineReader } ;
 
 module.exports = LineReader ;

@@ -1,5 +1,5 @@
 {
-    "name": "tango",
+    "name": "Tango",
     "description": "util lib",
     "version": "0.0.1",
     "homepage": "https://github.com/gessinger-hj/tango",
@@ -20,15 +20,15 @@
             "url": "https://github.com/gessinger-hj/tango/blob/master/LICENSE"
         }
     ],
-    "main": "src/main.js",
+    "main": "src/index.js",
     "engines": {
         "node": ">= 0.6.x"
     },
     "dependencies": {
-        "sax":"0.6.x",
-        "mysql2":">=0.12.1",
-        "promise": ">=4.0.0",
-        "async":">=0.1.23"
+       "sax":"0.6.x",
+       "mysql2":">=0.12.1",
+       "promise": ">=4.0.0",
+       "async":">=0.1.23"
     },
     "devDependencies": {
     }

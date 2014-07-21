@@ -1,5 +1,5 @@
 var Path = require ( "path" ) ;
-var T = require ( "Tango" ) ;
+var T = require ( "./Tango.js" ) ;
 var fs = require ( "fs" ) ;
 var util = require ( "util" ) ;
 
@@ -773,9 +773,7 @@ File.prototype.exists = function()
 
 var TLOG = new LogFile() ;
 
-if ( typeof tangojs === 'object' && tangojs ) tangojs.LogFile = TLOG ;
-else tangojs = { LogFile:TLOG } ;
-tangojs.Logger = TLOG ;
+
 module.exports = TLOG ;
 
 if ( require.main === module )
