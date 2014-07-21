@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+  <xml>
+    <LocaleCode>fr_FR</LocaleCode>
+    <CountryCode>FR</CountryCode>
+    <Language>fr</Language>
+    <TextDirection>ltr</TextDirection>
+    <TextVerticalDirection>tb</TextVerticalDirection>
+    <CurrencySymbol>€</CurrencySymbol>
+    <InternationalCurrencySymbol>EUR</InternationalCurrencySymbol>
+    <DecimalSeparator>,</DecimalSeparator>
+    <GroupingSeparator> </GroupingSeparator>
+    <MonetaryDecimalSeparator>,</MonetaryDecimalSeparator>
+    <PatternSeparator>;</PatternSeparator>
+    <Percent>%</Percent>
+    <PerMill>‰</PerMill>
+    <ZeroDigit>0</ZeroDigit>
+    <FirstDayOfWeek>2</FirstDayOfWeek>
+    <FormatSymbols>
+      <Date><![CDATA[["fr"
+,["janvier"
+,"février"
+,"mars"
+,"avril"
+,"mai"
+,"juin"
+,"juillet"
+,"août"
+,"septembre"
+,"octobre"
+,"novembre"
+,"décembre"
+,"janv."
+,"févr."
+,"mars"
+,"avr."
+,"mai"
+,"juin"
+,"juil."
+,"août"
+,"sept."
+,"oct."
+,"nov."
+,"déc."
+],["dimanche"
+,"lundi"
+,"mardi"
+,"mercredi"
+,"jeudi"
+,"vendredi"
+,"samedi"
+,"dim."
+,"lun."
+,"mar."
+,"mer."
+,"jeu."
+,"ven."
+,"sam."
+]
+,"dd/MM/yy"
+,"d MMM yyyy"
+,"d MMMM yyyy"
+,"dd/MM/yy HH:mm:ss"
+,"d MMM yyyy HH:mm:ss"
+,"d MMMM yyyy HH:mm:ss"]]]></Date>
+    </FormatSymbols>
+    <CurrencySymbolInFront>false</CurrencySymbolInFront>
+  </xml>
