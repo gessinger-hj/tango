@@ -25,7 +25,8 @@
         "node": ">= 0.6.x"
     },
     "dependencies": {
-        "sax":"0.6.x"
+        "sax":"0.6.x",
+        "nodejs-websocket":">=0.1.5"
     },
     "devDependencies": {
     }
