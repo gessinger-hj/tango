@@ -4,7 +4,7 @@ var util = require ( "util" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var stream = require('stream');
 
-var FileLineReader = require ( 'FileLineReader' ) ;
+var FileLineReader = require ( './FileLineReader' ) ;
 
 /**
  *  @constructor

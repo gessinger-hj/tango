@@ -20,7 +20,7 @@
             "url": "https://github.com/gessinger-hj/tango/blob/master/LICENSE"
         }
     ],
-    "main": "src/index.js",
+    "main": "index.js",
     "engines": {
         "node": ">= 0.6.x"
     },
