@@ -453,9 +453,6 @@ File.prototype.toJson = function()
   return o ;
 };
 
-if ( typeof tangojs === 'object' && tangojs ) tangojs.File = File ;
-else tangojs = { File:File } ;
-
 module.exports = File ;
 if ( require.main === module )
 {

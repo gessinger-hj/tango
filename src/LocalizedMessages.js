@@ -8,7 +8,7 @@ var Locale = require ( 'Locale' ) ;
 	*/
 var LocalizedMessages = function ( file, localeString )
 {
-	this.file = new tangojs.File ( file ) ;
+	this.file = new File ( file ) ;
 	this.xml = this.file.toXml() ;
 	this._localeStringToNameToText = [] ;
   this._LocaleString = null ;
@@ -122,9 +122,6 @@ LocalizedMessages.prototype.substituteDollarParameter = function ( str, args )
   }
   return str ;
 };
-if ( typeof tangojs === 'object' && tangojs ) tangojs.LocalizedMessages = LocalizedMessages ;
-else tangojs = { LocalizedMessages:LocalizedMessages } ;
-
 module.exports = LocalizedMessages ;
 if ( require.main === module )
 {

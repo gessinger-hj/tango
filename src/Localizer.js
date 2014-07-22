@@ -9,7 +9,7 @@ var Localizer = function ( localizedMessages )
 {
   if ( typeof localizedMessages === 'string' )
   {
-    this._LocalizedMessages = new tangojs.LocalizedMessages ( localizedMessages ) ;
+    this._LocalizedMessages = new LocalizedMessages ( localizedMessages ) ;
   }
   else
   {
@@ -35,8 +35,6 @@ Localizer.prototype.localize = function ( src )
   return sub.substitute ( src, this._LocalizedMessages, false, delimiter, true ) ;
 };
 
-if ( typeof tangojs === 'object' && tangojs ) tangojs.Localizer = Localizer ;
-else tangojs = { Localizer:Localizer } ;
 module.exports = Localizer ;
 
 if ( require.main === module )

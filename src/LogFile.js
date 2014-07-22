@@ -771,18 +771,15 @@ File.prototype.exists = function()
   }
 };
 
-var TLOG = new LogFile() ;
+var Log = new LogFile() ;
 
-if ( typeof tangojs === 'object' && tangojs ) tangojs.LogFile = TLOG ;
-else tangojs = { LogFile:TLOG } ;
-tangojs.Logger = TLOG ;
-module.exports = TLOG ;
+module.exports = Log ;
 
 if ( require.main === module )
 {
   // T.setProperty ( "tango.env", "level=info,redirect=3,file=%APPNAME%.log") ;
-  // TLOG.init() ;
-  // TLOG.init ( "appl=TLOG,level=debug,xfile=TLOG.log:max=100:v=10" ) ;
+  // Log.init() ;
+  // Log.init ( "appl=Log,level=debug,xfile=Log.log:max=100:v=10" ) ;
   // var XX = function()
   // {
   //   var e = new Error ( "error --------------------");
@@ -794,15 +791,15 @@ if ( require.main === module )
   // }
   // catch ( exc )
   // {
-  // TLOG.log ( exc ) ;
+  // Log.log ( exc ) ;
   // }
 
   // var i = 0 ;
-  // TLOG.init ( "level=dbg,file=TLOG.log:max=1m:v=4" ) ;
-  TLOG.init ( "level=notice,Xfile=TLOG-%DATE%.log" ) ;
+  // Log.init ( "level=dbg,file=Log.log:max=1m:v=4" ) ;
+  Log.init ( "level=notice,Xfile=Log-%DATE%.log" ) ;
   // for ( i = 0 ; i < 10 ; i++ )
   // {
-  // TLOG.logln ( "xxxxxxxxxxxxxxxxxxxxx") ;
+  // Log.logln ( "xxxxxxxxxxxxxxxxxxxxx") ;
   // }
 
 //   var o =
@@ -812,23 +809,23 @@ if ( require.main === module )
 //   , info: function ( str ) { console.log ( "3-" + str ) ;}
 //   , log: function ( str ) { console.log ( "4-" + str ) ;}
 //   } ;
-// TLOG.setLogger ( o ) ;
-  TLOG.emergency ( "----------------" ) ;
-  TLOG.alert ( "----------------" ) ;
-  TLOG.critical ( "----------------" ) ;
-TLOG.setLevel ( TLOG.LogLevel.DEBUG ) ;
-  TLOG.error ( "----------------" ) ;
-  TLOG.warning ( "----------------" ) ;
-  TLOG.info ( "----------------" ) ;
-  TLOG.notice ( "----------------" ) ;
-  TLOG.debug ( "----------------" ) ;
+// Log.seLogger ( o ) ;
+  Log.emergency ( "----------------" ) ;
+  Log.alert ( "----------------" ) ;
+  Log.critical ( "----------------" ) ;
+Log.setLevel ( Log.LogLevel.DEBUG ) ;
+  Log.error ( "----------------" ) ;
+  Log.warning ( "----------------" ) ;
+  Log.info ( "----------------" ) ;
+  Log.notice ( "----------------" ) ;
+  Log.debug ( "----------------" ) ;
   console.log ( "1 ---- console.log ---------" ) ;
-  // TLOG.redirectOutput() ;
+  // Log.redirectOutput() ;
   console.log ( "%sXXX", "2 ---- console.log ---------" ) ;
   console.log ( "3 ---- console.log ---------" ) ;
-  // TLOG.unredirectOutput() ;
+  // Log.unredirectOutput() ;
   console.log ( "4 ---- console.log ---------" ) ;
   process.stdout.write ( "5 ---- write ---------\n" ) ;
-// TLOG.flush() ;
+// Log.flush() ;
 // process.exit(0) ;
 }

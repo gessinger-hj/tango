@@ -693,9 +693,6 @@ DateUtilsClass.prototype.MLZ = function (x)
 
 var DateUtils = new DateUtilsClass() ;
 
-if ( typeof tangojs === 'object' && tangojs ) tangojs.DateUtils = DateUtils ;
-else tangojs = { DateUtils:DateUtils } ;
-
 module.exports = DateUtils ;
 
 if ( require.main === module )

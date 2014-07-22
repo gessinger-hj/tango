@@ -1080,20 +1080,6 @@ module.exports = {
   XmlTree: XmlTree,
   XmlFactory: XmlFactory
 } ;
-if ( typeof tangojs === 'object' && tangojs )
-{
-  tangojs.XmlElement = XmlElement ;
-  tangojs.XmlTree = XmlTree ;
-  tangojs.XmlFactory = XmlFactory ;
-}
-else
-{
-  tangojs = {
-    XmlElement: XmlElement,
-    XmlTree: XmlTree,
-    XmlFactory: XmlFactory
-  } ;
-}
 
 if ( require.main === module )
 {

@@ -1,10 +1,10 @@
 var T = require ( "Tango" ) ;
-var NEvent = require ( "NEvent" ) ;
+var GPEvent = require ( "GPEvent" ) ;
 var GPClient = require ( "GPClient" ) ;
 
 var c = new GPClient() ;
 
-var ne = new NEvent ( "alarm", "file" ) ;
+var ne = new GPEvent ( "alarm", "file" ) ;
 c.fire ( ne
        , { result: function(e)
            {

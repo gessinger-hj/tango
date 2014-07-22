@@ -1,7 +1,7 @@
 var net = require('net');
 var os = require('os');
 var T = require ( "Tango" ) ;
-var NEvent = require ( "NEvent" ) ;
+var GPEvent = require ( "GPEvent" ) ;
 var MultiHash = require ( "MultiHash" ) ;
 var Log = require ( "LogFile" ) ;
 var User = require ( "User" ) ;
@@ -43,7 +43,7 @@ GPClient.prototype.connect = function()
   var thiz = this ;
   this.socket = net.connect ( p, function()
   {
-    var einfo = new NEvent ( "system", "client_info" ) ;
+    var einfo = new GPEvent ( "system", "client_info" ) ;
     einfo.data.hostname = os.hostname() ;
     einfo.data.connectionTime = new Date() ;
     einfo.data.application = process.argv[1] ;
@@ -111,7 +111,7 @@ GPClient.prototype.connect = function()
 
       if ( m.charAt ( 0 ) === '{' )
       {
-        var e = T.deserialize ( m ) ;
+        var e = GPEvent.prototype.deserialize ( m ) ;
         if ( e.isResult() )
         {
           var uid = e.getUniqueId() ;
@@ -202,13 +202,13 @@ GPClient.prototype.fire = function ( params, callback )
 GPClient.prototype.fireEvent = function ( params, callback )
 {
   var e = null ;
-  if ( params instanceof NEvent )
+  if ( params instanceof GPEvent )
   {
     e = params ;
   }
   else
   {
-    e = new NEvent ( params.name, params.type ) ;
+    e = new GPEvent ( params.name, params.type ) ;
     e.setData ( params.data ) ;
     if ( params.user ) u = params.user ;
   }
@@ -289,7 +289,7 @@ GPClient.prototype.addEventListener = function ( eventNameList, callback )
   {
     throw new Error ( "GPClient.addEventListener: eventNameList must not be empty." ) ;
   }
-  var e = new NEvent ( "system", "addEventListener" ) ;
+  var e = new GPEvent ( "system", "addEventListener" ) ;
   if ( this.user )
   {
     e.setUser ( this.user ) ;
@@ -361,14 +361,11 @@ GPClient.prototype.removeEventListener = function ( eventNameOrFunction )
       this.eventListenerFunctions.remove ( item ) ;
     }
     if ( ! eventNameList.length ) return ;
-    var e = new NEvent ( "system", "removeEventListener" ) ;
+    var e = new GPEvent ( "system", "removeEventListener" ) ;
     e.setUser ( this.user ) ;
     e.data.eventNameList = eventNameList ;
     var s = this.getSocket() ;
     s.write ( e.serialize() ) ;
   }
 };
-if ( typeof tangojs === 'object' && tangojs ) tangojs.GPClient = GPClient ;
-else tangojs = { GPClient:GPClient } ;
-
 module.exports = GPClient ;

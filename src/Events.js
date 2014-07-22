@@ -506,29 +506,4 @@ events.PropertyChangeHandler = PropertyChangeHandler ;
 events.PropertyChangeTrait = PropertyChangeTrait ;
 events.EventMulticaster = EventMulticaster ;
 
-if ( typeof tangojs === 'object' && tangojs )
-{
-  tangojs.EventMulticasterTrait = EventMulticasterTrait ;
-  tangojs.Event = Event ;
-  tangojs.FunctionExecutor = FunctionExecutor ;
-  tangojs.ItemEvent = ItemEvent ;
-  tangojs.ActionEvent = ActionEvent ;
-  tangojs.PropertyChangeEvent = PropertyChangeEvent ;
-  tangojs.PropertyChangeHandler = PropertyChangeHandler ;
-  tangojs.PropertyChangeTrait = PropertyChangeTrait ;
-  tangojs.EventMulticaster = EventMulticaster ;
-}
-else
-{
-  tangojs = {} ;
-  tangojs.EventMulticasterTrait = EventMulticasterTrait ;
-  tangojs.Event = Event ;
-  tangojs.FunctionExecutor = FunctionExecutor ;
-  tangojs.ItemEvent = ItemEvent ;
-  tangojs.ActionEvent = ActionEvent ;
-  tangojs.PropertyChangeEvent = PropertyChangeEvent ;
-  tangojs.PropertyChangeHandler = PropertyChangeHandler ;
-  tangojs.PropertyChangeTrait = PropertyChangeTrait ;
-  tangojs.EventMulticaster = EventMulticaster ;
-}
 module.exports = events ;

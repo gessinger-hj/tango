@@ -19,7 +19,4 @@ var FileLineReader = function ( fileName )
 }
 util.inherits ( FileLineReader, LineReader ) ;
 
-if ( typeof tangojs === 'object' && tangojs ) tangojs.FileLineReader = FileLineReader ;
-else tangojs = { FileLineReader:FileLineReader } ;
-
 module.exports = FileLineReader ;

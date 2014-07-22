@@ -123,7 +123,4 @@ if ( require.main === module )
   t.setRepeats ( false ) ;
   t.start() ;
 }
-if ( typeof tangojs === 'object' && tangojs ) tangojs.Timer = Timer ;
-else tangojs = { Timer:Timer } ;
-
 module.exports = Timer ;

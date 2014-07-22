@@ -1,5 +1,5 @@
 var T = require ( "Tango" ) ;
-var NEvent = require ( "NEvent" ) ;
+var GPEvent = require ( "GPEvent" ) ;
 var GPClient = require ( "GPClient" ) ;
 
 var GPNotificationBroker = function ( port, host )
@@ -20,7 +20,7 @@ GPNotificationBroker.prototype.init = function()
 	{
 		for ( var i = 0 ; i < thiz.pendingProgressNotificationEventList.length ; i++ )
 		{
-			var ee = new NEvent ( "notification" ) ;
+			var ee = new GPEvent ( "notification" ) ;
 			ee.data.state = "stop" ;
 			thiz.client.fireEvent ( ee ) ;
 		}
@@ -29,7 +29,7 @@ GPNotificationBroker.prototype.init = function()
 	thiz.client.addEventListener ( "notify", function(e)
 	{
 		var i ;
-		var ee = new NEvent ( "notification" ) ;
+		var ee = new GPEvent ( "notification" ) ;
 		ee.data = e.data ;
 		if ( e.data.state === "start" && e.data.id )
 		{

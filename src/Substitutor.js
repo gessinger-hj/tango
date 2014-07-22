@@ -1,6 +1,5 @@
 var T = require ( "./Tango" ) ;
 var ItemSubstitutor = require ( "./ItemSubstitutor" ) ;
-// tangojs = require ( "tangojs" ) ;
 var splitCsv = require ( "./Utils" ).splitCsv ;
 var stream = require('stream');
 
@@ -454,9 +453,6 @@ Substitutor.prototype._substitute = function ( r, w, map, useEnv, delimiter, dep
 	}
   return count ;
 }
-if ( typeof tangojs === 'object' && tangojs ) tangojs.Substitutor = Substitutor ;
-else tangojs = { Substitutor:Substitutor } ;
-
 module.exports = Substitutor ;
 
 if ( require.main === module )

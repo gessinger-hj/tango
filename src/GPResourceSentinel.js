@@ -1,5 +1,5 @@
 var T = require ( "Tango" ) ;
-var NEvent = require ( "NEvent" ) ;
+var GPEvent = require ( "GPEvent" ) ;
 var GPClient = require ( "GPClient" ) ;
 var FSWatcher = require ( "FSWatcher" ) ;
 var DateUtils = require ( "DateUtils" ) ;
@@ -62,7 +62,7 @@ GPResourceSentinel.prototype.addChange = function ( resource )
   var e ;
   resource.on ( "change", function onchange ( name, resourceId, displayName )
   {
-    e = new NEvent ( thiz.mainEventName ) ;
+    e = new GPEvent ( thiz.mainEventName ) ;
     e.data = thiz.make_data ( name, "show", resourceId ) ;
     e.data.type = this.getNotificationType() ;
     e.data.text = displayName ? displayName : name ;
@@ -86,7 +86,7 @@ GPResourceSentinel.prototype.removeOutdated = function()
       for ( var j = 0 ; j < resourceIdList.length ; j++ )
       {
         var p = resourceIdList[j] ;
-        e = new NEvent ( thiz.mainEventName ) ;
+        e = new GPEvent ( thiz.mainEventName ) ;
         e.data = this.make_data ( p.name, "stop", p.resourceId ) ;
         e.data.type = "notify" ;
         e.data.text = p.displayName ? p.displayName : p.name ;
@@ -142,7 +142,7 @@ MRTResource.prototype.setParent = function ( sentinel )
   var e ;
   this.w.on ( "create", function oncreate ( name )
   {
-    e = new NEvent ( thiz.parent.mainEventName ) ;
+    e = new GPEvent ( thiz.parent.mainEventName ) ;
     e.data = thiz.parent.make_data ( name, "start", "MRTExport" ) ;
     Log.debug ( e.data ) ;
     thiz.parent.gpclient.fire ( e ) ;
@@ -150,7 +150,7 @@ MRTResource.prototype.setParent = function ( sentinel )
   this.w.on ( "delete", function ondelete ( name )
   {
     previous_file_name = "" ;
-    e = new NEvent ( thiz.parent.mainEventName ) ;
+    e = new GPEvent ( thiz.parent.mainEventName ) ;
     e.data = thiz.parent.make_data ( name, "stop", "MRTExport" ) ;
     Log.debug ( e.data ) ;
     thiz.parent.gpclient.fire ( e ) ;
@@ -167,7 +167,7 @@ MRTResource.prototype.setParent = function ( sentinel )
         return ;
       }
       previous_file_name = name ;
-      e = new NEvent ( thiz.parent.mainEventName ) ;
+      e = new GPEvent ( thiz.parent.mainEventName ) ;
       e.data = thiz.parent.make_data ( name, "start", "MRTExport" ) ;
       Log.debug ( e.data ) ;
       thiz.parent.gpclient.fire ( e ) ;

@@ -1,10 +1,10 @@
 if ( typeof tangojs === 'undefined' ) tangojs = {} ;
 
 tangojs.counter = 0 ;
-tangojs.WebClient = function ( port )
+tangojs.GPWebClient = function ( port )
 {
   this.port = port ;
-  this.webSocket = null ;
+  this.socket = null ;
   this.user = null ;
   this.pendingEventList = [] ;
   this.pendingResultList = {} ;
@@ -12,25 +12,27 @@ tangojs.WebClient = function ( port )
   this.eventListenerFunctions = new tangojs.MultiHash() ;
   this.pendingEventListenerList = [] ;
   this.url = "ws://" + document.domain + ":" + this.port ;
+  this.proxyIdentifier = null ;
 };
-tangojs.WebClient.prototype._initialize = function()
+tangojs.GPWebClient.prototype._initialize = function()
 {
 };
-tangojs.WebClient.prototype.createUniqueEventId = function()
+tangojs.GPWebClient.prototype.createUniqueEventId = function()
 {
-  return this.url + "_" + new Date().getTime() + "-" + (tangojs.counter++) ;
+  return this.url + "_" + new Date().getTime() + "-" + this.proxyIdentifier + "-" + (tangojs.counter++) ;
 };
-tangojs.WebClient.prototype.connect = function()
+tangojs.GPWebClient.prototype.connect = function()
 {
   var thiz = this ;
-  this.webSocket = new WebSocket ( this.url ) ;
-  this.webSocket.onerror = function(err)
+  this.socket = new WebSocket ( this.url ) ;
+
+  this.socket.onerror = function(err)
   {
-    if ( ! thiz.webSocket ) return ;
-    thiz.webSocket.close() ;
-    thiz.webSocket = null ;
+    if ( ! thiz.socket ) return ;
+    thiz.socket.close() ;
+    thiz.socket = null ;
   } ;
-  this.webSocket.onmessage = function onmessage ( messageEvent )
+  this.socket.onmessage = function onmessage ( messageEvent )
   {
     var mm = messageEvent.data ;
     if ( ! this.partialMessage ) this.partialMessage = "" ;
@@ -72,6 +74,11 @@ tangojs.WebClient.prototype.connect = function()
           {
             return ;
           }
+          if ( e.getType() === "client_info_response" )
+          {
+            thiz.proxyIdentifier = e.getProxyIdentifier() ;
+            return ;
+          }
           if ( e.isBad() )
           {
             var ctx = thiz.callbacks[wid] ;
@@ -99,15 +106,20 @@ tangojs.WebClient.prototype.connect = function()
         }
       }
     }
+  } ;
+  this.socket.onclose = function onclose(e)
+  {
+    if ( ! thiz.socket ) return ;
+    thiz.socket = null ;
+  } ;
+  this.socket.onopen = function()
+  {
+    var einfo = new tangojs.GPEvent ( "system", "client_info" ) ;
+    einfo.data.userAgent = navigator.userAgent ;
+    einfo.data.connectionTime = new Date() ;
+    einfo.data.domain = document.domain ;
+    thiz.socket.send ( einfo.serialize() ) ;
 
-  } ;
-  this.webSocket.onclose = function onclose(e)
-  {
-    if ( ! thiz.webSocket ) return ;
-    thiz.webSocket = null ;
-  } ;
-  this.webSocket.onopen = function()
-  {
     var i ;
     if ( thiz.pendingEventList.length )
     {
@@ -120,7 +132,7 @@ tangojs.WebClient.prototype.connect = function()
         e.setWebIdentifier ( uid ) ;
         thiz.callbacks[uid] = ctx ;
         ctx.e = undefined ;
-        thiz.webSocket.send ( e.serialize() ) ;
+        thiz.socket.send ( e.serialize() ) ;
       }
       thiz.pendingEventList.length = 0 ;
     }
@@ -132,30 +144,30 @@ tangojs.WebClient.prototype.connect = function()
         var e = ctx.e ;
         var callback = ctx.callback ;
         e.setWebIdentifier ( uid ) ;
-        thiz.webSocket.send ( e.serialize() ) ;
+        thiz.socket.send ( e.serialize() ) ;
       }
       thiz.pendingEventListenerList.length = 0 ;
     }
   };
 };
-tangojs.WebClient.prototype.getSocket = function()
+tangojs.GPWebClient.prototype.getSocket = function()
 {
-  if ( ! this.webSocket )
+  if ( ! this.socket )
   {
     this.connect() ;
   }
-  return this.webSocket ;
+  return this.socket ;
 };
-tangojs.WebClient.prototype.fireEvent = function ( params, callback )
+tangojs.GPWebClient.prototype.fireEvent = function ( params, callback )
 {
   var e = null ;
-  if ( params instanceof NEvent )
+  if ( params instanceof tangojs.GPEvent )
   {
     e = params ;
   }
   else
   {
-    e = new tangojs.NEvent ( params.name, params.type ) ;
+    e = new tangojs.GPEvent ( params.name, params.type ) ;
     e.setData ( params.data ) ;
     if ( params.user ) u = params.user ;
   }
@@ -179,7 +191,7 @@ tangojs.WebClient.prototype.fireEvent = function ( params, callback )
       ctx.write = callback ;
     }
   }
-  if ( ! this.webSocket )
+  if ( ! this.socket )
   {
     ctx.e = e ;
     this.pendingEventList.push ( ctx ) ;
@@ -194,7 +206,7 @@ tangojs.WebClient.prototype.fireEvent = function ( params, callback )
     s.send ( e.serialize() ) ;
   }
 };
-tangojs.WebClient.prototype.addEventListener = function ( eventNameList, callback )
+tangojs.GPWebClient.prototype.addEventListener = function ( eventNameList, callback )
 {
   if ( ! eventNameList ) throw new Error ( "Client.addEventListener: Missing eventNameList." ) ;
   if ( typeof callback !== 'function' ) throw new Error ( "Client.addEventListener: callback must be a function." ) ;
@@ -207,7 +219,7 @@ tangojs.WebClient.prototype.addEventListener = function ( eventNameList, callbac
   {
     throw new Error ( "Client.addEventListener: eventNameList must not be empty." ) ;
   }
-  var e = new NEvent ( "system", "addEventListener" ) ;
+  var e = new tangojs.GPEvent ( "system", "addEventListener" ) ;
   if ( this.user )
   {
     e.setUser ( this.user ) ;
@@ -218,7 +230,7 @@ tangojs.WebClient.prototype.addEventListener = function ( eventNameList, callbac
   {
     this.eventListenerFunctions.put ( eventNameList[i], callback ) ;
   }
-  if ( ! this.webSocket )
+  if ( ! this.socket )
   {
     this.pendingEventListenerList.push ( { e:e, callback:callback } ) ;
   }
@@ -236,7 +248,7 @@ tangojs.WebClient.prototype.addEventListener = function ( eventNameList, callbac
     s.send ( e.serialize() ) ;
   }
 };
-tangojs.WebClient.prototype.removeEventListener = function ( eventNameOrFunction )
+tangojs.GPWebClient.prototype.removeEventListener = function ( eventNameOrFunction )
 {
   var i ;
   if ( typeof eventNameOrFunction === 'string' )
@@ -277,14 +289,14 @@ tangojs.WebClient.prototype.removeEventListener = function ( eventNameOrFunction
       this.eventListenerFunctions.remove ( item ) ;
     }
     if ( ! eventNameList.length ) return ;
-    var e = new NEvent ( "system", "removeEventListener" ) ;
+    var e = new tangojs.GPEvent ( "system", "removeEventListener" ) ;
     e.setUser ( this.user ) ;
     e.data.eventNameList = eventNameList ;
     var s = this.getSocket() ;
     s.send ( e.serialize() ) ;
   }
 };
-tangojs.WebClient.prototype.sendResult = function ( message )
+tangojs.GPWebClient.prototype.sendResult = function ( message )
 {
   if ( ! message.isResultRequested() )
   {
@@ -293,9 +305,9 @@ tangojs.WebClient.prototype.sendResult = function ( message )
     return ;
   }
   message.setIsResult() ;
-  this.webSocket.send ( message.serialize() ) ;
+  this.socket.send ( message.serialize() ) ;
 };
-tangojs.WebClient.prototype.splitJSONObjects = function ( str )
+tangojs.GPWebClient.prototype.splitJSONObjects = function ( str )
 {
   var list = [] ;
   var pcounter = 1 ;

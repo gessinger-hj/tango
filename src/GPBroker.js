@@ -1,7 +1,7 @@
 var net = require ( 'net' ) ;
 var util = require ( 'util' ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
-var NEvent = require ( "NEvent" ) ;
+var GPEvent = require ( "GPEvent" ) ;
 var T = require ( "Tango" ) ;
 var MultiHash = require ( "MultiHash" ) ;
 var Log = require ( "LogFile" ) ;
@@ -91,7 +91,7 @@ GPBroker = function ( port, ip )
         }
         if ( m.charAt ( 0 ) === '{' )
         {
-          var e = T.deserialize ( m ) ;
+          var e = GPEvent.prototype.deserialize ( m ) ;
           if ( e.isResult() )
           {
             sid = e.getSourceIdentifier() ;
@@ -307,7 +307,7 @@ GPBroker.prototype.closeAllSockets = function ( exceptSocket )
   }
   this.closing = true ;
   var list = Object.keys ( this._sockets ) ;
-  var e = new NEvent ( "system", "shutdown" ) ;
+  var e = new GPEvent ( "system", "shutdown" ) ;
   for ( var i = 0 ; i < list.length ; i++ )
   {
     var ctx = this._sockets[list[i]] ;

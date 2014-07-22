@@ -1,4 +1,4 @@
-var NEvent = require ( "NEvent" ) ;
+var GPEvent = require ( "GPEvent" ) ;
 var Log = require ( "LogFile" ) ;
 var GPClient = require ( "GPClient" ) ;
 
@@ -84,7 +84,7 @@ GPWebSocketEventProxy.prototype._create = function()
 		Log.info ( 'web connects' ) ;
 		conn.on ( "text", function ( message )
 		{
-			var ne = NEvent.prototype.deserialize ( message ) ;
+			var ne = GPEvent.prototype.deserialize ( message ) ;
 			ne.setProxyIdentifier ( conn.key ) ;
 			var ctx = thiz._sockets[this.key] ;
 			if ( ! ctx )

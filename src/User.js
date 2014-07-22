@@ -4,7 +4,7 @@ var util = require ( "util" ) ;
 /**
  * @constructor
  */
-User = function ( id, key, pwd )
+var User = function ( id, key, pwd )
 {
 	this.className = "User" ;
 	this.id = id ;
@@ -21,7 +21,4 @@ User.prototype.getId = function (  )
 {
 	return this.id ;
 };
-if ( typeof tangojs === 'object' && tangojs ) tangojs.User = User ;
-else tangojs = { User:User } ;
-
 module.exports = User ;

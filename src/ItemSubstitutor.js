@@ -307,8 +307,5 @@ ItemSubstitutor.prototype.timeOfMonthOf = function ( h, first )
   }
   return rc ;
 }
-if ( typeof tangojs === 'object' && tangojs ) tangojs.ItemSubstitutor = ItemSubstitutor ;
-else tangojs = { ItemSubstitutor:ItemSubstitutor } ;
-
 module.exports = ItemSubstitutor ;
 

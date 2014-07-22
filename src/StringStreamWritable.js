@@ -33,7 +33,4 @@ StringStreamWritable.prototype.flush = function()
 {
   delete this._buffer ;
 };
-if ( typeof tangojs === 'object' && tangojs ) tangojs.StringStreamWritable = StringStreamWritable ;
-else tangojs = { StringStreamWritable:StringStreamWritable } ;
-
 module.exports = StringStreamWritable ;
