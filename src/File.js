@@ -8,11 +8,9 @@ var FileLineReader = require ( './FileLineReader' ) ;
 
 /**
  *  @constructor
- *  @class
  *  @param {path|dom} id the id of an html element or
  *         the html dom element itself.
  * @method File
- * 
  * @param {} path
  * @param {} name
  */
