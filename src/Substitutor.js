@@ -4,8 +4,11 @@ var splitCsv = require ( "./Utils" ).splitCsv ;
 var stream = require('stream');
 
 /**
-  * @constructor
-  */
+ * @constructor
+ * @method Substitutor
+ * @param {} itemSubstitutor
+ * @return 
+ */
 var Substitutor = function ( itemSubstitutor )
 {
   this._IS = itemSubstitutor
@@ -14,6 +17,16 @@ var Substitutor = function ( itemSubstitutor )
     this._IS = new ItemSubstitutor() ;
   }
 };
+/**
+ * Description
+ * @method substitute
+ * @param {} src
+ * @param {} map
+ * @param {} useEnv
+ * @param {} delimiter
+ * @param {} escapeApos
+ * @return tgt
+ */
 Substitutor.prototype.substitute = function ( src, map, useEnv, delimiter, escapeApos )
 {
   if ( src instanceof stream.Readable && map instanceof stream.Writable )
@@ -27,7 +40,14 @@ Substitutor.prototype.substitute = function ( src, map, useEnv, delimiter, escap
 
   if ( map && typeof map.getText !== 'function'  )
   {
-    var m = { map:map, getText: function ( key ) { return this.map[key] ; } } ;
+    var m = { map:map, 
+/**
+  * Description
+  * @method getText
+  * @param {} key
+  * @return MemberExpression
+  */
+ getText: function ( key ) { return this.map[key] ; } } ;
     map = m ;
   }
   if ( useEnv !== true ) useEnv = false ;
@@ -189,7 +209,14 @@ Substitutor.prototype._substitute = function ( r, w, map, useEnv, delimiter, dep
 
   if ( map && typeof map.getText !== 'function'  )
   {
-    var m = { map:map, getText: function ( key ) { return this.map[key] ; } } ;
+    var m = { map:map, 
+/**
+  * Description
+  * @method getText
+  * @param {} key
+  * @return MemberExpression
+  */
+ getText: function ( key ) { return this.map[key] ; } } ;
     map = m ;
   }
   if ( useEnv !== true ) useEnv = false ;
@@ -475,8 +502,8 @@ if ( require.main === module )
   // console.log ( t ) ;
   var t = sub.substitute ( str, { NN: "XXXX" }, true, '%' ) ;
   console.log ( t ) ;
-  var r = new tangojs.StringStreamReadable ( str ) ;
-  var w = new tangojs.StringStreamWritable() ;
+  var r = new StringStreamReadable ( str ) ;
+  var w = new StringStreamWritable() ;
   var t = sub.substitute ( r, w, { NN: "XXXX" }, true, '%' ) ;
   console.log ( w.toString() ) ;
   // console.log ( sub.substitute ( "--${firstTimeOfMonthOf(month=0)}--" ) ) ;

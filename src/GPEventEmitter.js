@@ -1,24 +1,44 @@
-var T = require ( "Tango" ) ;
-var GPEvent = require ( "GPEvent" ) ;
-var GPClient = require ( "GPClient" ) ;
+var T = require ( "./Tango" ) ;
+var GPEvent = require ( "./GPEvent" ) ;
+var GPClient = require ( "./GPClient" ) ;
 
 var c = new GPClient() ;
 
 var ne = new GPEvent ( "alarm", "file" ) ;
 c.fire ( ne
-       , { result: function(e)
+       , { 
+/**
+  * Description
+  * @method result
+  * @param {} e
+  * @return 
+  */
+ result: function(e)
            {
 console.log ( " ----------result: function()----------------" ) ;
              T.log ( e ) ;
              this.end() ;
            }
-         , error: function(e)
+         , 
+/**
+  * Description
+  * @method error
+  * @param {} e
+  * @return 
+  */
+ error: function(e)
            {
 console.log ( " ----------error: function()----------------" ) ;
              T.log ( e ) ;
              this.end() ;
            }
-         , Xwrite: function()
+         , 
+/**
+  * Description
+  * @method Xwrite
+  * @return 
+  */
+ Xwrite: function()
            {
 console.log ( " ----------write: function()----------------" ) ;
               // this.end() ;

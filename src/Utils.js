@@ -1,4 +1,11 @@
-var T = require ( "Tango" ) ;
+var T = require ( "./Tango" ) ;
+/**
+ * Description
+ * @method splitCsv
+ * @param {} str
+ * @param {} del
+ * @return l
+ */
 function splitCsv ( str, del )
 {
   var startIndex = 0 ;
@@ -68,6 +75,12 @@ function splitCsv ( str, del )
 }
 module.exports.splitCsv = splitCsv ;
 
+/**
+ * Description
+ * @method stripQuotes
+ * @param {} t
+ * @return t
+ */
 function stripQuotes ( t )
 {
   t = t.trim() ;
@@ -80,6 +93,14 @@ function stripQuotes ( t )
   return t ;
 }
 module.exports.stripQuotes = stripQuotes ;
+/**
+ * Description
+ * @method parseNameValues
+ * @param {} str
+ * @param {} map
+ * @param {} del
+ * @return map
+ */
 function parseNameValues ( str, map, del )
 {
   if ( ! map ) map = {} ;
@@ -103,4 +124,5 @@ function parseNameValues ( str, map, del )
 }
 module.exports.parseNameValues = parseNameValues ;
 
+module.exports["enumerate"] = true ;
 

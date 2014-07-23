@@ -3,6 +3,9 @@ var stream = require('stream');
 
 /**
  *  @constructor
+ * @method LineReader
+ * @param {} characterStream
+ * @return 
  */
 var LineReader = function ( characterStream )
 {
@@ -15,11 +18,12 @@ var LineReader = function ( characterStream )
 		var c ;
 		while ( ( c = characterStream.read(1) ) !== null )
 		{
-			if ( c === '\r' )
+			c = c.toString() ;
+			if ( c == '\r' )
 			{
 				continue ;
 			}
-			if ( c === '\n' )
+			if ( c == '\n' )
 			{
 				if ( line !== null )
 				{

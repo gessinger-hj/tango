@@ -1,15 +1,20 @@
 var util = require ( "util" ) ;
 var sax = require('sax');
-var T = require ( "Tango" ) ;
-var Utils = require ( "Utils" ) ;
-var DateUtils = require ( "DateUtils" ) ;
+var T = require ( "./Tango" ) ;
+var Utils = require ( "./Utils" ) ;
+var DateUtils = require ( "./DateUtils" ) ;
 
-var StringStreamWritable = require ( "StringStreamWritable" ) ;
+var StringStreamWritable = require ( "./StringStreamWritable" ) ;
 var stream = require('stream');
 
 /**
-  * @constructor
-  */
+ * @constructor
+ * @method XmlElement
+ * @param {} tag
+ * @param {} text
+ * @param {} attr
+ * @return 
+ */
 var XmlElement = function ( tag, text, attr )
 {
   if ( ! tag )
@@ -78,18 +83,31 @@ var XmlElement = function ( tag, text, attr )
   this.isCDATA = false ;
   this.parent = null ;
 };
-/** */
+/**
+ * Description
+ * @method setParent
+ * @param {} parent
+ * @return ThisExpression
+ */
 XmlElement.prototype.setParent = function ( parent )
 {
   this.parent = parent ;
   return this ;
 };
-/** */
+/**
+ * Description
+ * @method getParent
+ * @return MemberExpression
+ */
 XmlElement.prototype.getParent = function()
 {
   return this.parent ;
 };
-/** */
+/**
+ * Description
+ * @method getName
+ * @return MemberExpression
+ */
 XmlElement.prototype.getName = function()
 {
   return this._name ;
@@ -128,7 +146,13 @@ XmlElement.prototype._oncdata = function(cdata)
     this.isCDATA = true ;
   }
 }
-/** */
+/**
+ * Description
+ * @method elements
+ * @param {} iterator
+ * @param {} thiz
+ * @return 
+ */
 XmlElement.prototype.elements = function ( iterator, thiz )
 {
   for ( var i = 0 , l = this.children.length ; i < l ; i++ )
@@ -136,23 +160,45 @@ XmlElement.prototype.elements = function ( iterator, thiz )
     if ( iterator.call ( thiz, this.children[i] ) === false ) return;
   }
 }
-/** */
+/**
+ * Description
+ * @method addAttribute
+ * @param {} name
+ * @param {} value
+ * @return 
+ */
 XmlElement.prototype.addAttribute = function ( name, value )
 {
   this._attributes[name] = value ;
 };
-/** */
+/**
+ * Description
+ * @method getAttribute
+ * @param {} name
+ * @param {} def
+ * @return def
+ */
 XmlElement.prototype.getAttribute = function ( name, def )
 {
   if ( this._attributes[name] ) return this._attributes[name] ;
   return def ;
 };
-/** */
+/**
+ * Description
+ * @method removeAttribute
+ * @param {} name
+ * @return 
+ */
 XmlElement.prototype.removeAttribute = function ( name )
 {
   if ( this._attributes[name] ) delete this._attributes[name] ;
 };
-/** */
+/**
+ * Description
+ * @method replace
+ * @param {} e
+ * @return old
+ */
 XmlElement.prototype.replace = function ( e )
 {
   var children = this.getParent().children ;
@@ -162,7 +208,12 @@ XmlElement.prototype.replace = function ( e )
   e.setParent ( this.getParent() ) ;
   return old ;
 };
-/** */
+/**
+ * Description
+ * @method remove
+ * @param {} path
+ * @return e
+ */
 XmlElement.prototype.remove = function ( path )
 {
   var i ;
@@ -178,14 +229,25 @@ XmlElement.prototype.remove = function ( path )
   e.getParent().children.splice ( i, 1 ) ;
   return e ;
 };
-/** */
+/**
+ * Description
+ * @method elem
+ * @param {} path
+ * @return CallExpression
+ */
 XmlElement.prototype.elem = function ( path )
 {
   if ( ! path ) return this ;
   var pathArray = path.split ( '/' ) ;
   return this._elem ( pathArray, 0 ) ;
 };
-/** */
+/**
+ * Description
+ * @method elemAt
+ * @param {} path
+ * @param {} index
+ * @return 
+ */
 XmlElement.prototype.elemAt = function ( path, index )
 {
   if ( typeof path === 'number' )
@@ -308,7 +370,12 @@ XmlElement.prototype._elem = function ( pathArray, index )
   }
   return lastFoundElement ;
 };
-/** */
+/**
+ * Description
+ * @method select
+ * @param {} path
+ * @return list
+ */
 XmlElement.prototype.select = function ( path )
 {
   var list = [];
@@ -335,7 +402,12 @@ XmlElement.prototype.select = function ( path )
   }
   return list;
 };
-/** */
+/**
+ * Description
+ * @method valueOf
+ * @param {} path
+ * @return MemberExpression
+ */
 XmlElement.prototype.valueOf = function ( path )
 {
   if ( ! path )
@@ -377,12 +449,22 @@ XmlElement.prototype.valueOf = function ( path )
 
   return child._value ;
 };
-/** */
+/**
+ * Description
+ * @method getContent
+ * @param {} path
+ * @return CallExpression
+ */
 XmlElement.prototype.getContent = function ( path )
 {
   return this.valueOf ( path ) ;
 };
-/** */
+/**
+ * Description
+ * @method getDate
+ * @param {} path
+ * @return v
+ */
 XmlElement.prototype.getDate = function ( path )
 {
   var v = this.valueOf ( path ) ;
@@ -392,7 +474,13 @@ XmlElement.prototype.getDate = function ( path )
   }
   return v ;
 };
-/** */
+/**
+ * Description
+ * @method getBool
+ * @param {} path
+ * @param {} def
+ * @return Literal
+ */
 XmlElement.prototype.getBool = function ( path, def )
 {
   var s = null ;
@@ -413,7 +501,13 @@ XmlElement.prototype.getBool = function ( path, def )
   if ( s === "true" ) return true ;
   return false ;
 };
-/** */
+/**
+ * Description
+ * @method getNumber
+ * @param {} path
+ * @param {} def
+ * @return n
+ */
 XmlElement.prototype.getNumber = function ( path, def )
 {
   var s = null ;
@@ -430,13 +524,23 @@ XmlElement.prototype.getNumber = function ( path, def )
   return n ;
 };
 
-/** */
+/**
+ * Description
+ * @method setValue
+ * @param {} value
+ * @return 
+ */
 XmlElement.prototype.setValue = function ( value )
 {
   this._value = value ;
 };
 
-/** */
+/**
+ * Description
+ * @method toString
+ * @param {} wstream
+ * @return 
+ */
 XmlElement.prototype.toString = function ( wstream )
 {
   if ( ! wstream )
@@ -453,7 +557,12 @@ XmlElement.prototype.toString = function ( wstream )
     this._toString ( "", wstream ) ;
   }
 }
-/** */
+/**
+ * Description
+ * @method toWriteStream
+ * @param {} wstream
+ * @return 
+ */
 XmlElement.prototype.toWriteStream = function ( wstream )
 {
   this._toString ( "", wstream ) ;
@@ -542,7 +651,11 @@ XmlElement.prototype._toString = function ( indent, wstream )
     else wstream.write ( "/>" ) ;
   }
 };
-/** */
+/**
+ * Description
+ * @method getPath
+ * @return str
+ */
 XmlElement.prototype.getPath = function()
 {
   var str = this._name ;
@@ -558,12 +671,22 @@ XmlElement.prototype.getPath = function()
   }
   return str ;
 };
-/** */
+/**
+ * Description
+ * @method isRoot
+ * @return UnaryExpression
+ */
 XmlElement.prototype.isRoot = function()
 {
   return ! this.parent ;
 };
-/** */
+/**
+ * Description
+ * @method visit
+ * @param {} visitor
+ * @param {} thiz
+ * @return 
+ */
 XmlElement.prototype.visit = function ( visitor, thiz )
 {
   if ( typeof visitor === 'function' )
@@ -595,7 +718,14 @@ XmlElement.prototype._visit = function ( visitor, fvisitor, depth, thiz )
     if ( this.children[i]._visit ( visitor, fvisitor, depth + 1, thiz ) === false ) return false ;
   }
 } ;
-/** */
+/**
+ * Description
+ * @method add
+ * @param {} p1
+ * @param {} p2
+ * @param {} attr
+ * @return e
+ */
 XmlElement.prototype.add = function ( p1, p2, attr )
 {
   if ( p1 instanceof XmlElement )
@@ -609,7 +739,14 @@ XmlElement.prototype.add = function ( p1, p2, attr )
   e.setParent ( this ) ;
   return e ;
 } ;
-/** */
+/**
+ * Description
+ * @method addCDATA
+ * @param {} p1
+ * @param {} p2
+ * @param {} attr
+ * @return e
+ */
 XmlElement.prototype.addCDATA = function ( p1, p2, attr )
 {
   if ( p1 instanceof XmlElement )
@@ -625,7 +762,13 @@ XmlElement.prototype.addCDATA = function ( p1, p2, attr )
   e.setParent ( this ) ;
   return e ;
 } ;
-/** */
+/**
+ * Description
+ * @method insertAt
+ * @param {} e
+ * @param {} index
+ * @return e
+ */
 XmlElement.prototype.insertAt = function ( e, index )
 {
   if ( index < 0 )
@@ -640,7 +783,11 @@ XmlElement.prototype.insertAt = function ( e, index )
   e.setParent ( this ) ;
   return e ;
 };
-/** */
+/**
+ * Description
+ * @method duplicate
+ * @return e
+ */
 XmlElement.prototype.duplicate = function()
 {
   var e = null ;
@@ -668,6 +815,12 @@ XmlElement.prototype.duplicate = function()
   }
   return e ;
 };
+/**
+ * Description
+ * @method duplicateConditional
+ * @param {} properties
+ * @return eNew
+ */
 XmlElement.prototype.duplicateConditional = function ( properties )
 {
   var eNew = null ;
@@ -943,27 +1096,39 @@ XmlElement.prototype._evaluateProperty = function ( propertyValue, properties, e
 
   return ;
 };
+/**
+ * Description
+ * @method toJSON
+ * @return ObjectExpression
+ */
 XmlElement.prototype.toJSON = function()
 {
   return { type:'Xml', 'value': this.toString() } ;
 };
 
 /**
-  * @constructor
-  * @extends XmlElement
-  */
+ * @constructor
+ * @extends XmlElement
+ * @method XmlTree
+ * @param {} name
+ * @return 
+ */
 var XmlTree = function ( name )
 {
   if ( ! name ) name = 'xml' ;
-  T.initSuper ( this, XmlElement, name ) ;
+  XmlElement.call ( this, XmlElement, name ) ;
 };
-
-T.inherits ( XmlTree, XmlElement ) ;
+util.inherits ( XmlTree, XmlElement ) ;
 
 XmlTree.prototype._setCollectedElements = function ( list )
 {
   this.collectedElements = list ;
 };
+/**
+ * Description
+ * @method getCollectedElements
+ * @return MemberExpression
+ */
 XmlTree.prototype.getCollectedElements = function()
 {
   return this.collectedElements ;
@@ -971,8 +1136,11 @@ XmlTree.prototype.getCollectedElements = function()
 
 var EventEmitter = require ( "events" ).EventEmitter ;
 /**
-  * @constructor
-  */
+ * @constructor
+ * @method XmlFactory
+ * @param {} callbackCloseTag
+ * @return 
+ */
 var XmlFactory = function ( callbackCloseTag )
 {
   EventEmitter.call ( this ) ;
@@ -983,7 +1151,12 @@ var XmlFactory = function ( callbackCloseTag )
   }
 };
 util.inherits ( XmlFactory, EventEmitter ) ;
-/** */
+/**
+ * Description
+ * @method create
+ * @param {} source
+ * @return 
+ */
 XmlFactory.prototype.create = function ( source )
 {
   if ( ! source )
@@ -1008,8 +1181,25 @@ XmlFactory.prototype.create = function ( source )
       source = source.trim() ;
       parser = sax.parser(true)
     }
+    /**
+     * Description
+     * @method ontext
+     * @param {} text
+     * @return 
+     */
     parser.ontext = function ( text ) { thiz.currentChild._ontext ( text ) } ;
+    /**
+     * Description
+     * @method oncdata
+     * @param {} cdata
+     * @return 
+     */
     parser.oncdata = function ( cdata ) { thiz.currentChild._oncdata ( cdata ) } ;
+    /**
+     * Description
+     * @method onprocessinginstruction
+     * @return 
+     */
     parser.onprocessinginstruction = function()
     {
       var pi = arguments[0] ;
@@ -1020,6 +1210,12 @@ XmlFactory.prototype.create = function ( source )
       }
     } ;
     var first = true ;
+    /**
+     * Description
+     * @method onopentag
+     * @param {} tag
+     * @return 
+     */
     parser.onopentag = function ( tag )
     {
       if ( elementStack[0] === x && first )
@@ -1036,6 +1232,11 @@ XmlFactory.prototype.create = function ( source )
         elementStack.unshift ( child ) ;
       }
     } ;
+    /**
+     * Description
+     * @method onclosetag
+     * @return 
+     */
     parser.onclosetag = function()
     {
       if ( thiz.callbackCloseTag )
@@ -1078,7 +1279,8 @@ XmlFactory.prototype.create = function ( source )
 module.exports = {
   XmlElement: XmlElement,
   XmlTree: XmlTree,
-  XmlFactory: XmlFactory
+  XmlFactory: XmlFactory,
+  "enumerate":true
 } ;
 
 if ( require.main === module )

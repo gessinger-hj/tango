@@ -1,14 +1,17 @@
 var net = require ( 'net' ) ;
 var util = require ( 'util' ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
-var GPEvent = require ( "GPEvent" ) ;
-var T = require ( "Tango" ) ;
-var MultiHash = require ( "MultiHash" ) ;
-var Log = require ( "LogFile" ) ;
+var GPEvent = require ( "./GPEvent" ) ;
+var T = require ( "./Tango" ) ;
+var MultiHash = require ( "./MultiHash" ) ;
+var Log = require ( "./LogFile" ) ;
 
 /**
-  * @constructor
-  */
+ * @constructor
+ * @param {} port
+ * @param {} ip
+ * @return 
+ */
 GPBroker = function ( port, ip )
 {
   EventEmitter.call ( this ) ;
@@ -276,6 +279,12 @@ GPBroker = function ( port, ip )
   });
 };
 util.inherits ( GPBroker, EventEmitter ) ;
+/**
+ * Description
+ * @method ejectSocket
+ * @param {} socket
+ * @return 
+ */
 GPBroker.prototype.ejectSocket = function ( socket )
 {
   var sid = socket.sid ;
@@ -299,6 +308,12 @@ GPBroker.prototype.ejectSocket = function ( socket )
   delete this._sockets[sid] ;
   Log.info ( 'Socket disconnected, sid=' + sid ) ;
 };
+/**
+ * Description
+ * @method closeAllSockets
+ * @param {} exceptSocket
+ * @return 
+ */
 GPBroker.prototype.closeAllSockets = function ( exceptSocket )
 {
   if ( this.closing )
@@ -320,6 +335,13 @@ GPBroker.prototype.closeAllSockets = function ( exceptSocket )
   }
 };
 
+/**
+ * Description
+ * @method listen
+ * @param {} port
+ * @param {} callback
+ * @return 
+ */
 GPBroker.prototype.listen = function ( port, callback )
 {
   if ( port ) this.port = port ;
@@ -330,6 +352,10 @@ GPBroker.prototype.listen = function ( port, callback )
   if ( typeof callback !== 'function' )
   {
     var thiz = this ;
+    /**
+     * Description
+     * @return 
+     */
     callback = function() { Log.notice ( 'server bound to port=' + thiz.port ); } ;
   }
   this.server.listen ( this.port, callback ) ;

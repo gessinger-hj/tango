@@ -1,12 +1,18 @@
-var GPEvent = require ( "GPEvent" ) ;
-var Log = require ( "LogFile" ) ;
-var GPClient = require ( "GPClient" ) ;
+var GPEvent = require ( "./GPEvent" ) ;
+var Log = require ( "./LogFile" ) ;
+var GPClient = require ( "./GPClient" ) ;
 
-var MultiHash = require ( "MultiHash" ) ;
-var T = require ( "Tango" ) ;
+var MultiHash = require ( "./MultiHash" ) ;
+var T = require ( "./Tango" ) ;
 var ws = require ( "nodejs-websocket" ) ;
 
 
+/**
+ * Description
+ * @method GPWebSocketEventProxy
+ * @param {} port
+ * @return 
+ */
 var GPWebSocketEventProxy = function ( port )
 {
 	this.className = "GPWebSocketEventProxy" ;
@@ -16,10 +22,21 @@ var GPWebSocketEventProxy = function ( port )
 	this.port = port ;
 	this._create() ;
 }
+/**
+ * Description
+ * @method toString
+ * @return BinaryExpression
+ */
 GPWebSocketEventProxy.prototype.toString = function()
 {
 	return "(" + this.className + ")[port=" + this.port + "]" ;
 };
+/**
+ * Description
+ * @method sendToWebSocket
+ * @param {} e
+ * @return 
+ */
 GPWebSocketEventProxy.prototype.sendToWebSocket = function ( e )
 {
 	var pid = e.getProxyIdentifier() ;
@@ -29,6 +46,12 @@ GPWebSocketEventProxy.prototype.sendToWebSocket = function ( e )
 		ctx.socket.sendText ( e.serialize() ) ;
 	}
 };
+/**
+ * Description
+ * @method generalEventListenerFunction
+ * @param {} e
+ * @return 
+ */
 GPWebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 {
 	var se = e.serialize() ;
@@ -44,6 +67,12 @@ GPWebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 		}
 	}
 };
+/**
+ * Description
+ * @method removeWebsocket
+ * @param {} socket
+ * @return 
+ */
 GPWebSocketEventProxy.prototype.removeWebsocket = function ( socket )
 {
 	var ctx = this._sockets[socket.key] ;
@@ -109,18 +138,38 @@ GPWebSocketEventProxy.prototype._create = function()
 			else
 			{
 				thiz.client.fire ( ne
-	      , { result: function(e)
+	      , { 
+/**
+  * Description
+  * @method result
+  * @param {} e
+  * @return 
+  */
+ result: function(e)
 	          {
 							if ( e.isResult() )
 							{
 								thiz.sendToWebSocket ( e ) ;
 							}
 	          }
-	        	, error: function(e)
+	        	, 
+/**
+  * Description
+  * @method error
+  * @param {} e
+  * @return 
+  */
+ error: function(e)
 	          	{
 								thiz.sendToWebSocket ( e ) ;
 	          	}
-	         	, write: function()
+	         	, 
+/**
+  * Description
+  * @method write
+  * @return 
+  */
+ write: function()
 	          	{
 	          	}
 	        	}) ;
@@ -138,6 +187,13 @@ GPWebSocketEventProxy.prototype._create = function()
 		}) ;
 	}) ;
 };
+/**
+ * Description
+ * @method handleSystemMessages
+ * @param {} ctx
+ * @param {} ne
+ * @return 
+ */
 GPWebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 {
 	if ( ne.getType() === "client_info" )
@@ -230,6 +286,12 @@ GPWebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 		}
 	}
 };
+/**
+ * Description
+ * @method listen
+ * @param {} port
+ * @return 
+ */
 GPWebSocketEventProxy.prototype.listen = function ( port )
 {
 	if ( port )
@@ -242,6 +304,11 @@ GPWebSocketEventProxy.prototype.listen = function ( port )
 	}
 	this.server.listen ( this.port, this.listenSocketBound.bind ( this ) ) ;
 };
+/**
+ * Description
+ * @method listenSocketBound
+ * @return 
+ */
 GPWebSocketEventProxy.prototype.listenSocketBound = function()
 {
 	Log.notice ( "GPWebSocketEventProxy bound to port=" + this.port ) ;

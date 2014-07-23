@@ -1,5 +1,8 @@
 /**
  *  @constructor
+ * @param {} timeoutMillis
+ * @param {} callback
+ * @return 
  */
 Timer = function ( timeoutMillis, callback )
 {
@@ -30,13 +33,21 @@ Timer = function ( timeoutMillis, callback )
 } ;
 Timer.prototype =
 {
-  /** */
+  /**
+   * Description
+   * @method flush
+   * @return 
+   */
   flush: function()
   {
     this.stop() ;
     this.boundFunction = null ;
   },
-  /** */
+  /**
+   * Description
+   * @method toString
+   * @return BinaryExpression
+   */
   toString: function()
   {
     return "(Timer)"
@@ -46,12 +57,22 @@ Timer.prototype =
          + "]"
          ;
   },
-  /** */
+  /**
+   * Description
+   * @method setRepeats
+   * @param {} state
+   * @return 
+   */
   setRepeats: function ( state )
   {
     this.repeats = state ;
   },
-  /** */
+  /**
+   * Description
+   * @method setInitialDelay
+   * @param {} delayMillis
+   * @return 
+   */
   setInitialDelay: function ( delayMillis )
   {
     this.initialDelayMillis = delayMillis ;
@@ -60,22 +81,47 @@ Timer.prototype =
       this.initialDelayMillis = 1 ;
     } 
   },
+  /**
+   * Description
+   * @method isRunning
+   * @return UnaryExpression
+   */
   isRunning: function() { return !this.intervallId ; },
+  /**
+   * Description
+   * @method start
+   * @return 
+   */
   start: function()
   {
     this.first = true ;
     this.intervallId = setInterval(this.boundFunction, this.initialDelayMillis ) ;
   },
+  /**
+   * Description
+   * @method stop
+   * @return 
+   */
   stop: function()
   {
     if ( this.intervallId ) clearInterval ( this.intervallId ) ;
     this.intervallId = null ;
   },
+  /**
+   * Description
+   * @method restart
+   * @return 
+   */
   restart: function()
   {
     this.stop() ;
     this.start() ;
   },
+  /**
+   * Description
+   * @method onTimerEvent
+   * @return 
+   */
   onTimerEvent: function()
   {
     if ( ! this.intervallId ) return ;

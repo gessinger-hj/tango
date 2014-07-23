@@ -1,5 +1,11 @@
 if ( !Array.isArray )
 {
+  /**
+   * Description
+   * @method isArray
+   * @param {} arg
+   * @return LogicalExpression
+   */
   Array.isArray = function(arg) {
   	return arg && arg.constructor === Array ;
   };
@@ -9,12 +15,26 @@ if ( !Array.isArray )
  */
 var tangojs = {} ;
 
+/**
+ * Description
+ * @method GPEvent
+ * @param {} name
+ * @param {} type
+ * @param {} data
+ * @return 
+ */
 tangojs.GPEvent = function ( name, type, data )
 {
 	this._init ( name, type, data ) ;
 };
 tangojs.GPEvent.prototype =
 {
+	/**
+	 * Description
+	 * @method serialize
+	 * @param {} obj
+	 * @return 
+	 */
 	serialize: function ( obj )
 	{
 		if ( ! obj )
@@ -24,7 +44,12 @@ tangojs.GPEvent.prototype =
 	  var old = Date.prototype.toJSON ;
 	  try
 	  {
-	    Date.prototype.toJSON = function()
+	    /**
+    	 * Description
+    	 * @method toJSON
+    	 * @return ObjectExpression
+    	 */
+    	Date.prototype.toJSON = function()
 	    {
 	      return { type:'Date', 'value': this.toISOString() } ;
 	    };
@@ -35,6 +60,14 @@ tangojs.GPEvent.prototype =
 	    Date.prototype.toJSON = old ;
 	  }
 	},
+	/**
+	 * Description
+	 * @method deserialize
+	 * @param {} serializedObject
+	 * @param {} classNameToConstructor
+	 * @param {} deepClassInspection
+	 * @return that
+	 */
 	deserialize: function ( serializedObject, classNameToConstructor, deepClassInspection )
 	{
 	  var that ;
@@ -65,7 +98,12 @@ tangojs.GPEvent.prototype =
 		    }
 		    else
 		    {
-			    function F() { } ;
+			    /**
+    			 * Description
+    			 * @method F
+    			 * @return 
+    			 */
+    			function F() { } ;
 			    F.prototype = f.prototype ;
 	    		that = new F();
 	  		}
@@ -88,6 +126,12 @@ tangojs.GPEvent.prototype =
 	  }
   	return that ;
 	},
+	/**
+	 * Description
+	 * @method deepDeserializeClass
+	 * @param {} obj
+	 * @return 
+	 */
 	deepDeserializeClass: function ( obj )
 	{
   	if ( ! obj ) return ;
@@ -145,12 +189,20 @@ tangojs.GPEvent.prototype =
 		if ( data && typeof data === 'object' ) this.data = data ;
 		else this.data = {} ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method getClassName
+	 * @return MemberExpression
+	 */
 	getClassName: function()
 	{
 		return this.className ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method toString
+	 * @return 
+	 */
 	toString: function()
 	{
 		if ( typeof document === 'undefined' )
@@ -175,106 +227,200 @@ tangojs.GPEvent.prototype =
 			+ "[data=" + ACSys.toFullString ( this.data ) + "]" ;
 		}
 	},
-	/** */
+	/**
+	 * Description
+	 * @method getCreatedAt
+	 * @return MemberExpression
+	 */
 	getCreatedAt: function()
 	{
   	return this.control.createdAt ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method setIsResult
+	 * @return 
+	 */
 	setIsResult: function()
 	{
   	this.control._isResult = true ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method isResult
+	 * @return MemberExpression
+	 */
 	isResult: function()
 	{
   	return this.control._isResult ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method setRequestResult
+	 * @return 
+	 */
 	setRequestResult: function()
 	{
   	this.control._isResultRequested = true ;
 	},
-		/** */
+		/**
+	 * Description
+	 * @method isResultRequested
+	 * @return MemberExpression
+	 */
 	isResultRequested: function()
 	{
   	return this.control._isResultRequested ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method getSourceIdentifier
+	 * @return MemberExpression
+	 */
 	getSourceIdentifier: function()
 	{
   	return this.control.sourceIdentifier ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method setSourceIdentifier
+	 * @param {} sourceIdentifier
+	 * @return 
+	 */
 	setSourceIdentifier: function ( sourceIdentifier )
 	{
   	this.control.sourceIdentifier = sourceIdentifier ;
 	},
+	/**
+	 * Description
+	 * @method getProxyIdentifier
+	 * @return MemberExpression
+	 */
 	getProxyIdentifier: function()
 	{
   	return this.control.proxyIdentifier ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method setProxyIdentifier
+	 * @param {} proxyIdentifier
+	 * @return 
+	 */
 	setProxyIdentifier: function ( proxyIdentifier )
 	{
   	this.control.proxyIdentifier = proxyIdentifier ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method getWebIdentifier
+	 * @return MemberExpression
+	 */
 	getWebIdentifier: function()
 	{
   	return this.control.webIdentifier ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method setWebIdentifier
+	 * @param {} webIdentifier
+	 * @return 
+	 */
 	setWebIdentifier: function ( webIdentifier )
 	{
   	this.control.webIdentifier = webIdentifier ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method getName
+	 * @return MemberExpression
+	 */
 	getName: function()
 	{
   	return this.name ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method setName
+	 * @param {} name
+	 * @return 
+	 */
 	setName: function ( name )
 	{
   	this.name = name ? name : "" ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method getType
+	 * @return MemberExpression
+	 */
 	getType: function()
 	{
 		return this.type ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method setType
+	 * @param {} type
+	 * @return 
+	 */
 	setType: function ( type )
 	{
 		if ( ! type ) type = "" ;
   	this.type = type ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method getData
+	 * @return MemberExpression
+	 */
 	getData: function()
 	{
 		return this.data ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method setData
+	 * @param {} data
+	 * @return 
+	 */
 	setData: function ( data )
 	{
 		if ( data ) this.data = data ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method getUser
+	 * @return MemberExpression
+	 */
 	getUser: function()
 	{
 		return this.user ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method setUser
+	 * @param {} u
+	 * @return 
+	 */
 	setUser: function ( u )
 	{
 		this.user = u ;
 	},
-	/** */
+	/**
+	 * Description
+	 * @method getControl
+	 * @return MemberExpression
+	 */
 	getControl: function()
 	{
 		return this.control ;
 	},
+	/**
+	 * Description
+	 * @method setUniqueId
+	 * @param {} uid
+	 * @return 
+	 */
 	setUniqueId: function ( uid )
 	{
 		if ( ! this.control.uniqueId )
@@ -282,10 +428,20 @@ tangojs.GPEvent.prototype =
 			this.control.uniqueId = uid ;
 		}
 	},
+	/**
+	 * Description
+	 * @method getUniqueId
+	 * @return MemberExpression
+	 */
 	getUniqueId: function()
 	{
 		return this.control.uniqueId ;
 	},
+	/**
+	 * Description
+	 * @method isBad
+	 * @return BinaryExpression
+	 */
 	isBad: function()
 	{
 		if ( ! this.control ) return false ;
@@ -293,6 +449,11 @@ tangojs.GPEvent.prototype =
 		if ( this.control.status.code === 'undefined' ) return false ;
 		return this.control.status.code !== 0 ;
 	},
+	/**
+	 * Description
+	 * @method getStatusReason
+	 * @return MemberExpression
+	 */
 	getStatusReason: function()
 	{
 		if ( ! this.control ) return ;

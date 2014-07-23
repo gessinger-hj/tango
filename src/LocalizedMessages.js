@@ -1,11 +1,15 @@
-var T = require ( "Tango" ) ;
-require ( 'Xml' ) ;
-var File = require ( 'File' ) ;
-var Locale = require ( 'Locale' ) ;
+var T = require ( "./Tango" ) ;
+require ( './Xml' ) ;
+var File = require ( './File' ) ;
+var Locale = require ( './Locale' ) ;
 
 /**
-	* @constructor
-	*/
+ * @constructor
+ * @method LocalizedMessages
+ * @param {} file
+ * @param {} localeString
+ * @return 
+ */
 var LocalizedMessages = function ( file, localeString )
 {
 	this.file = new File ( file ) ;
@@ -16,7 +20,12 @@ var LocalizedMessages = function ( file, localeString )
 
 	this.setLocaleCode ( localeString ) ;
 };
-/** */
+/**
+ * Description
+ * @method setLocaleCode
+ * @param {} localeString
+ * @return 
+ */
 LocalizedMessages.prototype.setLocaleCode = function ( localeString )
 {
   this._LocaleString = localeString ;
@@ -31,7 +40,15 @@ LocalizedMessages.prototype.setLocaleCode = function ( localeString )
     this._LanguageString = this._LocaleString ;
   }
 };
-/** */
+/**
+ * Description
+ * @method getText
+ * @param {} name
+ * @param {} args
+ * @param {} defaultString
+ * @param {} lc
+ * @return CallExpression
+ */
 LocalizedMessages.prototype.getText = function ( name, args, defaultString, lc )
 {
   var localeString = this._LocaleString ;
@@ -107,7 +124,13 @@ LocalizedMessages.prototype.getText = function ( name, args, defaultString, lc )
   if ( ! args == null ) return text ;
   return this.substituteDollarParameter ( text, args ) ;
 };
-/** */
+/**
+ * Description
+ * @method substituteDollarParameter
+ * @param {} str
+ * @param {} args
+ * @return str
+ */
 LocalizedMessages.prototype.substituteDollarParameter = function ( str, args )
 {
   if ( ! str ) return str ;

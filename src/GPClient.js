@@ -1,18 +1,22 @@
 var net = require('net');
 var os = require('os');
-var T = require ( "Tango" ) ;
-var GPEvent = require ( "GPEvent" ) ;
-var MultiHash = require ( "MultiHash" ) ;
-var Log = require ( "LogFile" ) ;
-var User = require ( "User" ) ;
+var T = require ( "./Tango" ) ;
+var GPEvent = require ( "./GPEvent" ) ;
+var MultiHash = require ( "./MultiHash" ) ;
+var Log = require ( "./LogFile" ) ;
+var User = require ( "./User" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var util = require ( "util" ) ;
 
 var counter = 0 ;
 /**
-  * @constructor
-  * @extends EventEmitter
-  */
+ * @constructor
+ * @extends EventEmitter
+ * @method GPClient
+ * @param {} port
+ * @param {} host
+ * @return 
+ */
 var GPClient = function ( port, host )
 {
   EventEmitter.call ( this ) ;
@@ -29,12 +33,21 @@ var GPClient = function ( port, host )
   this.eventListenerFunctions = new MultiHash() ;
 } ;
 util.inherits ( GPClient, EventEmitter ) ;
-/** */
+/**
+ * Description
+ * @method setUser
+ * @param {} user
+ * @return 
+ */
 GPClient.prototype.setUser = function ( user )
 {
   this.user = user ;
 } ;
-/** */
+/**
+ * Description
+ * @method connect
+ * @return 
+ */
 GPClient.prototype.connect = function()
 {
   var p = {} ;
@@ -185,7 +198,11 @@ GPClient.prototype.connect = function()
 GPClient.prototype._writeCallback = function()
 {
 } ;
-/** */
+/**
+ * Description
+ * @method getSocket
+ * @return MemberExpression
+ */
 GPClient.prototype.getSocket = function()
 {
   if ( ! this.socket )
@@ -194,11 +211,24 @@ GPClient.prototype.getSocket = function()
   }
   return this.socket ;
 };
-/** */
+/**
+ * Description
+ * @method fire
+ * @param {} params
+ * @param {} callback
+ * @return 
+ */
 GPClient.prototype.fire = function ( params, callback )
 {
   this.fireEvent ( params, callback ) ;
 };
+/**
+ * Description
+ * @method fireEvent
+ * @param {} params
+ * @param {} callback
+ * @return 
+ */
 GPClient.prototype.fireEvent = function ( params, callback )
 {
   var e = null ;
@@ -253,7 +283,12 @@ GPClient.prototype.fireEvent = function ( params, callback )
     } ) ;
   }
 };
-/** */
+/**
+ * Description
+ * @method sendResult
+ * @param {} message
+ * @return 
+ */
 GPClient.prototype.sendResult = function ( message )
 {
   if ( ! message.isResultRequested() )
@@ -265,6 +300,11 @@ GPClient.prototype.sendResult = function ( message )
   message.setIsResult() ;
   this.socket.write ( message.serialize() ) ;
 };
+/**
+ * Description
+ * @method end
+ * @return 
+ */
 GPClient.prototype.end = function()
 {
   if ( this.socket ) this.socket.end() ;
@@ -275,7 +315,13 @@ GPClient.prototype.end = function()
   this.pendingEventListenerList = [] ;
   this.eventListenerFunctions.flush() ;
 };
-/** */
+/**
+ * Description
+ * @method addEventListener
+ * @param {} eventNameList
+ * @param {} callback
+ * @return 
+ */
 GPClient.prototype.addEventListener = function ( eventNameList, callback )
 {
   if ( ! eventNameList ) throw new Error ( "GPClient.addEventListener: Missing eventNameList." ) ;
@@ -320,6 +366,12 @@ GPClient.prototype.addEventListener = function ( eventNameList, callback )
     s.write ( e.serialize() ) ;
   }
 };
+/**
+ * Description
+ * @method removeEventListener
+ * @param {} eventNameOrFunction
+ * @return 
+ */
 GPClient.prototype.removeEventListener = function ( eventNameOrFunction )
 {
   var i ;

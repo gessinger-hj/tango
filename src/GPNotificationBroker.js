@@ -1,13 +1,25 @@
-var T = require ( "Tango" ) ;
-var GPEvent = require ( "GPEvent" ) ;
-var GPClient = require ( "GPClient" ) ;
+var T = require ( "./Tango" ) ;
+var GPEvent = require ( "./GPEvent" ) ;
+var GPClient = require ( "./GPClient" ) ;
 
+/**
+ * Description
+ * @method GPNotificationBroker
+ * @param {} port
+ * @param {} host
+ * @return 
+ */
 var GPNotificationBroker = function ( port, host )
 {
 	this.client = new GPClient ( port, host ) ;
 	this.pendingProgressNotificationList = [] ;
 	this.pendingProgressNotifications = {} ;
 };
+/**
+ * Description
+ * @method init
+ * @return 
+ */
 GPNotificationBroker.prototype.init = function()
 {
 	var thiz = this ;

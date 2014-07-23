@@ -1,11 +1,13 @@
 var Path = require ( "path" ) ;
-var T = require ( "Tango" ) ;
+var T = require ( "./Tango" ) ;
 var fs = require ( "fs" ) ;
 var util = require ( "util" ) ;
 
 /**
-	* @constructor
-	*/
+ * @constructor
+ * @method LogFile
+ * @return 
+ */
 var LogFile = function()
 {
   this._appName = "" ;
@@ -48,6 +50,12 @@ var LogFile = function()
   this._LEVEL_NAME = "info" ;
   this._LogCallback = null ;
 };
+/**
+ * Description
+ * @method setLogger
+ * @param {} loggerInterface
+ * @return 
+ */
 LogFile.prototype.setLogger = function ( loggerInterface )
 {
   var o =
@@ -59,19 +67,88 @@ LogFile.prototype.setLogger = function ( loggerInterface )
   // , warning: function ( str ) {}
   // , notice: function ( str ) {}
   // , info: function ( str ) {}
+    /**
+     * Description
+     * @method debug
+     * @param {} str
+     * @return 
+     */
     debug: function ( str ) {}
   // , log: function ( str ) {}
   } ;
   var li = loggerInterface ;
-  if ( typeof li.emergency === 'function' ) o.emergency = function ( str ) { li.emergency ( str ) } ;
-  if ( typeof li.alert === 'function' ) o.alert = function ( str ) { li.alert ( str ) } ;
-  if ( typeof li.critical === 'function' ) o.critical = function ( str ) { li.critical ( str ) } ;
-  if ( typeof li.error === 'function' ) o.error = function ( str ) { li.error ( str ) } ;
-  if ( typeof li.warning === 'function' ) o.warning = function ( str ) { li.warning ( str ) } ;
-  if ( typeof li.notice === 'function' ) o.notice = function ( str ) { li.notice ( str ) } ;
-  if ( typeof li.info === 'function' ) o.info = function ( str ) { li.info ( str ) } ;
-  if ( typeof li.debug === 'function' ) o.debug = function ( str ) { li.debug ( str ) } ;
-  if ( typeof li.log === 'function' ) o.log = function ( str ) { li.log ( str ) } ;
+  if ( typeof li.emergency === 'function' ) 
+/**
+  * Description
+  * @method emergency
+  * @param {} str
+  * @return 
+  */
+ o.emergency = function ( str ) { li.emergency ( str ) } ;
+  if ( typeof li.alert === 'function' ) 
+/**
+  * Description
+  * @method alert
+  * @param {} str
+  * @return 
+  */
+ o.alert = function ( str ) { li.alert ( str ) } ;
+  if ( typeof li.critical === 'function' ) 
+/**
+  * Description
+  * @method critical
+  * @param {} str
+  * @return 
+  */
+ o.critical = function ( str ) { li.critical ( str ) } ;
+  if ( typeof li.error === 'function' ) 
+/**
+  * Description
+  * @method error
+  * @param {} str
+  * @return 
+  */
+ o.error = function ( str ) { li.error ( str ) } ;
+  if ( typeof li.warning === 'function' ) 
+/**
+  * Description
+  * @method warning
+  * @param {} str
+  * @return 
+  */
+ o.warning = function ( str ) { li.warning ( str ) } ;
+  if ( typeof li.notice === 'function' ) 
+/**
+  * Description
+  * @method notice
+  * @param {} str
+  * @return 
+  */
+ o.notice = function ( str ) { li.notice ( str ) } ;
+  if ( typeof li.info === 'function' ) 
+/**
+  * Description
+  * @method info
+  * @param {} str
+  * @return 
+  */
+ o.info = function ( str ) { li.info ( str ) } ;
+  if ( typeof li.debug === 'function' ) 
+/**
+  * Description
+  * @method debug
+  * @param {} str
+  * @return 
+  */
+ o.debug = function ( str ) { li.debug ( str ) } ;
+  if ( typeof li.log === 'function' ) 
+/**
+  * Description
+  * @method log
+  * @param {} str
+  * @return 
+  */
+ o.log = function ( str ) { li.log ( str ) } ;
 
   if ( ! o.log ) o.log = o.info ;
   if ( ! o.emergency ) o.emergency = o.error ;
@@ -81,6 +158,12 @@ LogFile.prototype.setLogger = function ( loggerInterface )
 
   this._LogCallback = o ;
 };
+/**
+ * Description
+ * @method init
+ * @param {} s
+ * @return 
+ */
 LogFile.prototype.init = function ( s )
 {
   if ( this._isInitialized ) return ;
@@ -311,6 +394,12 @@ LogFile.prototype.init = function ( s )
     this._writeToBuffer ( "Application '" + this._appName + "' initialized with: " + initString + "\n", true ) ;
   }
 };
+/**
+ * Description
+ * @method setLevel
+ * @param {} level
+ * @return 
+ */
 LogFile.prototype.setLevel = function ( level )
 {
   for ( var n in this.LogLevel )
@@ -322,10 +411,20 @@ LogFile.prototype.setLevel = function ( level )
     }
   }
 };
+/**
+ * Description
+ * @method getLevel
+ * @return MemberExpression
+ */
 LogFile.prototype.getLevel = function()
 {
   return this._LEVEL ;
 };
+/**
+ * Description
+ * @method getLevelName
+ * @return MemberExpression
+ */
 LogFile.prototype.getLevelName = function()
 {
   return this._LEVEL_NAME ;
@@ -417,12 +516,22 @@ LogFile.prototype._writeToOutputBuffer = function ( s
   if ( s != null ) this._CurSize += dateLen + s.length + (ln ? 1 : 0) ;
   else             this._CurSize += dateLen + (ln ? 1 : 0) ;
 };
+/**
+ * Description
+ * @method getDatePrefix
+ * @return BinaryExpression
+ */
 LogFile.prototype.getDatePrefix = function()
 {
   var d = new Date() ;
   var DateUtils = require ( "DateUtils" ) ;
   return "[" + DateUtils.getSoapDateTimeWithMillis ( d ) + "]" ;
 };
+/**
+ * Description
+ * @method openNewFile
+ * @return 
+ */
 LogFile.prototype.openNewFile = function()
 {
   if ( this._outputToFile )
@@ -433,6 +542,11 @@ LogFile.prototype.openNewFile = function()
     }
   }
 };
+/**
+ * Description
+ * @method openNewFileIntern
+ * @return 
+ */
 LogFile.prototype.openNewFileIntern = function()
 {
   if ( this._out !== this._stdout )
@@ -524,6 +638,12 @@ LogFile.prototype.openNewFileIntern = function()
     }
   }
 };
+/**
+ * Description
+ * @method debug
+ * @param {} str
+ * @return 
+ */
 LogFile.prototype.debug = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
@@ -550,6 +670,12 @@ LogFile.prototype.debug = function ( str )
   }
   this._writeToBuffer ( str, true, true, "[DEBUG][" + t + " (" + fname + "())]" ) ;
 };
+/**
+ * Description
+ * @method info
+ * @param {} str
+ * @return 
+ */
 LogFile.prototype.info = function ( str )
 {
   if ( ! this._isInitialized ) this.init() ;
@@ -557,6 +683,12 @@ LogFile.prototype.info = function ( str )
   if ( this._LogCallback != null ) { this._LogCallback.info ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[INFO]" ) ;
 };
+/**
+ * Description
+ * @method notice
+ * @param {} str
+ * @return 
+ */
 LogFile.prototype.notice = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
@@ -564,6 +696,12 @@ LogFile.prototype.notice = function ( str )
   if ( this._LogCallback != null ) { this._LogCallback.notice ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[NOTICE]" ) ;
 };
+/**
+ * Description
+ * @method warning
+ * @param {} str
+ * @return 
+ */
 LogFile.prototype.warning = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
@@ -571,6 +709,12 @@ LogFile.prototype.warning = function ( str )
   if ( this._LogCallback != null ) { this._LogCallback.warning ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[WARNING]" ) ;
 };
+/**
+ * Description
+ * @method error
+ * @param {} str
+ * @return 
+ */
 LogFile.prototype.error = function ( str )
 {
   if ( ! this._isInitialized ) this.init() ;
@@ -578,6 +722,12 @@ LogFile.prototype.error = function ( str )
   if ( this._LogCallback != null ) { this._LogCallback.error ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[ERROR]" ) ;
 };
+/**
+ * Description
+ * @method critical
+ * @param {} str
+ * @return 
+ */
 LogFile.prototype.critical = function ( str )
 {
   if ( ! this._isInitialized ) this.init() ;
@@ -585,6 +735,12 @@ LogFile.prototype.critical = function ( str )
   if ( this._LogCallback != null ) { this._LogCallback.critical ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[CRITICAL]" ) ;
 };
+/**
+ * Description
+ * @method alert
+ * @param {} str
+ * @return 
+ */
 LogFile.prototype.alert = function ( str )
 {
   if ( ! this._isInitialized ) this.init() ;
@@ -592,6 +748,12 @@ LogFile.prototype.alert = function ( str )
   if ( this._LogCallback != null ) { this._LogCallback.alert ( str ) ; return ; }
   this._writeToBuffer ( str, true, true, "[ALERT]" ) ;
 };
+/**
+ * Description
+ * @method emergency
+ * @param {} str
+ * @return 
+ */
 LogFile.prototype.emergency = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
@@ -600,6 +762,12 @@ LogFile.prototype.emergency = function ( str )
   this._writeToBuffer ( str, true, true, "[EMERGENCY]" ) ;
 };
 
+/**
+ * Description
+ * @method log
+ * @param {} str
+ * @return 
+ */
 LogFile.prototype.log = function ( str )
 {
 	if ( ! this._isInitialized ) this.init() ;
@@ -607,6 +775,12 @@ LogFile.prototype.log = function ( str )
   if ( this._LogCallback != null ) { this._LogCallback.log ( str ) ; return ; }
   this._writeToBuffer ( str, true ) ;
 };
+/**
+ * Description
+ * @method logln
+ * @param {} str
+ * @return 
+ */
 LogFile.prototype.logln = function ( str )
 {
   if ( ! this._isInitialized ) this.init() ;
@@ -614,6 +788,11 @@ LogFile.prototype.logln = function ( str )
   if ( this._LogCallback != null ) { this._LogCallback.log ( str ) ; return ; }
   this._writeToBuffer ( str, true, true ) ;
 };
+/**
+ * Description
+ * @method flush
+ * @return 
+ */
 LogFile.prototype.flush = function()
 {
 	if ( this._out !== this._stdout )
@@ -632,6 +811,12 @@ LogFile.prototype.flush = function()
     this._file = null ;
   }
 };
+/**
+ * Description
+ * @method redirectOutput
+ * @param {} channelFlags
+ * @return 
+ */
 LogFile.prototype.redirectOutput = function ( channelFlags )
 {
   if ( ! this._outputToFile ) return ;
@@ -648,18 +833,38 @@ LogFile.prototype.redirectOutput = function ( channelFlags )
       this.old_console_info = console.info ;
       this.old_console_warn = console.warn ;
       this.old_console_error = console.error ;
+      /**
+       * Description
+       * @method log
+       * @return 
+       */
       console.log = function()
       {
         thiz.log ( util.format.apply ( console, arguments ) + "\n");
       };
+      /**
+       * Description
+       * @method error
+       * @return 
+       */
       console.error = function()
       {
         thiz.error ( util.format.apply ( console, arguments ) + "\n");
       };
+      /**
+       * Description
+       * @method info
+       * @return 
+       */
       console.info = function()
       {
         thiz.info ( util.format.apply ( console, arguments ) + "\n");
       };
+      /**
+       * Description
+       * @method warn
+       * @return 
+       */
       console.warn = function()
       {
         thiz.warning ( util.format.apply ( console, arguments ) + "\n");
@@ -684,6 +889,12 @@ LogFile.prototype.redirectOutput = function ( channelFlags )
     }
   }
 };
+/**
+ * Description
+ * @method unredirectOutput
+ * @param {} channelFlags
+ * @return 
+ */
 LogFile.prototype.unredirectOutput = function ( channelFlags )
 {
   if ( ! channelFlags )
@@ -727,6 +938,13 @@ LogFile.prototype.unredirectOutput = function ( channelFlags )
     }
   }
 };
+/**
+ * Description
+ * @method File
+ * @param {} path
+ * @param {} name
+ * @return 
+ */
 var File = function ( path, name )
 {
   if ( path instanceof File )
@@ -744,10 +962,22 @@ var File = function ( path, name )
   }
   this.path = Path.normalize ( this.path ) ;
 };
+/**
+ * Description
+ * @method toString
+ * @return MemberExpression
+ */
 File.prototype.toString = function()
 {
   return this.path ;
 };
+/**
+ * Description
+ * @method getWriteStream
+ * @param {} enc
+ * @param {} mode
+ * @return CallExpression
+ */
 File.prototype.getWriteStream = function ( enc, mode )
 {
   if ( ! enc && enc !== null ) enc = "utf8" ;
@@ -758,6 +988,11 @@ File.prototype.getWriteStream = function ( enc, mode )
   }
   return fs.createWriteStream ( this.path, { encoding: enc } ) ;
 };
+/**
+ * Description
+ * @method exists
+ * @return 
+ */
 File.prototype.exists = function()
 {
   try

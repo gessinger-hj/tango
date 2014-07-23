@@ -1,7 +1,7 @@
 var net = require('net');
 var os = require('os');
-var GPEvent = require ( "GPEvent" ) ;
-var T = require ( "Tango" ) ;
+var GPEvent = require ( "./GPEvent" ) ;
+var T = require ( "./Tango" ) ;
 
 var port = T.getProperty ( "gepard.port", 17501 ) ;
 var host = T.getProperty ( "gepard.host" ) ;

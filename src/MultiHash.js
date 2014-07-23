@@ -1,6 +1,8 @@
 if ( typeof tangojs === 'undefined' ) tangojs = {} ;
 /**
  *  @constructor
+ * @method MultiHash
+ * @return 
  */
 tangojs.MultiHash = function()
 {
@@ -9,6 +11,13 @@ tangojs.MultiHash = function()
 };
 tangojs.MultiHash.prototype =
 {
+  /**
+   * Description
+   * @method put
+   * @param {} key
+   * @param {} obj
+   * @return 
+   */
   put: function ( key, obj )
   {
     var l = this._hash[key] ;
@@ -23,6 +32,12 @@ tangojs.MultiHash.prototype =
     }
     l.push ( obj ) ;
   },
+  /**
+   * Description
+   * @method getKeysOf
+   * @param {} obj
+   * @return list
+   */
   getKeysOf: function ( obj )
   {
     var list = [] ;
@@ -37,6 +52,13 @@ tangojs.MultiHash.prototype =
     }
     return list ;
   },
+  /**
+   * Description
+   * @method remove
+   * @param {} key
+   * @param {} obj
+   * @return obj
+   */
   remove: function ( key, obj )
   {
     var l ;
@@ -77,11 +99,22 @@ tangojs.MultiHash.prototype =
     }
     return obj ;
   },
+  /**
+   * Description
+   * @method get
+   * @param {} key
+   * @return l
+   */
   get: function ( key )
   {
     var l = this._hash[key] ;
     return l ;
   },
+  /**
+   * Description
+   * @method getKeys
+   * @return a
+   */
   getKeys: function()
   {
     var a = [] ;
@@ -92,6 +125,11 @@ tangojs.MultiHash.prototype =
     }
     return a ;
   },
+  /**
+   * Description
+   * @method toString
+   * @return str
+   */
   toString: function()
   {
     var str = "(MultiHash)" ;
@@ -108,6 +146,11 @@ tangojs.MultiHash.prototype =
     }
     return str ;
   },
+  /**
+   * Description
+   * @method flush
+   * @return 
+   */
   flush: function()
   {
     delete this._hash ;

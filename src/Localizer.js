@@ -1,10 +1,13 @@
-var T = require ( "Tango" ) ;
-var LocalizedMessages = require ( 'LocalizedMessages' ) ;
-var Substitutor = require ( 'Substitutor' ) ;
+var T = require ( "./Tango" ) ;
+var LocalizedMessages = require ( './LocalizedMessages' ) ;
+var Substitutor = require ( './Substitutor' ) ;
 
 /**
-  * @constructor
-  */
+ * @constructor
+ * @method Localizer
+ * @param {} localizedMessages
+ * @return 
+ */
 var Localizer = function ( localizedMessages )
 {
   if ( typeof localizedMessages === 'string' )
@@ -16,18 +19,35 @@ var Localizer = function ( localizedMessages )
     this._LocalizedMessages = localizedMessages ;
   }
 }
-/** */
+/**
+ * Description
+ * @method setLocaleCode
+ * @param {} localeString
+ * @return 
+ */
 Localizer.prototype.setLocaleCode = function ( localeString )
 {
   this._LocalizedMessages.setLocaleCode ( localeString ) ;
 };
-/** */
+/**
+ * Description
+ * @method translate
+ * @param {} text
+ * @param {} args
+ * @param {} defaultString
+ * @return s
+ */
 Localizer.prototype.translate = function ( text, args, defaultString )
 {
   var s = this._LocalizedMessages.getText ( text, args, defaultString, null ) ;
   return s ;
 };
-/** */
+/**
+ * Description
+ * @method localize
+ * @param {} src
+ * @return CallExpression
+ */
 Localizer.prototype.localize = function ( src )
 {
   var delimiter  = '%' ;

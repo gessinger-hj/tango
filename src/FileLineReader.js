@@ -1,9 +1,11 @@
 var util = require ( "util" ) ;
 var fs = require ( "fs" ) ;
-var LineReader = require ( 'LineReader' ) ;
+var LineReader = require ( './LineReader' ) ;
 
 /**
- *  @constructor
+ * @constructor
+ * @method FileLineReader
+ * @param {} fileName
  */
 var FileLineReader = function ( fileName )
 {

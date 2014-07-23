@@ -1,14 +1,26 @@
-var splitCsv = require ( "Utils" ).splitCsv ;
-var parseNameValues = require ( "Utils" ).parseNameValues ;
-var T = require ( "Tango" ) ;
-var DateUtils = require ( "DateUtils" ) ;
+var splitCsv = require ( "./Utils" ).splitCsv ;
+var parseNameValues = require ( "./Utils" ).parseNameValues ;
+var T = require ( "./Tango" ) ;
+var DateUtils = require ( "./DateUtils" ) ;
 /**
-  * @constructor
-  **/
+ * @constructor
+ * @method ItemSubstitutor
+ * @return 
+ */
 var ItemSubstitutor = function ()
 {
   this._DefaultDateFormat = "yyyyMMddHHmmss" ;
 };
+/**
+ * Description
+ * @method substitute
+ * @param {} substitutor
+ * @param {} item
+ * @param {} map
+ * @param {} useEnv
+ * @param {} delimiter
+ * @return 
+ */
 ItemSubstitutor.prototype.substitute = function ( substitutor, item, map, useEnv, delimiter )
 {
   var v, str, p0, p1, p2, p3 ;
@@ -89,6 +101,13 @@ ItemSubstitutor.prototype.substitute = function ( substitutor, item, map, useEnv
   }
   return ;
 };
+/**
+ * Description
+ * @method evaluateFunction
+ * @param {} functionName
+ * @param {} hm
+ * @return 
+ */
 ItemSubstitutor.prototype.evaluateFunction = function ( functionName, hm )
 {
   if ( functionName.startsWith ( "LASTTIMEOFWEEKOF" ) )
@@ -127,6 +146,12 @@ ItemSubstitutor.prototype.evaluateFunction = function ( functionName, hm )
   }
   return ;
 };
+/**
+ * Description
+ * @method formatDate
+ * @param {} h
+ * @return CallExpression
+ */
 ItemSubstitutor.prototype.formatDate = function ( h )
 {
   var rc = null ;
@@ -169,14 +194,33 @@ ItemSubstitutor.prototype.formatDate = function ( h )
   return DateUtils.formatDate ( d, format ) ;
 };
 
+/**
+ * Description
+ * @method firstTimeOfDayOf
+ * @param {} h
+ * @return CallExpression
+ */
 ItemSubstitutor.prototype.firstTimeOfDayOf = function ( h )
 {
   return this.timeOfDayOf ( h, true ) ;
 };
+/**
+ * Description
+ * @method lastTimeOfDayOf
+ * @param {} h
+ * @return CallExpression
+ */
 ItemSubstitutor.prototype.lastTimeOfDayOf = function ( h )
 {
   return this.timeOfDayOf ( h, false ) ;
 };
+/**
+ * Description
+ * @method timeOfDayOf
+ * @param {} h
+ * @param {} first
+ * @return rc
+ */
 ItemSubstitutor.prototype.timeOfDayOf = function ( h, first )
 {
   var rc ;
@@ -215,14 +259,33 @@ ItemSubstitutor.prototype.timeOfDayOf = function ( h, first )
   }
   return rc ;
 };
+/**
+ * Description
+ * @method firstTimeOfWeekOf
+ * @param {} h
+ * @return CallExpression
+ */
 ItemSubstitutor.prototype.firstTimeOfWeekOf = function ( h )
 {
   return this.timeOfWeekOf ( h, true ) ;
 };
+/**
+ * Description
+ * @method lastTimeOfWeekOf
+ * @param {} h
+ * @return CallExpression
+ */
 ItemSubstitutor.prototype.lastTimeOfWeekOf = function ( h )
 {
   return this.timeOfWeekOf ( h, false ) ;
 };
+/**
+ * Description
+ * @method timeOfWeekOf
+ * @param {} h
+ * @param {} first
+ * @return rc
+ */
 ItemSubstitutor.prototype.timeOfWeekOf = function ( h, first )
 {
   var rc ;
@@ -261,14 +324,33 @@ ItemSubstitutor.prototype.timeOfWeekOf = function ( h, first )
   }
   return rc ;
 };
+/**
+ * Description
+ * @method firstTimeOfMonthOf
+ * @param {} h
+ * @return CallExpression
+ */
 ItemSubstitutor.prototype.firstTimeOfMonthOf = function ( h )
 {
   return this.timeOfMonthOf ( h, true ) ;
 }
+/**
+ * Description
+ * @method lastTimeOfMonthOf
+ * @param {} h
+ * @return CallExpression
+ */
 ItemSubstitutor.prototype.lastTimeOfMonthOf = function ( h )
 {
   return this.timeOfMonthOf ( h, false ) ;
 }
+/**
+ * Description
+ * @method timeOfMonthOf
+ * @param {} h
+ * @param {} first
+ * @return rc
+ */
 ItemSubstitutor.prototype.timeOfMonthOf = function ( h, first )
 {
   var rc = null ;

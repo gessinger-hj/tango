@@ -1,9 +1,11 @@
-var T = require ( "Tango" ) ;
+var T = require ( "./Tango" ) ;
 var fs = require ( "fs" ) ;
 var Path = require ( "path" ) ;
 
 /**
  *  @constructor
+ * @method LocaleFactoryClass
+ * @return 
  */
 var LocaleFactoryClass = function()
 {
@@ -16,15 +18,32 @@ var LocaleFactoryClass = function()
   this.language = this.defaultLocaleCode.substring ( 0, this.defaultLocaleCode.indexOf ( '_' ) ) ;
   this.defaultLocale = null ;
 };
+/**
+ * Description
+ * @method isLocale
+ * @param {} obj
+ * @return BinaryExpression
+ */
 LocaleFactoryClass.prototype.isLocale = function ( obj )
 {
   return obj instanceof Locale ;
 };
+/**
+ * Description
+ * @method getInstance
+ * @param {} optionalLocaleCode
+ * @return NewExpression
+ */
 LocaleFactoryClass.prototype.getInstance = function ( optionalLocaleCode )
 {
   if ( ! optionalLocaleCode ) return this.getDefault() ;
   return new Locale ( optionalLocaleCode ) ;
 };
+/**
+ * Description
+ * @method getDefault
+ * @return MemberExpression
+ */
 LocaleFactoryClass.prototype.getDefault = function ()
 {
   if ( ! this.defaultLocale )
@@ -33,6 +52,12 @@ LocaleFactoryClass.prototype.getDefault = function ()
   }
   return this.defaultLocale ;
 };
+/**
+ * Description
+ * @method setDefault
+ * @param {} defaultLocale
+ * @return l
+ */
 LocaleFactoryClass.prototype.setDefault = function ( defaultLocale )
 {
   var l = this.defaultLocale ;
@@ -47,22 +72,49 @@ LocaleFactoryClass.prototype.setDefault = function ( defaultLocale )
   }
   return l ;
 };
+/**
+ * Description
+ * @method getLocaleCode
+ * @return MemberExpression
+ */
 LocaleFactoryClass.prototype.getLocaleCode = function()
 {
   return this.defaultLocaleCode ;
 };
+/**
+ * Description
+ * @method setLanguage
+ * @param {} lang
+ * @return 
+ */
 LocaleFactoryClass.prototype.setLanguage = function ( lang )
 {
   if ( lang ) this.language = lang  ;
 };
+/**
+ * Description
+ * @method getLanguage
+ * @return MemberExpression
+ */
 LocaleFactoryClass.prototype.getLanguage = function()
 {
   return this.language ;
 };
+/**
+ * Description
+ * @method getLocalePath
+ * @return CallExpression
+ */
 LocaleFactoryClass.prototype.getLocalePath = function()
 {
   return T.getConfigPath() ;
 };
+/**
+ * Description
+ * @method getLocaleJson
+ * @param {} localeCode
+ * @return CallExpression
+ */
 LocaleFactoryClass.prototype.getLocaleJson = function ( localeCode )
 {
   if ( ! localeCode ) localeCode = this.defaultLocaleCode ;
@@ -103,6 +155,9 @@ LocaleFactoryClass.prototype.getLocaleJson = function ( localeCode )
 var LocaleFactory = new LocaleFactoryClass() ;
 /**
  *  @constructor
+ * @method Locale
+ * @param {} optionalLocationCode
+ * @return 
  */
 var Locale = function ( optionalLocationCode )
 {
@@ -122,6 +177,11 @@ Locale.prototype =
   SHORT: 1,
   MEDIUM: 2,
   LONG: 3,
+  /**
+   * Description
+   * @method setFormats
+   * @return 
+   */
   setFormats: function()
   {
     var a = this.json.FormatSymbols.Date ;
@@ -136,10 +196,20 @@ Locale.prototype =
     this._dateTimeFormatMedium = a[7] ;
     this._dateTimeFormatLong = a[8] ;
   },
+  /**
+   * Description
+   * @method flush
+   * @return 
+   */
   flush: function()
   {
     this.json = undefined ;
   },
+  /**
+   * Description
+   * @method getLanguage
+   * @return MemberExpression
+   */
   getLanguage: function()
   {
     if ( this.languageCode ) return this.languageCode ;
@@ -158,6 +228,11 @@ Locale.prototype =
     }
     return this.languageCode ;
   },
+  /**
+   * Description
+   * @method getCountryCode
+   * @return MemberExpression
+   */
   getCountryCode: function()
   {
     if ( this.countryCode ) return this.countryCode ;
@@ -170,10 +245,20 @@ Locale.prototype =
     }
     return this.countryCode ;
   },
+  /**
+   * Description
+   * @method getLocationCode
+   * @return BinaryExpression
+   */
   getLocationCode: function()
   {
     return this.getLanguage() + "_" + this.getCountryCode() ;
   },
+  /**
+   * Description
+   * @method toString
+   * @return BinaryExpression
+   */
   toString: function()
   {
     return "(Locale)"
@@ -190,6 +275,11 @@ Locale.prototype =
     		 + "\nDateTimeFormatLong=" + this._dateTimeFormatLong
          ;
   },
+  /**
+   * Description
+   * @method isCurrencySymbolInFront
+   * @return MemberExpression
+   */
   isCurrencySymbolInFront: function()
   {
     if ( typeof ( this.CurrencySymbolInFront ) != "undefined" ) return this.CurrencySymbolInFront ;
@@ -197,6 +287,11 @@ Locale.prototype =
     this.CurrencySymbolInFront = this.json.CurrencySymbolInFront == "true" ;
     return this.CurrencySymbolInFront ;
   },
+  /**
+   * Description
+   * @method getCurrencySymbol
+   * @return MemberExpression
+   */
   getCurrencySymbol: function()
   {
     if ( this.currencySymbol ) return this.currencySymbol ;
@@ -208,6 +303,11 @@ Locale.prototype =
     this.currencySymbol = this.json.CurrencySymbol ? this.json.CurrencySymbol : "\u20AC" ;
     return this.currencySymbol ;
   },
+  /**
+   * Description
+   * @method getInternationalCurrencySymbol
+   * @return MemberExpression
+   */
   getInternationalCurrencySymbol: function()
   {
     if ( this.internationalCurrencySymbol ) return this.internationalCurrencySymbol ;
@@ -219,6 +319,11 @@ Locale.prototype =
     this.internationalCurrencySymbol = this.json.InternationalCurrencySymbol ? this.json.InternationalCurrencySymbol : "EUR" ;
     return this.internationalCurrencySymbol ;
   },
+  /**
+   * Description
+   * @method getMonetaryDecimalSeparator
+   * @return MemberExpression
+   */
   getMonetaryDecimalSeparator: function()
   {
     if ( this.MonetaryDecimalSeparator ) return this.MonetaryDecimalSeparator ;
@@ -230,6 +335,11 @@ Locale.prototype =
     this.MonetaryDecimalSeparator = this.json.MonetaryDecimalSeparator ? this.json.MonetaryDecimalSeparator : "," ;
     return this.MonetaryDecimalSeparator ;
   },
+  /**
+   * Description
+   * @method getDecimalSeparator
+   * @return MemberExpression
+   */
   getDecimalSeparator: function()
   {
     if ( this.DecimalSeparator ) return this.DecimalSeparator ;
@@ -241,6 +351,11 @@ Locale.prototype =
     this.DecimalSeparator = this.json.DecimalSeparator ? this.json.DecimalSeparator : "," ;
     return this.DecimalSeparator ;
   },
+  /**
+   * Description
+   * @method getGroupingSeparator
+   * @return MemberExpression
+   */
   getGroupingSeparator: function()
   {
     if ( this.GroupingSeparator ) return this.GroupingSeparator ;
@@ -252,6 +367,12 @@ Locale.prototype =
     this.GroupingSeparator = this.json.GroupingSeparator ? this.json.GroupingSeparator : "." ;
     return this.GroupingSeparator ;
   },
+  /**
+   * Description
+   * @method formatMoneyWithCurrency
+   * @param {} amount
+   * @return BinaryExpression
+   */
   formatMoneyWithCurrency: function ( amount )
   {
     if ( ! this.currencySymbol || ! this.DecimalSeparator )
@@ -263,6 +384,12 @@ Locale.prototype =
     if ( this.CurrencySymbolInFront ) return this.currencySymbol + " " + this.formatMoney ( amount ) ;
     return this.formatMoney ( amount ) + " " + this.currencySymbol ;
   },
+  /**
+   * Description
+   * @method formatMoney
+   * @param {} amount
+   * @return str
+   */
   formatMoney: function ( amount )
   {
     if ( ! this.GroupingSeparator || this.DecimalSeparator || this.MonetaryDecimalSeparator )
@@ -298,6 +425,12 @@ Locale.prototype =
 		if ( sign ) str = sign + str ;
     return str ;
   },
+  /**
+   * Description
+   * @method formatFloat
+   * @param {} amount
+   * @return str
+   */
   formatFloat: function ( amount )
   {
     if ( ! this.DecimalSeparator )
@@ -313,30 +446,66 @@ Locale.prototype =
     if ( this.DecimalSeparator != '.' ) str = str.replace ( '.', this.DecimalSeparator ) ;
     return str ;
   },
+  /**
+   * Description
+   * @method getDateFormatShort
+   * @return MemberExpression
+   */
   getDateFormatShort: function()
   {
     return this._dateFormatShort ;
   },
+  /**
+   * Description
+   * @method getDateTimeFormatShort
+   * @return MemberExpression
+   */
   getDateTimeFormatShort: function()
   {
     return this._dateTimeFormatShort ;
   },
+  /**
+   * Description
+   * @method getDateFormatMedium
+   * @return MemberExpression
+   */
   getDateFormatMedium: function()
   {
     return this._dateFormatMedium ;
   },
+  /**
+   * Description
+   * @method getDateTimeFormatMedium
+   * @return MemberExpression
+   */
   getDateTimeFormatMedium: function()
   {
     return this._dateTimeFormatMedium ;
   },
+  /**
+   * Description
+   * @method getDateFormatLong
+   * @return MemberExpression
+   */
   getDateFormatLong: function()
   {
     return this._dateFormatLong ;
   },
+  /**
+   * Description
+   * @method getDateTimeFormatLong
+   * @return MemberExpression
+   */
   getDateTimeFormatLong: function()
   {
     return this._dateTimeFormatLong ;
   },
+  /**
+   * Description
+   * @method getDateFormat
+   * @param {} type
+   * @return MemberExpression
+   */
   getDateFormat: function ( type )
   {
     if ( typeof ( type ) == 'string' )
@@ -359,6 +528,12 @@ Locale.prototype =
     if ( type == this.LONG ) return this._dateFormatLong ;
     return this._dateFormatShort ;
   },
+  /**
+   * Description
+   * @method getDateTimeFormat
+   * @param {} type
+   * @return MemberExpression
+   */
   getDateTimeFormat: function ( type )
   {
     if ( typeof ( type ) == 'string' )
@@ -383,18 +558,33 @@ Locale.prototype =
   }
 } ;
 Locale.prototype.defaultLocale = null ;
-/** */
+/**
+ * Description
+ * @method getDefault
+ * @return MemberExpression
+ */
 Locale.prototype.getDefault = function()
 {
   if ( this.defaultLocale ) return this.defaultLocale ;
   this.defaultLocale = new Locale() ;
   return this.defaultLocale ;
 };
-/** */
+/**
+ * Description
+ * @method getJson
+ * @return MemberExpression
+ */
 Locale.prototype.getJson = function()
 {
   return this.json ;
 };
+/**
+ * Description
+ * @method File
+ * @param {} path
+ * @param {} name
+ * @return 
+ */
 var File = function ( path, name )
 {
   if ( path instanceof File )
@@ -412,6 +602,11 @@ var File = function ( path, name )
   }
   this.path = Path.normalize ( this.path ) ;
 };
+/**
+ * Description
+ * @method exists
+ * @return 
+ */
 File.prototype.exists = function()
 {
   try
@@ -424,6 +619,11 @@ File.prototype.exists = function()
     return false ;
   }
 };
+/**
+ * Description
+ * @method toJson
+ * @return o
+ */
 File.prototype.toJson = function()
 {
   var str = fs.readFileSync ( this.path, 'utf8' ) ;

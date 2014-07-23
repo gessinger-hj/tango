@@ -1,5 +1,5 @@
-var T = require ( "Tango" ) ;
-var GPClient = require ( "GPClient" ) ;
+var T = require ( "./Tango" ) ;
+var GPClient = require ( "./GPClient" ) ;
 
 var gpc = new GPClient() ;
 gpc.addEventListener ( "notification", function(e)

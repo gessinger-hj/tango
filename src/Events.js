@@ -1,7 +1,13 @@
-var T  = require ( "Tango" ) ;
+var T  = require ( "./Tango" ) ;
+var util = require ( "util" ) ;
 
 /**
  *  @constructor
+ * @method FunctionExecutor
+ * @param {} object
+ * @param {} method
+ * @param {} args
+ * @return 
  */
 var FunctionExecutor = function ( object, method, args )
 {
@@ -45,6 +51,11 @@ var FunctionExecutor = function ( object, method, args )
     this.argsArray = a ;
   }
 };
+/**
+ * Description
+ * @method flush
+ * @return 
+ */
 FunctionExecutor.prototype.flush = function()
 {
   if ( this.argsArray ) this.argsArray.length = 0 ;
@@ -56,6 +67,12 @@ FunctionExecutor.prototype.flush = function()
   this.object = null ;
   this.method = null ;
 };
+/**
+ * Description
+ * @method executeWithEvent
+ * @param {} event
+ * @return 
+ */
 FunctionExecutor.prototype.executeWithEvent = function ( event )
 {
   if ( ! this.argsArray )
@@ -74,6 +91,12 @@ FunctionExecutor.prototype.executeWithEvent = function ( event )
     return this.execute ( aa ) ;
   }
 };
+/**
+ * Description
+ * @method execute
+ * @param {} argumentArray
+ * @return 
+ */
 FunctionExecutor.prototype.execute = function ( argumentArray )
 {
   if ( ! this.method && ! this.object ) return ;
@@ -99,8 +122,6 @@ FunctionExecutor.prototype.execute = function ( argumentArray )
 };
 /**
  * @constructor
- * @param {eventName} name of the event
- * @param {int} [eventType]
  *   One of the following values:
  * <ul>
  * <li>Event.prototype.CHANGED</li>
@@ -110,6 +131,10 @@ FunctionExecutor.prototype.execute = function ( argumentArray )
  * <li>Event.prototype.PROPERTY_CHANGE</li>
  * <li>Event.prototype.ACTION</li>
  *  </ul>
+ * @method Event
+ * @param {} eventName
+ * @param {} eventType
+ * @return 
  */
 var Event = function ( eventName, eventType )
 {
@@ -133,48 +158,105 @@ Event.prototype =
   PROPERTY_CHANGE: 7,
   ACTION: 8,
   TYPE_MAX: 9,
+  /**
+   * Description
+   * @method isAction
+   * @return BinaryExpression
+   */
   isAction: function()
   {
     return this.eventType == this.ACTION ;
   },
+  /**
+   * Description
+   * @method isReset
+   * @return BinaryExpression
+   */
   isReset: function()
   {
     return this.eventType == this.RESET ;
   },
+  /**
+   * Description
+   * @method isChanged
+   * @return BinaryExpression
+   */
   isChanged: function()
   {
     return this.eventType == this.CHANGED ;
   },
+  /**
+   * Description
+   * @method isItemSelected
+   * @return BinaryExpression
+   */
   isItemSelected: function()
   {
     return this.eventType == this.ITEM_SELECTED ;
   },
+  /**
+   * Description
+   * @method isItemDeselected
+   * @return BinaryExpression
+   */
   isItemDeselected: function()
   {
     return this.eventType == this.ITEM_DESELECTED ;
   },
+  /**
+   * Description
+   * @method isPropertyChange
+   * @return BinaryExpression
+   */
   isPropertyChange: function()
   {
     return this.eventType == this.PROPERTY_CHANGE ;
   },
+  /**
+   * Description
+   * @method getName
+   * @return MemberExpression
+   */
   getName: function()
   {
     return this.eventName ;
   },
+  /**
+   * Description
+   * @method setName
+   * @param {} eventName
+   * @return 
+   */
   setName: function ( eventName )
   {
     this.eventName = eventName ;
   },
+  /**
+   * Description
+   * @method getType
+   * @return MemberExpression
+   */
   getType: function()
   {
     return this.eventType ;
   },
+  /**
+   * Description
+   * @method setType
+   * @param {} type
+   * @return 
+   */
   setType: function ( type )
   {
     if ( typeof ( type ) != 'number' ) throw "Event.setType(): type is not a number: '" + typeof ( type ) ;
     if ( type <= 0 || type > this.TYPE_MAX ) throw "Event.setType(): ivalid type: '" + type ;
     this.eventType = type ;
   },
+  /**
+   * Description
+   * @method typeToString
+   * @return 
+   */
   typeToString: function()
   {
     if ( this.eventType == this.CHANGED ) return "CHANGED" ;
@@ -184,58 +266,128 @@ Event.prototype =
     if ( this.eventType == this.PROPERTY_CHANGE ) return "PROPERTY_CHANGE" ;
     if ( this.eventType == this.ACTION ) return "ACTION" ;
   },
+  /**
+   * Description
+   * @method getAction
+   * @return MemberExpression
+   */
   getAction: function()
   {
     return this.action ;
   },
+  /**
+   * Description
+   * @method getItem
+   * @return MemberExpression
+   */
   getItem: function()
   {
     return this.item ;
   },
+  /**
+   * Description
+   * @method setItem
+   * @param {} item
+   * @return 
+   */
   setItem: function ( item )
   {
     this.item = item ;
   },
+  /**
+   * Description
+   * @method setPropertyName
+   * @param {} name
+   * @return 
+   */
   setPropertyName: function ( name )
   {
     this.propertyName = name ;
   },
+  /**
+   * Description
+   * @method getPropertyName
+   * @return MemberExpression
+   */
   getPropertyName: function()
   {
     return this.propertyName ;
   },
+  /**
+   * Description
+   * @method getOldValue
+   * @return MemberExpression
+   */
   getOldValue: function()
   {
     if ( this.jsEvent ) return this.jsEvent.oldValue ;
     return this.oldValue ;
   },
+  /**
+   * Description
+   * @method setOldValue
+   * @param {} val
+   * @return 
+   */
   setOldValue: function ( val )
   {
     this.oldValue = val ;
   },
+  /**
+   * Description
+   * @method getNewValue
+   * @return MemberExpression
+   */
   getNewValue: function()
   {
     if ( this.jsEvent ) return this.jsEvent.newValue ;
     return this.newValue ;
   },
+  /**
+   * Description
+   * @method setNewValue
+   * @param {} val
+   * @return 
+   */
   setNewValue: function ( val )
   {
     this.newValue = val ;
   },
+  /**
+   * Description
+   * @method isConsumed
+   * @return MemberExpression
+   */
   isConsumed: function()
   {
     if ( this.jsEvent ) return this.jsEvent.isConsumed() ;
     return this.consumed ;
   },
+  /**
+   * Description
+   * @method consume
+   * @return 
+   */
   consume: function()
   {
     this.consumed = true ;
   }
 };
+/**
+ * Description
+ * @method setAction
+ * @param {} name
+ * @return 
+ */
 Event.prototype.setAction = function ( name )
 {
   this.action = name ;
 };
+/**
+ * Description
+ * @method toString
+ * @return BinaryExpression
+ */
 Event.prototype.toString = function()
 {
   return "(" + this.jsClassName + ")[consumed=" + this.consumed + ",name=" + this.eventName
@@ -248,43 +400,55 @@ Event.prototype.toString = function()
         ;
 };
 /**
-  * @constructor
-  * @extends Event
-  */
+ * @constructor
+ * @extends Event
+ * @method ItemEvent
+ * @param {} item
+ * @param {} type
+ * @return 
+ */
 var ItemEvent = function ( item, type )
 {
   if ( ! type ) type = Event.prototype.ITEM_SELECTED ;
-  T.initSuper ( this, Event, null, type ) ;
+  Event.call ( this,  null, type ) ;
   this.jsClassName = "ItemEvent" ;
   this.item = item ;
 };
-T.inherits ( ItemEvent, Event ) ;
+util.inherits ( ItemEvent, Event ) ;
 /**
  *  @constructor
  *  @extends Event
+ * @method ActionEvent
+ * @param {} actionName
+ * @return 
  */
 var ActionEvent = function ( actionName )
 {
-  T.initSuper ( this, Event, actionName, Event.prototype.ACTION ) ;
+  Event.call ( this, actionName, Event.prototype.ACTION ) ;
   this.jsClassName = "ActionEvent" ;
   this.action = actionName ;
   if ( ! this.action ) this.action = "*" ;
 };
-T.inherits ( ActionEvent, Event ) ;
+util.inherits ( ActionEvent, Event ) ;
 /**
  *  @constructor
  *  @extends Event
+ * @method PropertyChangeEvent
+ * @param {} propertyName
+ * @return 
  */
 var PropertyChangeEvent = function ( propertyName )
 {
-  T.initSuper ( this, Event, propertyName, Event.prototype.PROPERTY_CHANGE ) ;
+  Event.call ( this, propertyName, Event.prototype.PROPERTY_CHANGE ) ;
   this.jsClassName = "PropertyChangeEvent" ;
   this.propertyName = propertyName ;
 };
-T.inherits ( PropertyChangeEvent, Event ) ;
+util.inherits ( PropertyChangeEvent, Event ) ;
 
 /**
  *  @constructor
+ * @method PropertyChangeHandler
+ * @return 
  */
 var PropertyChangeHandler = function()
 {
@@ -293,6 +457,11 @@ var PropertyChangeHandler = function()
   this.propertyNameList = [] ;
   this.jsClassName = "PropertyChangeHandler" ;
 };
+/**
+ * Description
+ * @method flush
+ * @return 
+ */
 PropertyChangeHandler.prototype.flush = function()
 {
   if ( this._flushed ) return ;
@@ -304,6 +473,14 @@ PropertyChangeHandler.prototype.flush = function()
   this.listenerList.length = 0 ;
   this.propertyNameList.length = 0 ;
 };
+/**
+ * Description
+ * @method add
+ * @param {} obj
+ * @param {} method
+ * @param {} propertyName
+ * @return 
+ */
 PropertyChangeHandler.prototype.add = function ( obj, method, propertyName )
 {
   var pn = '.*' ;
@@ -339,6 +516,13 @@ PropertyChangeHandler.prototype.add = function ( obj, method, propertyName )
   this.listenerList.push ( fe ) ;
   this.propertyNameList.push ( pn ) ;
 };
+/**
+ * Description
+ * @method fireEvent
+ * @param {} ev
+ * @param {} propertyName
+ * @return 
+ */
 PropertyChangeHandler.prototype.fireEvent = function ( ev, propertyName )
 {
   if ( typeof ( propertyName ) == 'string' )
@@ -369,6 +553,12 @@ PropertyChangeHandler.prototype.fireEvent = function ( ev, propertyName )
     }
   }
 };
+/**
+ * Description
+ * @method remove
+ * @param {} fe
+ * @return 
+ */
 PropertyChangeHandler.prototype.remove = function ( fe )
 {
   for ( var i = 0 ; i < this.listenerList.length ; i++ )
@@ -396,11 +586,31 @@ PropertyChangeHandler.prototype.remove = function ( fe )
 };
 
 PropertyChangeTrait = {} ;
-PropertyChangeTrait.__propertyChangeHandler = { create: function(){return new PropertyChangeHandler();} } ;
+PropertyChangeTrait.__propertyChangeHandler = { 
+/**
+  * Description
+  * @method create
+  * @return NewExpression
+  */
+ create: function(){return new PropertyChangeHandler();} } ;
+/**
+ * Description
+ * @method addPropertyChangeListener
+ * @param {} obj
+ * @param {} method
+ * @param {} propertyName
+ * @return 
+ */
 PropertyChangeTrait.addPropertyChangeListener = function ( obj, method, propertyName )
 {
   this.__propertyChangeHandler.add ( obj, method, propertyName ) ;
 }
+/**
+ * Description
+ * @method removePropertyChangeListener
+ * @param {} obj
+ * @return 
+ */
 PropertyChangeTrait.removePropertyChangeListener = function ( obj )
 {
   this.__propertyChangeHandler.remove ( obj ) ;
@@ -413,17 +623,31 @@ PropertyChangeTrait._firePropertyChangeEvent = function ( ev, propertyName )
 /**
  *  @constructor
  *  @extends PropertyChangeHandler
+ * @method EventMulticaster
+ * @return 
  */
 var EventMulticaster = function()
 {
-  T.initSuper ( this, PropertyChangeHandler );
+  PropertyChangeHandler.call ( this );
   this.jsClassName = "EventMulticaster" ;
 }
-T.inherits ( EventMulticaster, PropertyChangeHandler ) ;
+util.inherits ( EventMulticaster, PropertyChangeHandler ) ;
+/**
+ * Description
+ * @method toString
+ * @return BinaryExpression
+ */
 EventMulticaster.prototype.toString = function()
 {
   return "(" + this.jsClassName + ")" ;
 };
+/**
+ * Description
+ * @method fireEvent
+ * @param {} evt
+ * @param {} type
+ * @return 
+ */
 EventMulticaster.prototype.fireEvent = function ( evt, type )
 {
   var ev = null ;
@@ -473,12 +697,32 @@ EventMulticaster.prototype.fireEvent = function ( evt, type )
   }
 }
 EventMulticasterTrait = {} ;
-EventMulticasterTrait.__eventMulticaster = { create: function(){return new EventMulticaster();} } ;
+EventMulticasterTrait.__eventMulticaster = { 
+/**
+  * Description
+  * @method create
+  * @return NewExpression
+  */
+ create: function(){return new EventMulticaster();} } ;
+/**
+ * Description
+ * @method addListener
+ * @param {} obj
+ * @param {} method
+ * @param {} propertyName
+ * @return 
+ */
 EventMulticasterTrait.addListener = function ( obj, method, propertyName )
 {
   if ( ! this.__eventMulticaster ) return ;
   this.__eventMulticaster.add ( obj, method, propertyName ) ;
 }
+/**
+ * Description
+ * @method removeListener
+ * @param {} obj
+ * @return 
+ */
 EventMulticasterTrait.removeListener = function ( obj )
 {
   if ( ! this.__eventMulticaster ) return ;
@@ -489,6 +733,11 @@ EventMulticasterTrait._fireEvent = function ( ev, type )
   if ( ! this.__eventMulticaster ) return ;
   this.__eventMulticaster.fireEvent ( ev, type ) ;
 }
+/**
+ * Description
+ * @method flushEventMulticaster
+ * @return 
+ */
 EventMulticasterTrait.flushEventMulticaster = function()
 {
   if ( this.__eventMulticaster ) this.__eventMulticaster.flush() ;

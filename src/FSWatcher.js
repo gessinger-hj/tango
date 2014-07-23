@@ -8,12 +8,18 @@
   7268 -rw-rw-r-- 1 ciss vge   7430144 Jun 25 12:53 rating.price_parameter.rul.tmp
 */
 
-var T = require ( "Tango" ) ;
+var T = require ( "./Tango" ) ;
 var fs = require ( "fs" ) ;
 var util = require ( "util" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var Path = require ( "path" ) ;
 
+/**
+ * Description
+ * @method FSWatcher
+ * @param {} filename
+ * @return 
+ */
 var FSWatcher = function ( filename )
 {
   EventEmitter.call ( this ) ;
@@ -37,6 +43,11 @@ var FSWatcher = function ( filename )
 	}
 };
 util.inherits ( FSWatcher, EventEmitter ) ;
+/**
+ * Description
+ * @method exists
+ * @return 
+ */
 FSWatcher.prototype.exists = function()
 {
 	try
@@ -49,10 +60,20 @@ FSWatcher.prototype.exists = function()
 		return false ;
 	}
 };
+/**
+ * Description
+ * @method getFullname
+ * @return MemberExpression
+ */
 FSWatcher.prototype.getFullname = function()
 {
 	return this.fullname ;
 };
+/**
+ * Description
+ * @method isFile
+ * @return 
+ */
 FSWatcher.prototype.isFile = function()
 {
 	try
@@ -64,7 +85,11 @@ FSWatcher.prototype.isFile = function()
 		return false ;
 	}
 };
-/** */
+/**
+ * Description
+ * @method isDirectory
+ * @return 
+ */
 FSWatcher.prototype.isDirectory = function()
 {
 	try
@@ -76,11 +101,21 @@ FSWatcher.prototype.isDirectory = function()
 		return false ;
 	}
 };
+/**
+ * Description
+ * @method toString
+ * @return BinaryExpression
+ */
 FSWatcher.prototype.toString = function()
 {
 	return "(" + this.className + ")[fullname=" + this.fullname + "]" ;
 };
 
+/**
+ * Description
+ * @method watch
+ * @return 
+ */
 FSWatcher.prototype.watch = function()
 {
 	if ( this.basename )

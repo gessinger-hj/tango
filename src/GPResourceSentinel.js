@@ -1,16 +1,23 @@
-var T = require ( "Tango" ) ;
-var GPEvent = require ( "GPEvent" ) ;
-var GPClient = require ( "GPClient" ) ;
-var FSWatcher = require ( "FSWatcher" ) ;
-var DateUtils = require ( "DateUtils" ) ;
+var T = require ( "./Tango" ) ;
+var GPEvent = require ( "./GPEvent" ) ;
+var GPClient = require ( "./GPClient" ) ;
+var FSWatcher = require ( "./FSWatcher" ) ;
+var DateUtils = require ( "./DateUtils" ) ;
 var os = require ( "os" ) ;
-var File = require ( "File" ) ;
+var File = require ( "./File" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var util = require ( "util" ) ;
-var Timer = require ( "Timer" ) ;
-var Log = require ( "LogFile" ) ;
+var Timer = require ( "./Timer" ) ;
+var Log = require ( "./LogFile" ) ;
 var Path = require ( "path" ) ;
 
+/**
+ * Description
+ * @method GPResourceSentinel
+ * @param {} port
+ * @param {} host
+ * @return 
+ */
 var GPResourceSentinel = function ( port, host )
 {
   this.port = port ; 
@@ -25,10 +32,23 @@ var GPResourceSentinel = function ( port, host )
   });
   this.mainEventName = "notify" ;
 };
+/**
+ * Description
+ * @method init
+ * @return 
+ */
 GPResourceSentinel.prototype.init = function()
 {
   this.gpclient = new GPClient ( this.port, this.host ) ;
 };
+/**
+ * Description
+ * @method make_data
+ * @param {} name
+ * @param {} state
+ * @param {} id
+ * @return data
+ */
 GPResourceSentinel.prototype.make_data = function ( name, state, id )
 {
   var data = { id: this.hostname + ":" + process.pid + ":" + id
@@ -41,6 +61,12 @@ GPResourceSentinel.prototype.make_data = function ( name, state, id )
              } ;
   return data ;
 };
+/**
+ * Description
+ * @method add
+ * @param {} resource
+ * @return 
+ */
 GPResourceSentinel.prototype.add = function ( resource )
 {
   resource.setParent ( this ) ;
@@ -50,6 +76,12 @@ GPResourceSentinel.prototype.add = function ( resource )
   }
   this.resourceList.push ( resource ) ;
 };
+/**
+ * Description
+ * @method addChange
+ * @param {} resource
+ * @return 
+ */
 GPResourceSentinel.prototype.addChange = function ( resource )
 {
   resource.setParent ( this ) ;
@@ -71,6 +103,11 @@ GPResourceSentinel.prototype.addChange = function ( resource )
     thiz.gpclient.fire ( e ) ;
   }) ;
 };
+/**
+ * Description
+ * @method removeOutdated
+ * @return 
+ */
 GPResourceSentinel.prototype.removeOutdated = function()
 {
   var thiz = this ;
@@ -97,6 +134,11 @@ GPResourceSentinel.prototype.removeOutdated = function()
     }
   }
 };
+/**
+ * Description
+ * @method WatchResource
+ * @return 
+ */
 var WatchResource = function()
 {
   EventEmitter.call ( this ) ;
@@ -106,23 +148,53 @@ var WatchResource = function()
   this._canOutdate = false ;
 };
 util.inherits ( WatchResource, EventEmitter ) ;
+/**
+ * Description
+ * @method canOutdate
+ * @return MemberExpression
+ */
 WatchResource.prototype.canOutdate = function()
 {
   return this._canOutdate ;
 };
+/**
+ * Description
+ * @method setCanOutdate
+ * @param {} state
+ * @return 
+ */
 WatchResource.prototype.setCanOutdate = function ( state )
 {
   state = !! state ;
   this._canOutdate = state ;
 };
+/**
+ * Description
+ * @method setResourceId
+ * @param {} id
+ * @return 
+ */
 WatchResource.prototype.setResourceId = function ( id )
 {
   this.resourceId = id ;
 };
+/**
+ * Description
+ * @method setParent
+ * @param {} sentinel
+ * @return 
+ */
 WatchResource.prototype.setParent = function ( sentinel )
 {
   this.parent = sentinel ;
 };
+/**
+ * Description
+ * @method MRTResource
+ * @param {} log_dir
+ * @param {} MRT_dir
+ * @return 
+ */
 var MRTResource = function ( log_dir, MRT_dir )
 {
   WatchResource.apply ( this, arguments ) ;
@@ -130,6 +202,12 @@ var MRTResource = function ( log_dir, MRT_dir )
   this.log_dir = log_dir ;
 };
 util.inherits ( MRTResource, WatchResource ) ;
+/**
+ * Description
+ * @method setParent
+ * @param {} sentinel
+ * @return 
+ */
 MRTResource.prototype.setParent = function ( sentinel )
 {
   WatchResource.prototype.setParent.apply ( this, arguments )
@@ -175,6 +253,14 @@ MRTResource.prototype.setParent = function ( sentinel )
   })
   this.w2.watch() ;
 };
+/**
+ * Description
+ * @method DirectoryResource
+ * @param {} dirname
+ * @param {} pattern
+ * @param {} displayPattern
+ * @return 
+ */
 var DirectoryResource = function ( dirname, pattern, displayPattern )
 {
   WatchResource.apply ( this, arguments ) ;
@@ -217,18 +303,42 @@ var DirectoryResource = function ( dirname, pattern, displayPattern )
   this._canOutdate = true ;
 };
 util.inherits ( DirectoryResource, WatchResource ) ;
+/**
+ * Description
+ * @method setAcceptCallback
+ * @param {} callback
+ * @return 
+ */
 DirectoryResource.prototype.setAcceptCallback = function ( callback )
 {
   this.accept = callback ;
 };
+/**
+ * Description
+ * @method setNotificationType
+ * @param {} notificationType
+ * @return 
+ */
 DirectoryResource.prototype.setNotificationType = function ( notificationType )
 {
   this.notificationType = notificationType ;
 };
+/**
+ * Description
+ * @method getNotificationType
+ * @return MemberExpression
+ */
 DirectoryResource.prototype.getNotificationType = function()
 {
   return this.notificationType ;
 };
+/**
+ * Description
+ * @method on
+ * @param {} eventName
+ * @param {} callback
+ * @return 
+ */
 DirectoryResource.prototype.on = function ( eventName, callback )
 {
   EventEmitter.prototype.on.apply ( this, arguments ) ;
@@ -292,6 +402,11 @@ DirectoryResource.prototype._onchange = function ( name )
     }
   };
 };
+/**
+ * Description
+ * @method removeOutdated
+ * @return toBeRemoved
+ */
 DirectoryResource.prototype.removeOutdated = function()
 {
   var now = new Date().getTime() ;

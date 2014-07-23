@@ -1,8 +1,10 @@
-var T = require ( "Tango" ) ;
-var Locale = require ( "Locale" ) ;
+var T = require ( "./Tango" ) ;
+var Locale = require ( "./Locale" ) ;
 /**
  *  Global singleton <b>DateUtils</b>
  *  @constructor
+ * @method DateUtilsClass
+ * @return 
  */
 var DateUtilsClass = function()
 {
@@ -62,29 +64,23 @@ DateUtilsClass.prototype =
     this._dateFormatLong["de"] = "d.MMMM.yyyy" ;
     this._dateTimeFormatLong["de"] = "d.MMMM.yyyy HH:mm:ss" ;
   },
+  /**
+   * Description
+   * @method getDateTimeFormatShort
+   * @return MemberExpression
+   */
   getDateTimeFormatShort: function()
   {
     var f = this._dateTimeFormatShort[this._userLanguage] ;
     if ( f ) return f ;
     return this._dateTimeFormatShort["en"] ;
   },
-  // setFormats: function ( webConfig )
-  // {
-  //   if ( ! webConfig.getXml() ) return ;
-  //   var str = webConfig.getXml().getContent ( "FormatSymbols/Date" ) ;
-  //   if ( ! str ) return ;
-  //   var a = eval ( str ) ;
-  //   var lang = a[0] ;
-  //   this._userLanguage = lang ;
-  //   this._monthNames[lang] = a[1] ;
-  //   this._dayNames[lang] = a[2] ;
-  //   this._dateFormatShort[lang] = a[3] ;
-  //   this._dateFormatMedium[lang] = a[4] ;
-  //   this._dateFormatLong[lang] = a[5] ;
-  //   this._dateTimeFormatShort[lang] = a[6] ;
-  //   this._dateTimeFormatMedium[lang] = a[7] ;
-  //   this._dateTimeFormatLong[lang] = a[8] ;
-  // },
+  /**
+   * Description
+   * @method getWeekOfYear
+   * @param {} date
+   * @return iWeekOfYear
+   */
   getWeekOfYear: function ( date )
   {
     var iYear = date.getFullYear();
@@ -119,6 +115,12 @@ DateUtilsClass.prototype =
     }
     return iWeekOfYear ;
   },
+  /**
+   * Description
+   * @method getWeekOfYear2
+   * @param {} date
+   * @return CallExpression
+   */
   getWeekOfYear2: function ( date )
   {
     // Skip to Thursday of this week
@@ -128,6 +130,12 @@ DateUtilsClass.prototype =
     var then = (7 - jan1.getDay() + 4);
     return Math.floor ( ((now - then) / 7) + 1 ) ;
   },
+  /**
+   * Description
+   * @method getDayOfYear
+   * @param {} date
+   * @return iDayOfYear
+   */
   getDayOfYear: function ( date )
   {
     var iMonth = date.getMonth();
@@ -142,6 +150,12 @@ DateUtilsClass.prototype =
     iDayOfYear += date.getDate();
     return iDayOfYear ;
   },
+  /**
+   * Description
+   * @method getFirstDayOfWeek
+   * @param {} localeCode
+   * @return CallExpression
+   */
   getFirstDayOfWeek: function ( localeCode )
   {
     var json ;
@@ -155,6 +169,12 @@ DateUtilsClass.prototype =
     }
     return parseInt ( json.FirstDayOfWeek ) ;
   },
+  /**
+   * Description
+   * @method getDayNames
+   * @param {} lang
+   * @return a
+   */
   getDayNames: function ( lang )
   {
     if ( ! lang ) lang = Locale.getLanguage() ;
@@ -162,6 +182,12 @@ DateUtilsClass.prototype =
     if ( ! a ) a = this._dayNames["en"] ;
     return a ;
   },
+  /**
+   * Description
+   * @method getDayNamesShort
+   * @param {} lang
+   * @return b
+   */
   getDayNamesShort: function ( lang )
   {
     var a = this.getDayNames() ;
@@ -173,6 +199,12 @@ DateUtilsClass.prototype =
     b.push ( a[7] ) ;
     return b ;
   },
+  /**
+   * Description
+   * @method getMonthNames
+   * @param {} lang
+   * @return a
+   */
   getMonthNames: function ( lang )
   {
     if ( ! lang ) lang = Locale.getLanguage() ;
@@ -180,11 +212,24 @@ DateUtilsClass.prototype =
     if ( ! a ) a = this._monthNames["en"] ;
     return a ;
   },
+  /**
+   * Description
+   * @method isLeapYear
+   * @param {} date
+   * @return Literal
+   */
   isLeapYear: function ( date )
   {
     if ( this.getMaxDays ( date.getFullYear(), 1 ) == 29 ) return true ;
     return false ;
   },
+  /**
+   * Description
+   * @method getMaxDays
+   * @param {} y
+   * @param {} m
+   * @return Literal
+   */
   getMaxDays: function ( y, m )
   {
     if ( T.isDate ( y ) )
@@ -204,6 +249,12 @@ DateUtilsClass.prototype =
     }
     return 29 ;
   },
+  /**
+   * Description
+   * @method roundDownToDay
+   * @param {} date
+   * @return d
+   */
   roundDownToDay: function ( date )
   {
     var m = date.getTime() ;
@@ -214,6 +265,13 @@ DateUtilsClass.prototype =
     d.setMilliseconds ( 0 ) ;
     return d ;
   },
+  /**
+   * Description
+   * @method roundDownToWeek
+   * @param {} date
+   * @param {} localeCode
+   * @return d
+   */
   roundDownToWeek: function ( date, localeCode )
   {
     var firstDayOfWeek = this.getFirstDayOfWeek ( localeCode ) ;
@@ -229,6 +287,12 @@ DateUtilsClass.prototype =
     }
     return d ;
   },
+  /**
+   * Description
+   * @method roundDownToMonth
+   * @param {} date
+   * @return date
+   */
   roundDownToMonth: function ( date )
   {
     date = new Date ( date.getTime() ) ;
@@ -239,10 +303,24 @@ DateUtilsClass.prototype =
     date.setMilliseconds ( 0 ) ;
     return date ;
   },
+  /**
+   * Description
+   * @method addWeek
+   * @param {} date
+   * @param {} nWeeks
+   * @return CallExpression
+   */
   addWeek: function ( date, nWeeks )
   {
     return this.addDay ( date, nWeeks * 7 ) ;
   },
+  /**
+   * Description
+   * @method addDay
+   * @param {} date
+   * @param {} nDay
+   * @return newDate
+   */
   addDay: function ( date, nDay )
   {
     var millis = date.getTime() ;
@@ -255,6 +333,13 @@ DateUtilsClass.prototype =
     }
     return newDate ;
   },
+  /**
+   * Description
+   * @method addMonth
+   * @param {} date
+   * @param {} nMonth
+   * @return d
+   */
   addMonth: function ( date, nMonth )
   {
     var day = date.getDate() ;
@@ -290,59 +375,134 @@ DateUtilsClass.prototype =
     d.setDate ( day ) ;
     return d ;
   },
+  /**
+   * Description
+   * @method getSoapDate
+   * @param {} d
+   * @return CallExpression
+   */
   getSoapDate: function ( d )
   {
     return DateUtils.formatDate ( d ? d : new Date(), "yyyy-MM-dd" ) ;
   },
+  /**
+   * Description
+   * @method getSoapDateTime
+   * @param {} d
+   * @return CallExpression
+   */
   getSoapDateTime: function ( d )
   {
     return DateUtils.formatDate ( d ? d : new Date(), "yyyy-MM-ddTHH:mm:ss" ) ;
   },
+  /**
+   * Description
+   * @method getSoapDateTimeWithMillis
+   * @param {} d
+   * @return CallExpression
+   */
   getSoapDateTimeWithMillis: function ( d )
   {
     return DateUtils.formatDate ( d ? d : new Date(), "yyyy-MM-ddTHH:mm:ss.SSS" ) ;
   },
+  /**
+   * Description
+   * @method formatTimeShort
+   * @param {} date
+   * @return CallExpression
+   */
   formatTimeShort: function ( date )
   {
     if ( ! date ) date = new Date() ;
     return this.formatDate ( date, "HH:mm:ss" ) ;
   },
+  /**
+   * Description
+   * @method formatDateShort
+   * @param {} date
+   * @param {} locale
+   * @return CallExpression
+   */
   formatDateShort: function ( date, locale )
   {
     if ( ! date ) date = new Date() ;
     if ( ! locale ) locale = Locale.getDefault() ;
     return this.formatDate ( date, locale, this.SHORT, false ) ;
   },
+  /**
+   * Description
+   * @method formatDateTimeShort
+   * @param {} date
+   * @param {} locale
+   * @return CallExpression
+   */
   formatDateTimeShort: function ( date, locale )
   {
     if ( ! date ) date = new Date() ;
     if ( ! locale ) locale = Locale.getDefault() ;
     return this.formatDate ( date, locale, this.SHORT, true ) ;
   },
+  /**
+   * Description
+   * @method formatDateMedium
+   * @param {} date
+   * @param {} locale
+   * @return CallExpression
+   */
   formatDateMedium: function ( date, locale )
   {
     if ( ! date ) date = new Date() ;
     if ( ! locale ) locale = Locale.getDefault() ;
     return this.formatDate ( date, locale, this.MEDIUM, false ) ;
   },
+  /**
+   * Description
+   * @method formatDateTimeMedium
+   * @param {} date
+   * @param {} locale
+   * @return CallExpression
+   */
   formatDateTimeMedium: function ( date, locale )
   {
     if ( ! date ) date = new Date() ;
     if ( ! locale ) locale = Locale.getDefault() ;
     return this.formatDate ( date, locale, this.MEDIUM, true ) ;
   },
+  /**
+   * Description
+   * @method formatDateLong
+   * @param {} date
+   * @param {} locale
+   * @return CallExpression
+   */
   formatDateLong: function ( date, locale )
   {
     if ( ! date ) date = new Date() ;
     if ( ! locale ) locale = Locale.getDefault() ;
     return this.formatDate ( date, locale, this.LONG, false ) ;
   },
+  /**
+   * Description
+   * @method formatDateTimeLong
+   * @param {} date
+   * @param {} locale
+   * @return CallExpression
+   */
   formatDateTimeLong: function ( date, locale )
   {
     if ( ! date ) date = new Date() ;
     if ( ! locale ) locale = Locale.getDefault() ;
     return this.formatDate ( date, locale, this.LONG, true ) ;
   },
+  /**
+   * Description
+   * @method formatDate
+   * @param {} date
+   * @param {} format
+   * @param {} monthNames
+   * @param {} dayNames
+   * @return result
+   */
   formatDate: function ( date, format, monthNames, dayNames )
   {
     var locale = Locale.getDefault() ;
@@ -503,6 +663,12 @@ DateUtilsClass.prototype =
     }
     return result;
   },
+  /**
+   * Description
+   * @method isStandardDateFormat
+   * @param {} str
+   * @return Literal
+   */
   isStandardDateFormat: function ( str )
   {
     var i ;
@@ -561,10 +727,22 @@ DateUtilsClass.prototype =
     }
     return true ;
   },
+  /**
+   * Description
+   * @method stringToDate
+   * @param {} str
+   * @return CallExpression
+   */
   stringToDate: function ( str )
   {
     return this.parseDate ( str ) ;
   },
+  /**
+   * Description
+   * @method parseDate
+   * @param {} str
+   * @return date
+   */
   parseDate: function ( str )
   {
     var iYear ;
@@ -652,6 +830,11 @@ DateUtilsClass.prototype =
     date = new Date ( Date.parse ( str ) ) ;
     return date ;
   },
+  /**
+   * Description
+   * @method getTimeZoneId
+   * @return MemberExpression
+   */
   getTimeZoneId: function()
   {
     if ( ! this.TIMEZONE_ID )
@@ -667,13 +850,31 @@ DateUtilsClass.prototype =
     return this.TIMEZONE_ID ;
   }
 } ;
+/**
+ * Description
+ * @method LZ
+ * @param {} x
+ * @return BinaryExpression
+ */
 DateUtilsClass.prototype.LZ = function (x){return(x<0||x>9?"":"0")+x;} ;
+/**
+ * Description
+ * @method LZ2
+ * @param {} x
+ * @return BinaryExpression
+ */
 DateUtilsClass.prototype.LZ2 = function (x)
 {
   if ( x < 0 || x >= 100 ) return "" + x ;
   if ( x >= 10 || x < 100 ) return "0" + x ;
   return "00" + x ;
 } ;
+/**
+ * Description
+ * @method MLZ
+ * @param {} x
+ * @return rc
+ */
 DateUtilsClass.prototype.MLZ = function (x)
 {
   if ( x == "" ) return 0 ;

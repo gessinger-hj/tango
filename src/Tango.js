@@ -6,6 +6,12 @@
 var util = require  ( "util" ) ;
 if ( ! String.prototype.startsWith )
 {
+  /**
+   * Description
+   * @method startsWith
+   * @param {} needle
+   * @return BinaryExpression
+   */
   String.prototype.startsWith = function ( needle )
   {
     if ( ! needle ) return false ;
@@ -14,6 +20,12 @@ if ( ! String.prototype.startsWith )
 }
 if ( ! String.prototype.endsWith )
 {
+  /**
+   * Description
+   * @method endsWith
+   * @param {} needle
+   * @return Literal
+   */
   String.prototype.endsWith = function ( needle )
   {
     if ( ! needle ) return false ;
@@ -27,14 +39,30 @@ if ( ! String.prototype.endsWith )
  * @constructor
  */
  // @alias module:Tango
+/**
+ * Description
+ * @method TangoClass
+ * @return 
+ */
 var TangoClass = function()
 {
   this.jsClassName = "TangoClass" ;
 };
+/**
+ * Description
+ * @method toString
+ * @return BinaryExpression
+ */
 TangoClass.prototype.toString = function()
 {
   return "(" + this.jsClassName + ")" ;
 };
+/**
+ * Description
+ * @method isArguments
+ * @param {} args
+ * @return Literal
+ */
 TangoClass.prototype.isArguments = function ( args )
 {
   if ( args === null ) return false;
@@ -44,11 +72,36 @@ TangoClass.prototype.isArguments = function ( args )
   if ( args.constructor !== Object ) return false;
   return true;
 };
+/**
+ * Description
+ * @method isObject
+ * @param {} a
+ * @return LogicalExpression
+ */
 TangoClass.prototype.isObject = function (a) { return a && typeof a == 'object'; } ;
 
+/**
+ * Description
+ * @method isArray
+ * @param {} a
+ * @return LogicalExpression
+ */
 TangoClass.prototype.isArray = function (a) { return this.isObject(a) && a.constructor == Array; } ;
+/**
+ * Description
+ * @method isDate
+ * @param {} a
+ * @return LogicalExpression
+ */
 TangoClass.prototype.isDate = function (a) { return this.isObject(a) && a.constructor == Date; } ;
 
+/**
+ * Description
+ * @method initSuper
+ * @param {} thiz
+ * @param {} parentClass
+ * @return 
+ */
 TangoClass.prototype.initSuper = function ( thiz, parentClass )
 {
   // thiz._super_ = parentClass.prototype ;
@@ -63,12 +116,26 @@ TangoClass.prototype.initSuper = function ( thiz, parentClass )
     parentClass.call ( thiz ) ;
   }
 };
+/**
+ * Description
+ * @method inherits
+ * @param {} clazz
+ * @param {} parentClazz
+ * @return 
+ */
 TangoClass.prototype.inherits = function ( clazz, parentClazz )
 {
   clazz.prototype = Object.create ( parentClazz.prototype ) ;
   clazz.prototype.constructor = this;
 };
 
+/**
+ * Description
+ * @method mixin
+ * @param {} from
+ * @param {} to
+ * @return 
+ */
 TangoClass.prototype.mixin = function ( from, to )
 {
   for ( var key in from )
@@ -83,6 +150,14 @@ TangoClass.prototype.mixin = function ( from, to )
     to[key] = from[key] ;
   }
 };
+/**
+ * Description
+ * @method callSuper
+ * @param {} obj
+ * @param {} name
+ * @param {} a
+ * @return 
+ */
 TangoClass.prototype.callSuper = function ( obj, name, a )
 {
 	if  ( ! obj ) return ;
@@ -124,6 +199,12 @@ try {
     hasStacks = !!e.stack;
 }
 
+/**
+ * Description
+ * @method lwhere
+ * @param {} str
+ * @return 
+ */
 TangoClass.prototype.lwhere = function ( str )
 {
   if (!hasStacks) {
@@ -163,6 +244,12 @@ TangoClass.prototype.lwhere = function ( str )
     }
   }
 }
+/**
+ * Description
+ * @method where
+ * @param {} indexOfLine
+ * @return 
+ */
 TangoClass.prototype.where = function ( indexOfLine )
 {
   if (!hasStacks) {
@@ -181,6 +268,12 @@ TangoClass.prototype.where = function ( indexOfLine )
     return firstLine ;
   }
 }
+/**
+ * Description
+ * @method toArray
+ * @param {} iterable
+ * @return results
+ */
 TangoClass.prototype.toArray = function (iterable)
 {
   if ( !iterable ) return []; 
@@ -195,29 +288,50 @@ TangoClass.prototype.toArray = function (iterable)
   }     
   return results;
 };
+/**
+ * Description
+ * @method setProperty
+ * @param {} name
+ * @param {} value
+ * @return 
+ */
 TangoClass.prototype.setProperty = function ( name, value )
 {
-  if ( ! this.envMap ) this.envMap = [] ;
-  this.envMap[name] = value ;
+  if ( ! this._envMap ) this._envMap = [] ;
+  this._envMap[name] = value ;
 };
+/**
+ * Description
+ * @method getInt
+ * @param {} name
+ * @param {} defaultValue
+ * @return 
+ */
 TangoClass.prototype.getInt = function ( name, defaultValue )
 {
   var v = this
 };
+/**
+ * Description
+ * @method getProperty
+ * @param {} name
+ * @param {} defaultValue
+ * @return defaultValue
+ */
 TangoClass.prototype.getProperty = function ( name, defaultValue )
 {
   var value ;
-  if ( this.envMap )
+  if ( this._envMap )
   {
-    value = this.envMap[name] ;
+    value = this._envMap[name] ;
     if ( typeof value !== 'undefined' )
     {
       return value ;
     }
   }
-  if ( ! this.envMap )
+  if ( ! this._envMap )
   {
-    this.envMap = [] ;
+    this._envMap = [] ;
   }
   var i ;
   if ( ! this.argsDone )
@@ -249,7 +363,7 @@ TangoClass.prototype.getProperty = function ( name, defaultValue )
       }
     }
   }
-  value = this.envMap[name] ;
+  value = this._envMap[name] ;
   if ( typeof value !== 'undefined' )
   {
     return value ;
@@ -267,22 +381,37 @@ TangoClass.prototype.getProperty = function ( name, defaultValue )
   }
   if ( typeof value !== 'undefined' )
   {
-    this.envMap[name] = value ;
+    this._envMap[name] = value ;
     return value ;
   }
 
   return defaultValue ;
 };
-/** */
+/**
+ * Description
+ * @method log
+ * @param {} object
+ * @return 
+ */
 TangoClass.prototype.log = function ( object )
 {
   console.log ( util.inspect ( object, { showHidden: false, depth: null } ) ) ;
 };
+/**
+ * Description
+ * @method getConfigPath
+ * @return __dirname
+ */
 TangoClass.prototype.getConfigPath = function()
 {
   return __dirname ;
 };
-/** */
+/**
+ * Description
+ * @method splitJSONObjects
+ * @param {} str
+ * @return list
+ */
 TangoClass.prototype.splitJSONObjects = function ( str )
 {
   var list = [] ;
@@ -340,12 +469,22 @@ TangoClass.prototype.splitJSONObjects = function ( str )
   }
   return list ;
 };
-/** */
+/**
+ * Description
+ * @method serialize
+ * @param {} obj
+ * @return 
+ */
 TangoClass.prototype.serialize = function ( obj )
 {
   var old = Date.prototype.toJSON ;
   try
   {
+    /**
+     * Description
+     * @method toJSON
+     * @return ObjectExpression
+     */
     Date.prototype.toJSON = function()
     {
       return { type:'Date', 'value': this.toISOString() } ;
@@ -358,7 +497,12 @@ TangoClass.prototype.serialize = function ( obj )
     // console.log ( exc ) ;
   }
 };
-/** */
+/**
+ * Description
+ * @method deepDeserializeClass
+ * @param {} obj
+ * @return 
+ */
 TangoClass.prototype.deepDeserializeClass = function ( obj )
 {
   if ( ! obj ) return ;
@@ -399,7 +543,14 @@ TangoClass.prototype.deepDeserializeClass = function ( obj )
     }
   }
 }
-/** */
+/**
+ * Description
+ * @method deserialize
+ * @param {} serializedObject
+ * @param {} classNameToConstructor
+ * @param {} deepClassInspection
+ * @return that
+ */
 TangoClass.prototype.deserialize = function ( serializedObject, classNameToConstructor, deepClassInspection )
 {
   var that ;
