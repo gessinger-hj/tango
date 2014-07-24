@@ -8,9 +8,9 @@ var Log = require ( "./LogFile" ) ;
 
 /**
  * @constructor
+ * @extends {EventEmitter}
  * @param {} port
  * @param {} ip
- * @return 
  */
 GPBroker = function ( port, ip )
 {
@@ -122,6 +122,7 @@ GPBroker = function ( port, ip )
               thiz.closeAllSockets ( this ) ;
               thiz.server.unref() ;
               Log.notice ( 'server shut down' ) ;
+              thiz.emit ( "shutdown" ) ;
               return ;
             }
             else
@@ -281,9 +282,7 @@ GPBroker = function ( port, ip )
 util.inherits ( GPBroker, EventEmitter ) ;
 /**
  * Description
- * @method ejectSocket
  * @param {} socket
- * @return 
  */
 GPBroker.prototype.ejectSocket = function ( socket )
 {
@@ -310,9 +309,7 @@ GPBroker.prototype.ejectSocket = function ( socket )
 };
 /**
  * Description
- * @method closeAllSockets
  * @param {} exceptSocket
- * @return 
  */
 GPBroker.prototype.closeAllSockets = function ( exceptSocket )
 {
@@ -337,10 +334,8 @@ GPBroker.prototype.closeAllSockets = function ( exceptSocket )
 
 /**
  * Description
- * @method listen
  * @param {} port
  * @param {} callback
- * @return 
  */
 GPBroker.prototype.listen = function ( port, callback )
 {
@@ -354,7 +349,6 @@ GPBroker.prototype.listen = function ( port, callback )
     var thiz = this ;
     /**
      * Description
-     * @return 
      */
     callback = function() { Log.notice ( 'server bound to port=' + thiz.port ); } ;
   }

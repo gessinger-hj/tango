@@ -4,7 +4,6 @@ var util = require('util');
 /**
  * @constructor
  * @param {} enc
- * @return 
  * @extends stream.Writable
  */
 StringStreamWritable = function ( enc )
@@ -29,7 +28,6 @@ StringStreamWritable.prototype._write = function ( chunk, enc, cb )
 };
 /**
  * Description
- * @method toString
  * @return CallExpression
  */
 StringStreamWritable.prototype.toString = function()
@@ -38,8 +36,6 @@ StringStreamWritable.prototype.toString = function()
 };
 /**
  * Description
- * @method flush
- * @return 
  */
 StringStreamWritable.prototype.flush = function()
 {

@@ -10,9 +10,8 @@ var FileLineReader = require ( './FileLineReader' ) ;
  *  @constructor
  *  @param {path|dom} id the id of an html element or
  *         the html dom element itself.
- * @method File
- * @param {} path
- * @param {} name
+ * @param {string} path
+ * @param {string} name
  */
 var File = function ( path, name )
 {
@@ -33,7 +32,6 @@ var File = function ( path, name )
 };
 /**
  * Description
- * @method toString
  * @return MemberExpression
  */
 File.prototype.toString = function()
@@ -42,7 +40,6 @@ File.prototype.toString = function()
 };
 /**
  * Description
- * @method getName
  * @return CallExpression
  */
 File.prototype.getName = function()
@@ -51,7 +48,6 @@ File.prototype.getName = function()
 };
 /**
  * Description
- * @method getParent
  * @return CallExpression
  */
 File.prototype.getParent = function()
@@ -60,7 +56,6 @@ File.prototype.getParent = function()
 };
 /**
  * Description
- * @method getParentFile
  * @return NewExpression
  */
 File.prototype.getParentFile = function()
@@ -69,7 +64,6 @@ File.prototype.getParentFile = function()
 };
 /**
  * Description
- * @method getParentAbsolute
  * @return CallExpression
  */
 File.prototype.getParentAbsolute = function()
@@ -77,9 +71,7 @@ File.prototype.getParentAbsolute = function()
 	return fs.realpathSync ( Path.dirname ( this.path ) ) ;
 };
 /**
- * Description
- * @method asString
- * @return CallExpression
+ * @return {type} [description]
  */
 File.prototype.asString = function()
 {
@@ -87,7 +79,6 @@ File.prototype.asString = function()
 };
 /**
  * Description
- * @method toBuffer
  * @return CallExpression
  */
 File.prototype.toBuffer = function()
@@ -96,7 +87,6 @@ File.prototype.toBuffer = function()
 };
 /**
  * Description
- * @method getWriteStream
  * @param {} enc
  * @param {} mode
  * @return CallExpression
@@ -113,7 +103,6 @@ File.prototype.getWriteStream = function ( enc, mode )
 };
 /**
  * Description
- * @method getCharStream
  * @return CallExpression
  */
 File.prototype.getCharStream = function()
@@ -122,7 +111,6 @@ File.prototype.getCharStream = function()
 }
 /**
  * Description
- * @method getBinaryStream
  * @return CallExpression
  */
 File.prototype.getBinaryStream = function()
@@ -144,7 +132,6 @@ File.prototype._getReadStream = function ( enc )
 };
 /**
  * Description
- * @method write
  * @param {} o
  * @param {} enc
  */
@@ -180,7 +167,6 @@ File.prototype.write = function ( o, enc )
 };
 /**
  * Description
- * @method stat
  * @return CallExpression
  */
 File.prototype.stat = function()
@@ -198,7 +184,6 @@ stats.isSocket()
 */
 /**
  * Description
- * @method exists
  */
 File.prototype.exists = function()
 {
@@ -214,7 +199,6 @@ File.prototype.exists = function()
 };
 /**
  * Description
- * @method isSymbolicLink
  */
 File.prototype.isSymbolicLink = function()
 {
@@ -229,7 +213,6 @@ File.prototype.isSymbolicLink = function()
 };
 /**
  * Description
- * @method length
  * @return MemberExpression
  */
 File.prototype.length = function()
@@ -238,7 +221,6 @@ File.prototype.length = function()
 };
 /**
  * Description
- * @method lastModified
  * @return CallExpression
  */
 File.prototype.lastModified = function()
@@ -247,7 +229,6 @@ File.prototype.lastModified = function()
 };
 /**
  * Description
- * @method isFile
  */
 File.prototype.isFile = function()
 {
@@ -262,7 +243,6 @@ File.prototype.isFile = function()
 };
 /**
  * Description
- * @method isDirectory
  */
 File.prototype.isDirectory = function()
 {
@@ -277,7 +257,6 @@ File.prototype.isDirectory = function()
 };
 /**
  * Description
- * @method getAbsolutePath
  * @return CallExpression
  */
 File.prototype.getAbsolutePath = function()
@@ -286,7 +265,6 @@ File.prototype.getAbsolutePath = function()
 };
 /**
  * Description
- * @method getAbsoluteFile
  */
 File.prototype.getAbsoluteFile = function()
 {
@@ -295,7 +273,6 @@ File.prototype.getAbsoluteFile = function()
 };
 /**
  * Description
- * @method toXml
  * @param {} elementCallback
  * @return CallExpression
  */
@@ -308,7 +285,6 @@ File.prototype.toXml = function ( elementCallback )
 };
 /**
  * Description
- * @method toXmlResolved
  * @param {} options
  * @return xmlTree
  */
@@ -368,7 +344,6 @@ File.prototype._toXmlResolved = function ( includeTagNameMap, variablesMap, incl
 };
 /**
  * Description
- * @method ls
  * @param {} pattern
  * @return CallExpression
  */
@@ -378,7 +353,6 @@ File.prototype.ls = function ( pattern )
 };
 /**
  * Description
- * @method lsFiles
  * @param {} pattern
  * @return CallExpression
  */
@@ -388,7 +362,6 @@ File.prototype.lsFiles = function ( pattern )
 };
 /**
  * Description
- * @method lsDirs
  * @param {} pattern
  * @return CallExpression
  */
@@ -398,7 +371,6 @@ File.prototype.lsDirs = function ( pattern )
 };
 /**
  * Description
- * @method lsRegExp
  * @param {} pattern
  * @param {} filesOnly
  * @param {} dirsOnly
@@ -489,7 +461,6 @@ File.prototype._ls = function ( pattern, regexp, filesOnly, dirsOnly )
 };
 /**
  * Description
- * @method visit
  * @param {} visitor
  * @return void
  */
@@ -525,7 +496,6 @@ File.prototype._visit = function ( thisFile, visitor )
 };
 /**
  * Description
- * @method renameTo
  * @param {} newName
  * @return void
  */
@@ -542,7 +512,6 @@ File.prototype.renameTo = function ( newName )
 };
 /**
  * Description
- * @method remove
  * @return void
  */
 File.prototype.remove = function()
@@ -558,7 +527,6 @@ File.prototype.remove = function()
 };
 /**
  * Description
- * @method lines
  * @param {} callback
  * @return lr
  */
@@ -581,7 +549,6 @@ File.prototype.lines = function ( callback )
 };
 /**
  * Description
- * @method toJson
  * @return o
  */
 File.prototype.toJson = function()

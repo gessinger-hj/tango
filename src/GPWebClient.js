@@ -3,9 +3,7 @@ if ( typeof tangojs === 'undefined' ) tangojs = {} ;
 tangojs.counter = 0 ;
 /**
  * Description
- * @method GPWebClient
  * @param {} port
- * @return 
  */
 tangojs.GPWebClient = function ( port )
 {
@@ -25,7 +23,6 @@ tangojs.GPWebClient.prototype._initialize = function()
 };
 /**
  * Description
- * @method createUniqueEventId
  * @return BinaryExpression
  */
 tangojs.GPWebClient.prototype.createUniqueEventId = function()
@@ -34,8 +31,6 @@ tangojs.GPWebClient.prototype.createUniqueEventId = function()
 };
 /**
  * Description
- * @method connect
- * @return 
  */
 tangojs.GPWebClient.prototype.connect = function()
 {
@@ -44,9 +39,7 @@ tangojs.GPWebClient.prototype.connect = function()
 
   /**
    * Description
-   * @method onerror
    * @param {} err
-   * @return 
    */
   this.socket.onerror = function(err)
   {
@@ -56,9 +49,7 @@ tangojs.GPWebClient.prototype.connect = function()
   } ;
   /**
    * Description
-   * @method onmessage
    * @param {} messageEvent
-   * @return 
    */
   this.socket.onmessage = function onmessage ( messageEvent )
   {
@@ -137,9 +128,7 @@ tangojs.GPWebClient.prototype.connect = function()
   } ;
   /**
    * Description
-   * @method onclose
    * @param {} e
-   * @return 
    */
   this.socket.onclose = function onclose(e)
   {
@@ -148,8 +137,6 @@ tangojs.GPWebClient.prototype.connect = function()
   } ;
   /**
    * Description
-   * @method onopen
-   * @return 
    */
   this.socket.onopen = function()
   {
@@ -191,7 +178,6 @@ tangojs.GPWebClient.prototype.connect = function()
 };
 /**
  * Description
- * @method getSocket
  * @return MemberExpression
  */
 tangojs.GPWebClient.prototype.getSocket = function()
@@ -204,10 +190,8 @@ tangojs.GPWebClient.prototype.getSocket = function()
 };
 /**
  * Description
- * @method fireEvent
  * @param {} params
  * @param {} callback
- * @return 
  */
 tangojs.GPWebClient.prototype.fireEvent = function ( params, callback )
 {
@@ -259,10 +243,8 @@ tangojs.GPWebClient.prototype.fireEvent = function ( params, callback )
 };
 /**
  * Description
- * @method addEventListener
  * @param {} eventNameList
  * @param {} callback
- * @return 
  */
 tangojs.GPWebClient.prototype.addEventListener = function ( eventNameList, callback )
 {
@@ -308,9 +290,7 @@ tangojs.GPWebClient.prototype.addEventListener = function ( eventNameList, callb
 };
 /**
  * Description
- * @method removeEventListener
  * @param {} eventNameOrFunction
- * @return 
  */
 tangojs.GPWebClient.prototype.removeEventListener = function ( eventNameOrFunction )
 {
@@ -362,9 +342,7 @@ tangojs.GPWebClient.prototype.removeEventListener = function ( eventNameOrFuncti
 };
 /**
  * Description
- * @method sendResult
  * @param {} message
- * @return 
  */
 tangojs.GPWebClient.prototype.sendResult = function ( message )
 {
@@ -379,7 +357,6 @@ tangojs.GPWebClient.prototype.sendResult = function ( message )
 };
 /**
  * Description
- * @method splitJSONObjects
  * @param {} str
  * @return list
  */

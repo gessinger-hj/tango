@@ -6,14 +6,12 @@ var DateUtils = require ( "./DateUtils" ) ;
 
 var StringStreamWritable = require ( "./StringStreamWritable" ) ;
 var stream = require('stream');
-
+'use strict' ;
 /**
  * @constructor
- * @method XmlElement
- * @param {} tag
- * @param {} text
- * @param {} attr
- * @return 
+ * @param {string} [tag="elem"] tag name
+ * @param {string} [text]
+ * @param {hash} [attr]
  */
 var XmlElement = function ( tag, text, attr )
 {
@@ -85,7 +83,6 @@ var XmlElement = function ( tag, text, attr )
 };
 /**
  * Description
- * @method setParent
  * @param {} parent
  * @return ThisExpression
  */
@@ -96,7 +93,6 @@ XmlElement.prototype.setParent = function ( parent )
 };
 /**
  * Description
- * @method getParent
  * @return MemberExpression
  */
 XmlElement.prototype.getParent = function()
@@ -105,7 +101,6 @@ XmlElement.prototype.getParent = function()
 };
 /**
  * Description
- * @method getName
  * @return MemberExpression
  */
 XmlElement.prototype.getName = function()
@@ -113,7 +108,11 @@ XmlElement.prototype.getName = function()
   return this._name ;
 };
 
-/** */
+/*
+ * [_ontext description]
+ * @param  {[type]} text [description]
+ * @return {[type]}      [description]
+ */
 XmlElement.prototype._ontext = function(text)
 {
   text = text.trim() ;
@@ -129,7 +128,11 @@ XmlElement.prototype._ontext = function(text)
     this._value = text;
   }
 }
-
+/*
+ * [_oncdata description]
+ * @param  {[type]} cdata [description]
+ * @return {[type]}       [description]
+ */
 XmlElement.prototype._oncdata = function(cdata)
 {
   if ( this._value )
@@ -148,10 +151,8 @@ XmlElement.prototype._oncdata = function(cdata)
 }
 /**
  * Description
- * @method elements
  * @param {} iterator
  * @param {} thiz
- * @return 
  */
 XmlElement.prototype.elements = function ( iterator, thiz )
 {
@@ -162,10 +163,8 @@ XmlElement.prototype.elements = function ( iterator, thiz )
 }
 /**
  * Description
- * @method addAttribute
  * @param {} name
  * @param {} value
- * @return 
  */
 XmlElement.prototype.addAttribute = function ( name, value )
 {
@@ -173,7 +172,6 @@ XmlElement.prototype.addAttribute = function ( name, value )
 };
 /**
  * Description
- * @method getAttribute
  * @param {} name
  * @param {} def
  * @return def
@@ -185,9 +183,7 @@ XmlElement.prototype.getAttribute = function ( name, def )
 };
 /**
  * Description
- * @method removeAttribute
  * @param {} name
- * @return 
  */
 XmlElement.prototype.removeAttribute = function ( name )
 {
@@ -195,7 +191,6 @@ XmlElement.prototype.removeAttribute = function ( name )
 };
 /**
  * Description
- * @method replace
  * @param {} e
  * @return old
  */
@@ -210,7 +205,6 @@ XmlElement.prototype.replace = function ( e )
 };
 /**
  * Description
- * @method remove
  * @param {} path
  * @return e
  */
@@ -231,7 +225,6 @@ XmlElement.prototype.remove = function ( path )
 };
 /**
  * Description
- * @method elem
  * @param {} path
  * @return CallExpression
  */
@@ -243,10 +236,8 @@ XmlElement.prototype.elem = function ( path )
 };
 /**
  * Description
- * @method elemAt
  * @param {} path
  * @param {} index
- * @return 
  */
 XmlElement.prototype.elemAt = function ( path, index )
 {
@@ -261,7 +252,12 @@ XmlElement.prototype.elemAt = function ( path, index )
     return e.children[index] ;
   }
 };
-/** */
+/*
+ * [_elem description]
+ * @param  {[type]} pathArray [description]
+ * @param  {[type]} index     [description]
+ * @return {[type]}           [description]
+ */
 XmlElement.prototype._elem = function ( pathArray, index )
 {
   var name = pathArray[index] ;
@@ -372,7 +368,6 @@ XmlElement.prototype._elem = function ( pathArray, index )
 };
 /**
  * Description
- * @method select
  * @param {} path
  * @return list
  */
@@ -404,9 +399,8 @@ XmlElement.prototype.select = function ( path )
 };
 /**
  * Description
- * @method valueOf
- * @param {} path
- * @return MemberExpression
+ * @param {string} path - location path
+ * @return {Date|Number|Boolean|String}
  */
 XmlElement.prototype.valueOf = function ( path )
 {
@@ -451,7 +445,6 @@ XmlElement.prototype.valueOf = function ( path )
 };
 /**
  * Description
- * @method getContent
  * @param {} path
  * @return CallExpression
  */
@@ -461,7 +454,6 @@ XmlElement.prototype.getContent = function ( path )
 };
 /**
  * Description
- * @method getDate
  * @param {} path
  * @return v
  */
@@ -476,7 +468,6 @@ XmlElement.prototype.getDate = function ( path )
 };
 /**
  * Description
- * @method getBool
  * @param {} path
  * @param {} def
  * @return Literal
@@ -503,7 +494,6 @@ XmlElement.prototype.getBool = function ( path, def )
 };
 /**
  * Description
- * @method getNumber
  * @param {} path
  * @param {} def
  * @return n
@@ -526,9 +516,7 @@ XmlElement.prototype.getNumber = function ( path, def )
 
 /**
  * Description
- * @method setValue
  * @param {} value
- * @return 
  */
 XmlElement.prototype.setValue = function ( value )
 {
@@ -537,9 +525,7 @@ XmlElement.prototype.setValue = function ( value )
 
 /**
  * Description
- * @method toString
  * @param {} wstream
- * @return 
  */
 XmlElement.prototype.toString = function ( wstream )
 {
@@ -557,18 +543,21 @@ XmlElement.prototype.toString = function ( wstream )
     this._toString ( "", wstream ) ;
   }
 }
-/**
+/*
  * Description
- * @method toWriteStream
  * @param {} wstream
- * @return 
  */
 XmlElement.prototype.toWriteStream = function ( wstream )
 {
   this._toString ( "", wstream ) ;
 };
 
-/** */
+/*
+ * [_toString description]
+ * @param  {[type]} indent  [description]
+ * @param  {[type]} wstream [description]
+ * @return {[type]}         [description]
+ */
 XmlElement.prototype._toString = function ( indent, wstream )
 {
   if ( !this.getParent() && ( this instanceof XmlTree ) )
@@ -653,7 +642,6 @@ XmlElement.prototype._toString = function ( indent, wstream )
 };
 /**
  * Description
- * @method getPath
  * @return str
  */
 XmlElement.prototype.getPath = function()
@@ -673,7 +661,6 @@ XmlElement.prototype.getPath = function()
 };
 /**
  * Description
- * @method isRoot
  * @return UnaryExpression
  */
 XmlElement.prototype.isRoot = function()
@@ -682,10 +669,8 @@ XmlElement.prototype.isRoot = function()
 };
 /**
  * Description
- * @method visit
  * @param {} visitor
  * @param {} thiz
- * @return 
  */
 XmlElement.prototype.visit = function ( visitor, thiz )
 {
@@ -698,7 +683,14 @@ XmlElement.prototype.visit = function ( visitor, thiz )
     this._visit ( visitor, null, 0, thiz ) ;
   }
 } ;
-/** */
+/*
+ * [_visit description]
+ * @param  {[type]} visitor  [description]
+ * @param  {[type]} fvisitor [description]
+ * @param  {[type]} depth    [description]
+ * @param  {[type]} thiz     [description]
+ * @return {[type]}          [description]
+ */
 XmlElement.prototype._visit = function ( visitor, fvisitor, depth, thiz )
 {
   if ( fvisitor )
@@ -720,11 +712,10 @@ XmlElement.prototype._visit = function ( visitor, fvisitor, depth, thiz )
 } ;
 /**
  * Description
- * @method add
- * @param {} p1
- * @param {} p2
- * @param {} attr
- * @return e
+ * @param {string|XmlElement} p1
+ * @param {string} [p2]
+ * @param {hash} [attr]
+ * @return {XmlElement} new element
  */
 XmlElement.prototype.add = function ( p1, p2, attr )
 {
@@ -741,7 +732,6 @@ XmlElement.prototype.add = function ( p1, p2, attr )
 } ;
 /**
  * Description
- * @method addCDATA
  * @param {} p1
  * @param {} p2
  * @param {} attr
@@ -764,7 +754,6 @@ XmlElement.prototype.addCDATA = function ( p1, p2, attr )
 } ;
 /**
  * Description
- * @method insertAt
  * @param {} e
  * @param {} index
  * @return e
@@ -785,7 +774,6 @@ XmlElement.prototype.insertAt = function ( e, index )
 };
 /**
  * Description
- * @method duplicate
  * @return e
  */
 XmlElement.prototype.duplicate = function()
@@ -817,7 +805,6 @@ XmlElement.prototype.duplicate = function()
 };
 /**
  * Description
- * @method duplicateConditional
  * @param {} properties
  * @return eNew
  */
@@ -1098,7 +1085,6 @@ XmlElement.prototype._evaluateProperty = function ( propertyValue, properties, e
 };
 /**
  * Description
- * @method toJSON
  * @return ObjectExpression
  */
 XmlElement.prototype.toJSON = function()
@@ -1109,9 +1095,7 @@ XmlElement.prototype.toJSON = function()
 /**
  * @constructor
  * @extends XmlElement
- * @method XmlTree
- * @param {} name
- * @return 
+ * @param {string} [name="xml"] - root tag name
  */
 var XmlTree = function ( name )
 {
@@ -1126,7 +1110,6 @@ XmlTree.prototype._setCollectedElements = function ( list )
 };
 /**
  * Description
- * @method getCollectedElements
  * @return MemberExpression
  */
 XmlTree.prototype.getCollectedElements = function()
@@ -1137,9 +1120,7 @@ XmlTree.prototype.getCollectedElements = function()
 var EventEmitter = require ( "events" ).EventEmitter ;
 /**
  * @constructor
- * @method XmlFactory
- * @param {} callbackCloseTag
- * @return 
+ * @param {requestCallback} callbackCloseTag
  */
 var XmlFactory = function ( callbackCloseTag )
 {
@@ -1153,9 +1134,7 @@ var XmlFactory = function ( callbackCloseTag )
 util.inherits ( XmlFactory, EventEmitter ) ;
 /**
  * Description
- * @method create
- * @param {} source
- * @return 
+ * @param {string|stream.Readable} source
  */
 XmlFactory.prototype.create = function ( source )
 {
@@ -1183,22 +1162,16 @@ XmlFactory.prototype.create = function ( source )
     }
     /**
      * Description
-     * @method ontext
      * @param {} text
-     * @return 
      */
     parser.ontext = function ( text ) { thiz.currentChild._ontext ( text ) } ;
     /**
      * Description
-     * @method oncdata
      * @param {} cdata
-     * @return 
      */
     parser.oncdata = function ( cdata ) { thiz.currentChild._oncdata ( cdata ) } ;
     /**
      * Description
-     * @method onprocessinginstruction
-     * @return 
      */
     parser.onprocessinginstruction = function()
     {
@@ -1212,9 +1185,7 @@ XmlFactory.prototype.create = function ( source )
     var first = true ;
     /**
      * Description
-     * @method onopentag
      * @param {} tag
-     * @return 
      */
     parser.onopentag = function ( tag )
     {
@@ -1234,8 +1205,6 @@ XmlFactory.prototype.create = function ( source )
     } ;
     /**
      * Description
-     * @method onclosetag
-     * @return 
      */
     parser.onclosetag = function()
     {

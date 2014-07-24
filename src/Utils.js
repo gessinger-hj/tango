@@ -1,7 +1,6 @@
 var T = require ( "./Tango" ) ;
 /**
  * Description
- * @method splitCsv
  * @param {} str
  * @param {} del
  * @return l
@@ -77,7 +76,6 @@ module.exports.splitCsv = splitCsv ;
 
 /**
  * Description
- * @method stripQuotes
  * @param {} t
  * @return t
  */
@@ -95,7 +93,6 @@ function stripQuotes ( t )
 module.exports.stripQuotes = stripQuotes ;
 /**
  * Description
- * @method parseNameValues
  * @param {} str
  * @param {} map
  * @param {} del

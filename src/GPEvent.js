@@ -2,7 +2,6 @@ if ( !Array.isArray )
 {
   /**
    * Description
-   * @method isArray
    * @param {} arg
    * @return LogicalExpression
    */
@@ -10,18 +9,14 @@ if ( !Array.isArray )
   	return arg && arg.constructor === Array ;
   };
 }
-/**
- * @constructor
- */
 var tangojs = {} ;
 
 /**
  * Description
- * @method GPEvent
+ * @constructor
  * @param {} name
  * @param {} type
  * @param {} data
- * @return 
  */
 tangojs.GPEvent = function ( name, type, data )
 {
@@ -31,9 +26,7 @@ tangojs.GPEvent.prototype =
 {
 	/**
 	 * Description
-	 * @method serialize
 	 * @param {} obj
-	 * @return 
 	 */
 	serialize: function ( obj )
 	{
@@ -46,7 +39,6 @@ tangojs.GPEvent.prototype =
 	  {
 	    /**
     	 * Description
-    	 * @method toJSON
     	 * @return ObjectExpression
     	 */
     	Date.prototype.toJSON = function()
@@ -62,7 +54,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method deserialize
 	 * @param {} serializedObject
 	 * @param {} classNameToConstructor
 	 * @param {} deepClassInspection
@@ -100,8 +91,6 @@ tangojs.GPEvent.prototype =
 		    {
 			    /**
     			 * Description
-    			 * @method F
-    			 * @return 
     			 */
     			function F() { } ;
 			    F.prototype = f.prototype ;
@@ -128,9 +117,7 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method deepDeserializeClass
 	 * @param {} obj
-	 * @return 
 	 */
 	deepDeserializeClass: function ( obj )
 	{
@@ -191,7 +178,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method getClassName
 	 * @return MemberExpression
 	 */
 	getClassName: function()
@@ -200,8 +186,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method toString
-	 * @return 
 	 */
 	toString: function()
 	{
@@ -229,7 +213,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method getCreatedAt
 	 * @return MemberExpression
 	 */
 	getCreatedAt: function()
@@ -238,8 +221,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method setIsResult
-	 * @return 
 	 */
 	setIsResult: function()
 	{
@@ -247,7 +228,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method isResult
 	 * @return MemberExpression
 	 */
 	isResult: function()
@@ -256,8 +236,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method setRequestResult
-	 * @return 
 	 */
 	setRequestResult: function()
 	{
@@ -265,7 +243,6 @@ tangojs.GPEvent.prototype =
 	},
 		/**
 	 * Description
-	 * @method isResultRequested
 	 * @return MemberExpression
 	 */
 	isResultRequested: function()
@@ -274,7 +251,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method getSourceIdentifier
 	 * @return MemberExpression
 	 */
 	getSourceIdentifier: function()
@@ -283,9 +259,7 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method setSourceIdentifier
 	 * @param {} sourceIdentifier
-	 * @return 
 	 */
 	setSourceIdentifier: function ( sourceIdentifier )
 	{
@@ -293,7 +267,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method getProxyIdentifier
 	 * @return MemberExpression
 	 */
 	getProxyIdentifier: function()
@@ -302,9 +275,7 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method setProxyIdentifier
 	 * @param {} proxyIdentifier
-	 * @return 
 	 */
 	setProxyIdentifier: function ( proxyIdentifier )
 	{
@@ -312,7 +283,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method getWebIdentifier
 	 * @return MemberExpression
 	 */
 	getWebIdentifier: function()
@@ -321,9 +291,7 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method setWebIdentifier
 	 * @param {} webIdentifier
-	 * @return 
 	 */
 	setWebIdentifier: function ( webIdentifier )
 	{
@@ -331,7 +299,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method getName
 	 * @return MemberExpression
 	 */
 	getName: function()
@@ -340,9 +307,7 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method setName
 	 * @param {} name
-	 * @return 
 	 */
 	setName: function ( name )
 	{
@@ -350,7 +315,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method getType
 	 * @return MemberExpression
 	 */
 	getType: function()
@@ -359,9 +323,7 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method setType
 	 * @param {} type
-	 * @return 
 	 */
 	setType: function ( type )
 	{
@@ -370,7 +332,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method getData
 	 * @return MemberExpression
 	 */
 	getData: function()
@@ -379,9 +340,7 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method setData
 	 * @param {} data
-	 * @return 
 	 */
 	setData: function ( data )
 	{
@@ -389,7 +348,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method getUser
 	 * @return MemberExpression
 	 */
 	getUser: function()
@@ -398,9 +356,7 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method setUser
 	 * @param {} u
-	 * @return 
 	 */
 	setUser: function ( u )
 	{
@@ -408,7 +364,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method getControl
 	 * @return MemberExpression
 	 */
 	getControl: function()
@@ -417,9 +372,7 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method setUniqueId
 	 * @param {} uid
-	 * @return 
 	 */
 	setUniqueId: function ( uid )
 	{
@@ -430,7 +383,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method getUniqueId
 	 * @return MemberExpression
 	 */
 	getUniqueId: function()
@@ -439,7 +391,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method isBad
 	 * @return BinaryExpression
 	 */
 	isBad: function()
@@ -451,7 +402,6 @@ tangojs.GPEvent.prototype =
 	},
 	/**
 	 * Description
-	 * @method getStatusReason
 	 * @return MemberExpression
 	 */
 	getStatusReason: function()
@@ -463,7 +413,6 @@ tangojs.GPEvent.prototype =
 };
 if ( typeof document !== 'undefined' )
 {
-	
 	tangojs.serialize = tangojs.GPEvent.prototype.serialize ;
 	tangojs.deserialize = tangojs.GPEvent.prototype.deserialize ;
 }

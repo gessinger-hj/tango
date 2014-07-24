@@ -5,9 +5,7 @@ var stream = require('stream');
 
 /**
  * @constructor
- * @method Substitutor
  * @param {} itemSubstitutor
- * @return 
  */
 var Substitutor = function ( itemSubstitutor )
 {
@@ -19,7 +17,6 @@ var Substitutor = function ( itemSubstitutor )
 };
 /**
  * Description
- * @method substitute
  * @param {} src
  * @param {} map
  * @param {} useEnv
@@ -43,7 +40,6 @@ Substitutor.prototype.substitute = function ( src, map, useEnv, delimiter, escap
     var m = { map:map, 
 /**
   * Description
-  * @method getText
   * @param {} key
   * @return MemberExpression
   */
@@ -212,7 +208,6 @@ Substitutor.prototype._substitute = function ( r, w, map, useEnv, delimiter, dep
     var m = { map:map, 
 /**
   * Description
-  * @method getText
   * @param {} key
   * @return MemberExpression
   */

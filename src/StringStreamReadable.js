@@ -4,10 +4,8 @@ var util = require('util');
 /**
  * @constructor
  * @extends stream.Readable
- * @method StringStreamReadable
  * @param {} inputBufferOrString
  * @param {} options
- * @return 
  */
 var StringStreamReadable = function ( inputBufferOrString, options )
 {
@@ -33,7 +31,6 @@ StringStreamReadable.prototype._read = function ( size )
 };
 /**
  * Description
- * @method toString
  * @return CallExpression
  */
 StringStreamReadable.prototype.toString = function()
@@ -42,8 +39,6 @@ StringStreamReadable.prototype.toString = function()
 };
 /**
  * Description
- * @method flush
- * @return 
  */
 StringStreamReadable.prototype.flush = function()
 {

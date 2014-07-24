@@ -3,11 +3,9 @@ var util = require ( "util" ) ;
 
 /**
  * @constructor
- * @method User
  * @param {} id
  * @param {} key
  * @param {} pwd
- * @return 
  */
 var User = function ( id, key, pwd )
 {
@@ -18,7 +16,6 @@ var User = function ( id, key, pwd )
 };
 /**
  * Description
- * @method toString
  * @return BinaryExpression
  */
 User.prototype.toString = function()
@@ -27,7 +24,6 @@ User.prototype.toString = function()
 };
 /**
  * Description
- * @method getId
  * @return MemberExpression
  */
 User.prototype.getId = function (  )

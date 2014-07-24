@@ -1,11 +1,9 @@
 var util = require ( "util" ) ;
 var stream = require('stream');
-
+// grep -E 'return[ ]*$'
 /**
- *  @constructor
- * @method LineReader
+ * @constructor
  * @param {} characterStream
- * @return 
  */
 var LineReader = function ( characterStream )
 {

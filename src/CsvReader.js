@@ -4,9 +4,7 @@ var stream = require ( 'stream' ) ;
 var Utils = require ( "./Utils" ) ;
 /**
  *  @constructor
- * @method CsvReader
  * @param {} lineReader
- * @return 
  */
 var CsvReader = function ( lineReader )
 {

@@ -7,11 +7,7 @@ var c = new GPClient() ;
 var ne = new GPEvent ( "alarm", "file" ) ;
 c.fire ( ne
        , { 
-/**
-  * Description
-  * @method result
-  * @param {} e
-  * @return 
+/*
   */
  result: function(e)
            {
@@ -20,11 +16,7 @@ console.log ( " ----------result: function()----------------" ) ;
              this.end() ;
            }
          , 
-/**
-  * Description
-  * @method error
-  * @param {} e
-  * @return 
+/*
   */
  error: function(e)
            {
@@ -33,10 +25,7 @@ console.log ( " ----------error: function()----------------" ) ;
              this.end() ;
            }
          , 
-/**
-  * Description
-  * @method Xwrite
-  * @return 
+/*
   */
  Xwrite: function()
            {

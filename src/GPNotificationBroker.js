@@ -4,10 +4,9 @@ var GPClient = require ( "./GPClient" ) ;
 
 /**
  * Description
- * @method GPNotificationBroker
+ * @constructor
  * @param {} port
  * @param {} host
- * @return 
  */
 var GPNotificationBroker = function ( port, host )
 {
@@ -17,8 +16,6 @@ var GPNotificationBroker = function ( port, host )
 };
 /**
  * Description
- * @method init
- * @return 
  */
 GPNotificationBroker.prototype.init = function()
 {

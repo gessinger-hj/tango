@@ -4,8 +4,6 @@ var Path = require ( "path" ) ;
 
 /**
  *  @constructor
- * @method LocaleFactoryClass
- * @return 
  */
 var LocaleFactoryClass = function()
 {
@@ -20,7 +18,6 @@ var LocaleFactoryClass = function()
 };
 /**
  * Description
- * @method isLocale
  * @param {} obj
  * @return BinaryExpression
  */
@@ -30,7 +27,6 @@ LocaleFactoryClass.prototype.isLocale = function ( obj )
 };
 /**
  * Description
- * @method getInstance
  * @param {} optionalLocaleCode
  * @return NewExpression
  */
@@ -41,7 +37,6 @@ LocaleFactoryClass.prototype.getInstance = function ( optionalLocaleCode )
 };
 /**
  * Description
- * @method getDefault
  * @return MemberExpression
  */
 LocaleFactoryClass.prototype.getDefault = function ()
@@ -54,7 +49,6 @@ LocaleFactoryClass.prototype.getDefault = function ()
 };
 /**
  * Description
- * @method setDefault
  * @param {} defaultLocale
  * @return l
  */
@@ -74,7 +68,6 @@ LocaleFactoryClass.prototype.setDefault = function ( defaultLocale )
 };
 /**
  * Description
- * @method getLocaleCode
  * @return MemberExpression
  */
 LocaleFactoryClass.prototype.getLocaleCode = function()
@@ -83,9 +76,7 @@ LocaleFactoryClass.prototype.getLocaleCode = function()
 };
 /**
  * Description
- * @method setLanguage
  * @param {} lang
- * @return 
  */
 LocaleFactoryClass.prototype.setLanguage = function ( lang )
 {
@@ -93,7 +84,6 @@ LocaleFactoryClass.prototype.setLanguage = function ( lang )
 };
 /**
  * Description
- * @method getLanguage
  * @return MemberExpression
  */
 LocaleFactoryClass.prototype.getLanguage = function()
@@ -102,7 +92,6 @@ LocaleFactoryClass.prototype.getLanguage = function()
 };
 /**
  * Description
- * @method getLocalePath
  * @return CallExpression
  */
 LocaleFactoryClass.prototype.getLocalePath = function()
@@ -111,7 +100,6 @@ LocaleFactoryClass.prototype.getLocalePath = function()
 };
 /**
  * Description
- * @method getLocaleJson
  * @param {} localeCode
  * @return CallExpression
  */
@@ -155,9 +143,7 @@ LocaleFactoryClass.prototype.getLocaleJson = function ( localeCode )
 var LocaleFactory = new LocaleFactoryClass() ;
 /**
  *  @constructor
- * @method Locale
  * @param {} optionalLocationCode
- * @return 
  */
 var Locale = function ( optionalLocationCode )
 {
@@ -179,8 +165,6 @@ Locale.prototype =
   LONG: 3,
   /**
    * Description
-   * @method setFormats
-   * @return 
    */
   setFormats: function()
   {
@@ -198,8 +182,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method flush
-   * @return 
    */
   flush: function()
   {
@@ -207,7 +189,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getLanguage
    * @return MemberExpression
    */
   getLanguage: function()
@@ -230,7 +211,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getCountryCode
    * @return MemberExpression
    */
   getCountryCode: function()
@@ -247,7 +227,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getLocationCode
    * @return BinaryExpression
    */
   getLocationCode: function()
@@ -256,7 +235,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method toString
    * @return BinaryExpression
    */
   toString: function()
@@ -277,7 +255,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method isCurrencySymbolInFront
    * @return MemberExpression
    */
   isCurrencySymbolInFront: function()
@@ -289,7 +266,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getCurrencySymbol
    * @return MemberExpression
    */
   getCurrencySymbol: function()
@@ -305,7 +281,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getInternationalCurrencySymbol
    * @return MemberExpression
    */
   getInternationalCurrencySymbol: function()
@@ -321,7 +296,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getMonetaryDecimalSeparator
    * @return MemberExpression
    */
   getMonetaryDecimalSeparator: function()
@@ -337,7 +311,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getDecimalSeparator
    * @return MemberExpression
    */
   getDecimalSeparator: function()
@@ -353,7 +326,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getGroupingSeparator
    * @return MemberExpression
    */
   getGroupingSeparator: function()
@@ -369,7 +341,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method formatMoneyWithCurrency
    * @param {} amount
    * @return BinaryExpression
    */
@@ -386,7 +357,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method formatMoney
    * @param {} amount
    * @return str
    */
@@ -427,7 +397,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method formatFloat
    * @param {} amount
    * @return str
    */
@@ -448,7 +417,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getDateFormatShort
    * @return MemberExpression
    */
   getDateFormatShort: function()
@@ -457,7 +425,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getDateTimeFormatShort
    * @return MemberExpression
    */
   getDateTimeFormatShort: function()
@@ -466,7 +433,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getDateFormatMedium
    * @return MemberExpression
    */
   getDateFormatMedium: function()
@@ -475,7 +441,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getDateTimeFormatMedium
    * @return MemberExpression
    */
   getDateTimeFormatMedium: function()
@@ -484,7 +449,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getDateFormatLong
    * @return MemberExpression
    */
   getDateFormatLong: function()
@@ -493,7 +457,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getDateTimeFormatLong
    * @return MemberExpression
    */
   getDateTimeFormatLong: function()
@@ -502,7 +465,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getDateFormat
    * @param {} type
    * @return MemberExpression
    */
@@ -530,7 +492,6 @@ Locale.prototype =
   },
   /**
    * Description
-   * @method getDateTimeFormat
    * @param {} type
    * @return MemberExpression
    */
@@ -560,7 +521,6 @@ Locale.prototype =
 Locale.prototype.defaultLocale = null ;
 /**
  * Description
- * @method getDefault
  * @return MemberExpression
  */
 Locale.prototype.getDefault = function()
@@ -571,7 +531,6 @@ Locale.prototype.getDefault = function()
 };
 /**
  * Description
- * @method getJson
  * @return MemberExpression
  */
 Locale.prototype.getJson = function()
@@ -580,10 +539,8 @@ Locale.prototype.getJson = function()
 };
 /**
  * Description
- * @method File
  * @param {} path
  * @param {} name
- * @return 
  */
 var File = function ( path, name )
 {
@@ -604,8 +561,6 @@ var File = function ( path, name )
 };
 /**
  * Description
- * @method exists
- * @return 
  */
 File.prototype.exists = function()
 {
@@ -621,7 +576,6 @@ File.prototype.exists = function()
 };
 /**
  * Description
- * @method toJson
  * @return o
  */
 File.prototype.toJson = function()

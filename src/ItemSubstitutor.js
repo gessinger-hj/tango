@@ -4,8 +4,6 @@ var T = require ( "./Tango" ) ;
 var DateUtils = require ( "./DateUtils" ) ;
 /**
  * @constructor
- * @method ItemSubstitutor
- * @return 
  */
 var ItemSubstitutor = function ()
 {
@@ -13,13 +11,11 @@ var ItemSubstitutor = function ()
 };
 /**
  * Description
- * @method substitute
  * @param {} substitutor
  * @param {} item
  * @param {} map
  * @param {} useEnv
  * @param {} delimiter
- * @return 
  */
 ItemSubstitutor.prototype.substitute = function ( substitutor, item, map, useEnv, delimiter )
 {
@@ -103,10 +99,8 @@ ItemSubstitutor.prototype.substitute = function ( substitutor, item, map, useEnv
 };
 /**
  * Description
- * @method evaluateFunction
  * @param {} functionName
  * @param {} hm
- * @return 
  */
 ItemSubstitutor.prototype.evaluateFunction = function ( functionName, hm )
 {
@@ -148,7 +142,6 @@ ItemSubstitutor.prototype.evaluateFunction = function ( functionName, hm )
 };
 /**
  * Description
- * @method formatDate
  * @param {} h
  * @return CallExpression
  */
@@ -196,7 +189,6 @@ ItemSubstitutor.prototype.formatDate = function ( h )
 
 /**
  * Description
- * @method firstTimeOfDayOf
  * @param {} h
  * @return CallExpression
  */
@@ -206,7 +198,6 @@ ItemSubstitutor.prototype.firstTimeOfDayOf = function ( h )
 };
 /**
  * Description
- * @method lastTimeOfDayOf
  * @param {} h
  * @return CallExpression
  */
@@ -216,7 +207,6 @@ ItemSubstitutor.prototype.lastTimeOfDayOf = function ( h )
 };
 /**
  * Description
- * @method timeOfDayOf
  * @param {} h
  * @param {} first
  * @return rc
@@ -261,7 +251,6 @@ ItemSubstitutor.prototype.timeOfDayOf = function ( h, first )
 };
 /**
  * Description
- * @method firstTimeOfWeekOf
  * @param {} h
  * @return CallExpression
  */
@@ -271,7 +260,6 @@ ItemSubstitutor.prototype.firstTimeOfWeekOf = function ( h )
 };
 /**
  * Description
- * @method lastTimeOfWeekOf
  * @param {} h
  * @return CallExpression
  */
@@ -281,7 +269,6 @@ ItemSubstitutor.prototype.lastTimeOfWeekOf = function ( h )
 };
 /**
  * Description
- * @method timeOfWeekOf
  * @param {} h
  * @param {} first
  * @return rc
@@ -326,7 +313,6 @@ ItemSubstitutor.prototype.timeOfWeekOf = function ( h, first )
 };
 /**
  * Description
- * @method firstTimeOfMonthOf
  * @param {} h
  * @return CallExpression
  */
@@ -336,7 +322,6 @@ ItemSubstitutor.prototype.firstTimeOfMonthOf = function ( h )
 }
 /**
  * Description
- * @method lastTimeOfMonthOf
  * @param {} h
  * @return CallExpression
  */
@@ -346,7 +331,6 @@ ItemSubstitutor.prototype.lastTimeOfMonthOf = function ( h )
 }
 /**
  * Description
- * @method timeOfMonthOf
  * @param {} h
  * @param {} first
  * @return rc

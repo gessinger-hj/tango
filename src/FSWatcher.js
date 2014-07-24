@@ -16,9 +16,9 @@ var Path = require ( "path" ) ;
 
 /**
  * Description
- * @method FSWatcher
+ * @constructor
+ * @extends EventEmitter
  * @param {} filename
- * @return 
  */
 var FSWatcher = function ( filename )
 {
@@ -45,8 +45,6 @@ var FSWatcher = function ( filename )
 util.inherits ( FSWatcher, EventEmitter ) ;
 /**
  * Description
- * @method exists
- * @return 
  */
 FSWatcher.prototype.exists = function()
 {
@@ -62,7 +60,6 @@ FSWatcher.prototype.exists = function()
 };
 /**
  * Description
- * @method getFullname
  * @return MemberExpression
  */
 FSWatcher.prototype.getFullname = function()
@@ -71,8 +68,6 @@ FSWatcher.prototype.getFullname = function()
 };
 /**
  * Description
- * @method isFile
- * @return 
  */
 FSWatcher.prototype.isFile = function()
 {
@@ -87,8 +82,6 @@ FSWatcher.prototype.isFile = function()
 };
 /**
  * Description
- * @method isDirectory
- * @return 
  */
 FSWatcher.prototype.isDirectory = function()
 {
@@ -103,7 +96,6 @@ FSWatcher.prototype.isDirectory = function()
 };
 /**
  * Description
- * @method toString
  * @return BinaryExpression
  */
 FSWatcher.prototype.toString = function()
@@ -113,8 +105,6 @@ FSWatcher.prototype.toString = function()
 
 /**
  * Description
- * @method watch
- * @return 
  */
 FSWatcher.prototype.watch = function()
 {

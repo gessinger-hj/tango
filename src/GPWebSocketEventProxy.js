@@ -9,9 +9,8 @@ var ws = require ( "nodejs-websocket" ) ;
 
 /**
  * Description
- * @method GPWebSocketEventProxy
+ * @constructor
  * @param {} port
- * @return 
  */
 var GPWebSocketEventProxy = function ( port )
 {
@@ -24,7 +23,6 @@ var GPWebSocketEventProxy = function ( port )
 }
 /**
  * Description
- * @method toString
  * @return BinaryExpression
  */
 GPWebSocketEventProxy.prototype.toString = function()
@@ -33,9 +31,7 @@ GPWebSocketEventProxy.prototype.toString = function()
 };
 /**
  * Description
- * @method sendToWebSocket
  * @param {} e
- * @return 
  */
 GPWebSocketEventProxy.prototype.sendToWebSocket = function ( e )
 {
@@ -48,9 +44,7 @@ GPWebSocketEventProxy.prototype.sendToWebSocket = function ( e )
 };
 /**
  * Description
- * @method generalEventListenerFunction
  * @param {} e
- * @return 
  */
 GPWebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 {
@@ -69,9 +63,7 @@ GPWebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 };
 /**
  * Description
- * @method removeWebsocket
  * @param {} socket
- * @return 
  */
 GPWebSocketEventProxy.prototype.removeWebsocket = function ( socket )
 {
@@ -139,11 +131,7 @@ GPWebSocketEventProxy.prototype._create = function()
 			{
 				thiz.client.fire ( ne
 	      , { 
-/**
-  * Description
-  * @method result
-  * @param {} e
-  * @return 
+/*
   */
  result: function(e)
 	          {
@@ -153,21 +141,14 @@ GPWebSocketEventProxy.prototype._create = function()
 							}
 	          }
 	        	, 
-/**
-  * Description
-  * @method error
-  * @param {} e
-  * @return 
+/*
   */
  error: function(e)
 	          	{
 								thiz.sendToWebSocket ( e ) ;
 	          	}
 	         	, 
-/**
-  * Description
-  * @method write
-  * @return 
+/*
   */
  write: function()
 	          	{
@@ -189,10 +170,8 @@ GPWebSocketEventProxy.prototype._create = function()
 };
 /**
  * Description
- * @method handleSystemMessages
  * @param {} ctx
  * @param {} ne
- * @return 
  */
 GPWebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 {
@@ -288,9 +267,7 @@ GPWebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 };
 /**
  * Description
- * @method listen
  * @param {} port
- * @return 
  */
 GPWebSocketEventProxy.prototype.listen = function ( port )
 {
@@ -306,8 +283,6 @@ GPWebSocketEventProxy.prototype.listen = function ( port )
 };
 /**
  * Description
- * @method listenSocketBound
- * @return 
  */
 GPWebSocketEventProxy.prototype.listenSocketBound = function()
 {

@@ -3,11 +3,9 @@ var util = require ( "util" ) ;
 
 /**
  *  @constructor
- * @method FunctionExecutor
  * @param {} object
  * @param {} method
  * @param {} args
- * @return 
  */
 var FunctionExecutor = function ( object, method, args )
 {
@@ -53,8 +51,6 @@ var FunctionExecutor = function ( object, method, args )
 };
 /**
  * Description
- * @method flush
- * @return 
  */
 FunctionExecutor.prototype.flush = function()
 {
@@ -69,9 +65,7 @@ FunctionExecutor.prototype.flush = function()
 };
 /**
  * Description
- * @method executeWithEvent
  * @param {} event
- * @return 
  */
 FunctionExecutor.prototype.executeWithEvent = function ( event )
 {
@@ -93,9 +87,7 @@ FunctionExecutor.prototype.executeWithEvent = function ( event )
 };
 /**
  * Description
- * @method execute
  * @param {} argumentArray
- * @return 
  */
 FunctionExecutor.prototype.execute = function ( argumentArray )
 {
@@ -121,7 +113,6 @@ FunctionExecutor.prototype.execute = function ( argumentArray )
   }
 };
 /**
- * @constructor
  *   One of the following values:
  * <ul>
  * <li>Event.prototype.CHANGED</li>
@@ -131,10 +122,9 @@ FunctionExecutor.prototype.execute = function ( argumentArray )
  * <li>Event.prototype.PROPERTY_CHANGE</li>
  * <li>Event.prototype.ACTION</li>
  *  </ul>
- * @method Event
+ * @constructor
  * @param {} eventName
  * @param {} eventType
- * @return 
  */
 var Event = function ( eventName, eventType )
 {
@@ -160,7 +150,6 @@ Event.prototype =
   TYPE_MAX: 9,
   /**
    * Description
-   * @method isAction
    * @return BinaryExpression
    */
   isAction: function()
@@ -169,7 +158,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method isReset
    * @return BinaryExpression
    */
   isReset: function()
@@ -178,7 +166,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method isChanged
    * @return BinaryExpression
    */
   isChanged: function()
@@ -187,7 +174,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method isItemSelected
    * @return BinaryExpression
    */
   isItemSelected: function()
@@ -196,7 +182,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method isItemDeselected
    * @return BinaryExpression
    */
   isItemDeselected: function()
@@ -205,7 +190,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method isPropertyChange
    * @return BinaryExpression
    */
   isPropertyChange: function()
@@ -214,7 +198,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method getName
    * @return MemberExpression
    */
   getName: function()
@@ -223,9 +206,7 @@ Event.prototype =
   },
   /**
    * Description
-   * @method setName
    * @param {} eventName
-   * @return 
    */
   setName: function ( eventName )
   {
@@ -233,7 +214,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method getType
    * @return MemberExpression
    */
   getType: function()
@@ -242,9 +222,7 @@ Event.prototype =
   },
   /**
    * Description
-   * @method setType
    * @param {} type
-   * @return 
    */
   setType: function ( type )
   {
@@ -254,8 +232,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method typeToString
-   * @return 
    */
   typeToString: function()
   {
@@ -268,7 +244,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method getAction
    * @return MemberExpression
    */
   getAction: function()
@@ -277,7 +252,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method getItem
    * @return MemberExpression
    */
   getItem: function()
@@ -286,9 +260,7 @@ Event.prototype =
   },
   /**
    * Description
-   * @method setItem
    * @param {} item
-   * @return 
    */
   setItem: function ( item )
   {
@@ -296,9 +268,7 @@ Event.prototype =
   },
   /**
    * Description
-   * @method setPropertyName
    * @param {} name
-   * @return 
    */
   setPropertyName: function ( name )
   {
@@ -306,7 +276,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method getPropertyName
    * @return MemberExpression
    */
   getPropertyName: function()
@@ -315,7 +284,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method getOldValue
    * @return MemberExpression
    */
   getOldValue: function()
@@ -325,9 +293,7 @@ Event.prototype =
   },
   /**
    * Description
-   * @method setOldValue
    * @param {} val
-   * @return 
    */
   setOldValue: function ( val )
   {
@@ -335,7 +301,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method getNewValue
    * @return MemberExpression
    */
   getNewValue: function()
@@ -345,9 +310,7 @@ Event.prototype =
   },
   /**
    * Description
-   * @method setNewValue
    * @param {} val
-   * @return 
    */
   setNewValue: function ( val )
   {
@@ -355,7 +318,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method isConsumed
    * @return MemberExpression
    */
   isConsumed: function()
@@ -365,8 +327,6 @@ Event.prototype =
   },
   /**
    * Description
-   * @method consume
-   * @return 
    */
   consume: function()
   {
@@ -375,9 +335,7 @@ Event.prototype =
 };
 /**
  * Description
- * @method setAction
  * @param {} name
- * @return 
  */
 Event.prototype.setAction = function ( name )
 {
@@ -385,7 +343,6 @@ Event.prototype.setAction = function ( name )
 };
 /**
  * Description
- * @method toString
  * @return BinaryExpression
  */
 Event.prototype.toString = function()
@@ -402,10 +359,8 @@ Event.prototype.toString = function()
 /**
  * @constructor
  * @extends Event
- * @method ItemEvent
  * @param {} item
  * @param {} type
- * @return 
  */
 var ItemEvent = function ( item, type )
 {
@@ -418,9 +373,7 @@ util.inherits ( ItemEvent, Event ) ;
 /**
  *  @constructor
  *  @extends Event
- * @method ActionEvent
  * @param {} actionName
- * @return 
  */
 var ActionEvent = function ( actionName )
 {
@@ -433,9 +386,7 @@ util.inherits ( ActionEvent, Event ) ;
 /**
  *  @constructor
  *  @extends Event
- * @method PropertyChangeEvent
  * @param {} propertyName
- * @return 
  */
 var PropertyChangeEvent = function ( propertyName )
 {
@@ -447,8 +398,6 @@ util.inherits ( PropertyChangeEvent, Event ) ;
 
 /**
  *  @constructor
- * @method PropertyChangeHandler
- * @return 
  */
 var PropertyChangeHandler = function()
 {
@@ -459,8 +408,6 @@ var PropertyChangeHandler = function()
 };
 /**
  * Description
- * @method flush
- * @return 
  */
 PropertyChangeHandler.prototype.flush = function()
 {
@@ -475,11 +422,9 @@ PropertyChangeHandler.prototype.flush = function()
 };
 /**
  * Description
- * @method add
  * @param {} obj
  * @param {} method
  * @param {} propertyName
- * @return 
  */
 PropertyChangeHandler.prototype.add = function ( obj, method, propertyName )
 {
@@ -518,10 +463,8 @@ PropertyChangeHandler.prototype.add = function ( obj, method, propertyName )
 };
 /**
  * Description
- * @method fireEvent
  * @param {} ev
  * @param {} propertyName
- * @return 
  */
 PropertyChangeHandler.prototype.fireEvent = function ( ev, propertyName )
 {
@@ -555,9 +498,7 @@ PropertyChangeHandler.prototype.fireEvent = function ( ev, propertyName )
 };
 /**
  * Description
- * @method remove
  * @param {} fe
- * @return 
  */
 PropertyChangeHandler.prototype.remove = function ( fe )
 {
@@ -589,17 +530,14 @@ PropertyChangeTrait = {} ;
 PropertyChangeTrait.__propertyChangeHandler = { 
 /**
   * Description
-  * @method create
   * @return NewExpression
   */
  create: function(){return new PropertyChangeHandler();} } ;
 /**
  * Description
- * @method addPropertyChangeListener
  * @param {} obj
  * @param {} method
  * @param {} propertyName
- * @return 
  */
 PropertyChangeTrait.addPropertyChangeListener = function ( obj, method, propertyName )
 {
@@ -607,9 +545,7 @@ PropertyChangeTrait.addPropertyChangeListener = function ( obj, method, property
 }
 /**
  * Description
- * @method removePropertyChangeListener
  * @param {} obj
- * @return 
  */
 PropertyChangeTrait.removePropertyChangeListener = function ( obj )
 {
@@ -623,8 +559,6 @@ PropertyChangeTrait._firePropertyChangeEvent = function ( ev, propertyName )
 /**
  *  @constructor
  *  @extends PropertyChangeHandler
- * @method EventMulticaster
- * @return 
  */
 var EventMulticaster = function()
 {
@@ -634,7 +568,6 @@ var EventMulticaster = function()
 util.inherits ( EventMulticaster, PropertyChangeHandler ) ;
 /**
  * Description
- * @method toString
  * @return BinaryExpression
  */
 EventMulticaster.prototype.toString = function()
@@ -643,10 +576,8 @@ EventMulticaster.prototype.toString = function()
 };
 /**
  * Description
- * @method fireEvent
  * @param {} evt
  * @param {} type
- * @return 
  */
 EventMulticaster.prototype.fireEvent = function ( evt, type )
 {
@@ -700,17 +631,14 @@ EventMulticasterTrait = {} ;
 EventMulticasterTrait.__eventMulticaster = { 
 /**
   * Description
-  * @method create
   * @return NewExpression
   */
  create: function(){return new EventMulticaster();} } ;
 /**
  * Description
- * @method addListener
  * @param {} obj
  * @param {} method
  * @param {} propertyName
- * @return 
  */
 EventMulticasterTrait.addListener = function ( obj, method, propertyName )
 {
@@ -719,9 +647,7 @@ EventMulticasterTrait.addListener = function ( obj, method, propertyName )
 }
 /**
  * Description
- * @method removeListener
  * @param {} obj
- * @return 
  */
 EventMulticasterTrait.removeListener = function ( obj )
 {
@@ -735,8 +661,6 @@ EventMulticasterTrait._fireEvent = function ( ev, type )
 }
 /**
  * Description
- * @method flushEventMulticaster
- * @return 
  */
 EventMulticasterTrait.flushEventMulticaster = function()
 {

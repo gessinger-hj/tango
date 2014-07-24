@@ -4,9 +4,7 @@ var Substitutor = require ( './Substitutor' ) ;
 
 /**
  * @constructor
- * @method Localizer
  * @param {} localizedMessages
- * @return 
  */
 var Localizer = function ( localizedMessages )
 {
@@ -21,9 +19,7 @@ var Localizer = function ( localizedMessages )
 }
 /**
  * Description
- * @method setLocaleCode
  * @param {} localeString
- * @return 
  */
 Localizer.prototype.setLocaleCode = function ( localeString )
 {
@@ -31,7 +27,6 @@ Localizer.prototype.setLocaleCode = function ( localeString )
 };
 /**
  * Description
- * @method translate
  * @param {} text
  * @param {} args
  * @param {} defaultString
@@ -44,7 +39,6 @@ Localizer.prototype.translate = function ( text, args, defaultString )
 };
 /**
  * Description
- * @method localize
  * @param {} src
  * @return CallExpression
  */

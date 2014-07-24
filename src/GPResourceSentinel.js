@@ -13,10 +13,9 @@ var Path = require ( "path" ) ;
 
 /**
  * Description
- * @method GPResourceSentinel
+ * @constructor
  * @param {} port
  * @param {} host
- * @return 
  */
 var GPResourceSentinel = function ( port, host )
 {
@@ -34,8 +33,6 @@ var GPResourceSentinel = function ( port, host )
 };
 /**
  * Description
- * @method init
- * @return 
  */
 GPResourceSentinel.prototype.init = function()
 {
@@ -43,7 +40,6 @@ GPResourceSentinel.prototype.init = function()
 };
 /**
  * Description
- * @method make_data
  * @param {} name
  * @param {} state
  * @param {} id
@@ -63,9 +59,7 @@ GPResourceSentinel.prototype.make_data = function ( name, state, id )
 };
 /**
  * Description
- * @method add
  * @param {} resource
- * @return 
  */
 GPResourceSentinel.prototype.add = function ( resource )
 {
@@ -78,9 +72,7 @@ GPResourceSentinel.prototype.add = function ( resource )
 };
 /**
  * Description
- * @method addChange
  * @param {} resource
- * @return 
  */
 GPResourceSentinel.prototype.addChange = function ( resource )
 {
@@ -105,8 +97,6 @@ GPResourceSentinel.prototype.addChange = function ( resource )
 };
 /**
  * Description
- * @method removeOutdated
- * @return 
  */
 GPResourceSentinel.prototype.removeOutdated = function()
 {
@@ -136,8 +126,7 @@ GPResourceSentinel.prototype.removeOutdated = function()
 };
 /**
  * Description
- * @method WatchResource
- * @return 
+ * @constructor
  */
 var WatchResource = function()
 {
@@ -150,7 +139,6 @@ var WatchResource = function()
 util.inherits ( WatchResource, EventEmitter ) ;
 /**
  * Description
- * @method canOutdate
  * @return MemberExpression
  */
 WatchResource.prototype.canOutdate = function()
@@ -159,9 +147,7 @@ WatchResource.prototype.canOutdate = function()
 };
 /**
  * Description
- * @method setCanOutdate
  * @param {} state
- * @return 
  */
 WatchResource.prototype.setCanOutdate = function ( state )
 {
@@ -170,9 +156,7 @@ WatchResource.prototype.setCanOutdate = function ( state )
 };
 /**
  * Description
- * @method setResourceId
  * @param {} id
- * @return 
  */
 WatchResource.prototype.setResourceId = function ( id )
 {
@@ -180,9 +164,7 @@ WatchResource.prototype.setResourceId = function ( id )
 };
 /**
  * Description
- * @method setParent
  * @param {} sentinel
- * @return 
  */
 WatchResource.prototype.setParent = function ( sentinel )
 {
@@ -190,10 +172,10 @@ WatchResource.prototype.setParent = function ( sentinel )
 };
 /**
  * Description
- * @method MRTResource
+ * @constructor
+ * @extends WatchResource
  * @param {} log_dir
  * @param {} MRT_dir
- * @return 
  */
 var MRTResource = function ( log_dir, MRT_dir )
 {
@@ -204,9 +186,7 @@ var MRTResource = function ( log_dir, MRT_dir )
 util.inherits ( MRTResource, WatchResource ) ;
 /**
  * Description
- * @method setParent
  * @param {} sentinel
- * @return 
  */
 MRTResource.prototype.setParent = function ( sentinel )
 {
@@ -255,11 +235,11 @@ MRTResource.prototype.setParent = function ( sentinel )
 };
 /**
  * Description
- * @method DirectoryResource
+ * @constructor
+ * @extends WatchResource
  * @param {} dirname
  * @param {} pattern
  * @param {} displayPattern
- * @return 
  */
 var DirectoryResource = function ( dirname, pattern, displayPattern )
 {
@@ -305,9 +285,7 @@ var DirectoryResource = function ( dirname, pattern, displayPattern )
 util.inherits ( DirectoryResource, WatchResource ) ;
 /**
  * Description
- * @method setAcceptCallback
  * @param {} callback
- * @return 
  */
 DirectoryResource.prototype.setAcceptCallback = function ( callback )
 {
@@ -315,9 +293,7 @@ DirectoryResource.prototype.setAcceptCallback = function ( callback )
 };
 /**
  * Description
- * @method setNotificationType
  * @param {} notificationType
- * @return 
  */
 DirectoryResource.prototype.setNotificationType = function ( notificationType )
 {
@@ -325,7 +301,6 @@ DirectoryResource.prototype.setNotificationType = function ( notificationType )
 };
 /**
  * Description
- * @method getNotificationType
  * @return MemberExpression
  */
 DirectoryResource.prototype.getNotificationType = function()
@@ -334,10 +309,8 @@ DirectoryResource.prototype.getNotificationType = function()
 };
 /**
  * Description
- * @method on
  * @param {} eventName
  * @param {} callback
- * @return 
  */
 DirectoryResource.prototype.on = function ( eventName, callback )
 {
@@ -404,7 +377,6 @@ DirectoryResource.prototype._onchange = function ( name )
 };
 /**
  * Description
- * @method removeOutdated
  * @return toBeRemoved
  */
 DirectoryResource.prototype.removeOutdated = function()

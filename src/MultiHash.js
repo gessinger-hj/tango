@@ -1,8 +1,6 @@
 if ( typeof tangojs === 'undefined' ) tangojs = {} ;
 /**
  *  @constructor
- * @method MultiHash
- * @return 
  */
 tangojs.MultiHash = function()
 {
@@ -13,10 +11,8 @@ tangojs.MultiHash.prototype =
 {
   /**
    * Description
-   * @method put
    * @param {} key
    * @param {} obj
-   * @return 
    */
   put: function ( key, obj )
   {
@@ -34,7 +30,6 @@ tangojs.MultiHash.prototype =
   },
   /**
    * Description
-   * @method getKeysOf
    * @param {} obj
    * @return list
    */
@@ -54,7 +49,6 @@ tangojs.MultiHash.prototype =
   },
   /**
    * Description
-   * @method remove
    * @param {} key
    * @param {} obj
    * @return obj
@@ -101,7 +95,6 @@ tangojs.MultiHash.prototype =
   },
   /**
    * Description
-   * @method get
    * @param {} key
    * @return l
    */
@@ -112,7 +105,6 @@ tangojs.MultiHash.prototype =
   },
   /**
    * Description
-   * @method getKeys
    * @return a
    */
   getKeys: function()
@@ -127,7 +119,6 @@ tangojs.MultiHash.prototype =
   },
   /**
    * Description
-   * @method toString
    * @return str
    */
   toString: function()
@@ -148,8 +139,6 @@ tangojs.MultiHash.prototype =
   },
   /**
    * Description
-   * @method flush
-   * @return 
    */
   flush: function()
   {

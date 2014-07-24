@@ -6,10 +6,9 @@ var util = require ( "util" ) ;
 
 /**
  * Description
- * @method Process
- * @param {} cmd
- * @param {} args
- * @return 
+ * @constructor
+ * @param {string} cmd
+ * @param {string|Array<string>} args
  */
 var Process = function ( cmd, args )
 {
@@ -27,7 +26,6 @@ util.inherits ( Process, EventEmitter ) ;
 
 /**
  * Description
- * @method toString
  * @return BinaryExpression
  */
 Process.prototype.toString = function()
@@ -36,9 +34,7 @@ Process.prototype.toString = function()
 };
 /**
  * Description
- * @method lines
  * @param {} callback
- * @return 
  */
 Process.prototype.lines = function ( callback )
 {
@@ -88,9 +84,7 @@ Process.prototype.lines = function ( callback )
 };
 /**
  * Description
- * @method asString
  * @param {} callback
- * @return 
  */
 Process.prototype.asString = function ( callback )
 {
@@ -131,25 +125,21 @@ Process.prototype.asString = function ( callback )
 };
 /**
  * Description
- * @method getExitCode
  * @return MemberExpression
  */
 Process.prototype.getExitCode = function() { return this.exitCode ; };
 /**
  * Description
- * @method getSignal
  * @return MemberExpression
  */
 Process.prototype.getSignal = function() { return this.signal ; };
 /**
  * Description
- * @method stdout
  * @return MemberExpression
  */
 Process.prototype.stdout = function() { return this._stdout ; };
 /**
  * Description
- * @method stderr
  * @return MemberExpression
  */
 Process.prototype.stderr = function() { return this._stderr ; };

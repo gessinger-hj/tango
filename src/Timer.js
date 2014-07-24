@@ -2,7 +2,6 @@
  *  @constructor
  * @param {} timeoutMillis
  * @param {} callback
- * @return 
  */
 Timer = function ( timeoutMillis, callback )
 {
@@ -35,8 +34,6 @@ Timer.prototype =
 {
   /**
    * Description
-   * @method flush
-   * @return 
    */
   flush: function()
   {
@@ -45,7 +42,6 @@ Timer.prototype =
   },
   /**
    * Description
-   * @method toString
    * @return BinaryExpression
    */
   toString: function()
@@ -59,9 +55,7 @@ Timer.prototype =
   },
   /**
    * Description
-   * @method setRepeats
    * @param {} state
-   * @return 
    */
   setRepeats: function ( state )
   {
@@ -69,9 +63,7 @@ Timer.prototype =
   },
   /**
    * Description
-   * @method setInitialDelay
    * @param {} delayMillis
-   * @return 
    */
   setInitialDelay: function ( delayMillis )
   {
@@ -83,14 +75,11 @@ Timer.prototype =
   },
   /**
    * Description
-   * @method isRunning
    * @return UnaryExpression
    */
   isRunning: function() { return !this.intervallId ; },
   /**
    * Description
-   * @method start
-   * @return 
    */
   start: function()
   {
@@ -99,8 +88,6 @@ Timer.prototype =
   },
   /**
    * Description
-   * @method stop
-   * @return 
    */
   stop: function()
   {
@@ -109,8 +96,6 @@ Timer.prototype =
   },
   /**
    * Description
-   * @method restart
-   * @return 
    */
   restart: function()
   {
@@ -119,8 +104,6 @@ Timer.prototype =
   },
   /**
    * Description
-   * @method onTimerEvent
-   * @return 
    */
   onTimerEvent: function()
   {

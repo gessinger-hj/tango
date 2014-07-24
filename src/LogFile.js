@@ -5,8 +5,6 @@ var util = require ( "util" ) ;
 
 /**
  * @constructor
- * @method LogFile
- * @return 
  */
 var LogFile = function()
 {
@@ -52,9 +50,7 @@ var LogFile = function()
 };
 /**
  * Description
- * @method setLogger
  * @param {} loggerInterface
- * @return 
  */
 LogFile.prototype.setLogger = function ( loggerInterface )
 {
@@ -69,9 +65,7 @@ LogFile.prototype.setLogger = function ( loggerInterface )
   // , info: function ( str ) {}
     /**
      * Description
-     * @method debug
      * @param {} str
-     * @return 
      */
     debug: function ( str ) {}
   // , log: function ( str ) {}
@@ -80,73 +74,55 @@ LogFile.prototype.setLogger = function ( loggerInterface )
   if ( typeof li.emergency === 'function' ) 
 /**
   * Description
-  * @method emergency
   * @param {} str
-  * @return 
   */
  o.emergency = function ( str ) { li.emergency ( str ) } ;
   if ( typeof li.alert === 'function' ) 
 /**
   * Description
-  * @method alert
   * @param {} str
-  * @return 
   */
  o.alert = function ( str ) { li.alert ( str ) } ;
   if ( typeof li.critical === 'function' ) 
 /**
   * Description
-  * @method critical
   * @param {} str
-  * @return 
   */
  o.critical = function ( str ) { li.critical ( str ) } ;
   if ( typeof li.error === 'function' ) 
 /**
   * Description
-  * @method error
   * @param {} str
-  * @return 
   */
  o.error = function ( str ) { li.error ( str ) } ;
   if ( typeof li.warning === 'function' ) 
 /**
   * Description
-  * @method warning
   * @param {} str
-  * @return 
   */
  o.warning = function ( str ) { li.warning ( str ) } ;
   if ( typeof li.notice === 'function' ) 
 /**
   * Description
-  * @method notice
   * @param {} str
-  * @return 
   */
  o.notice = function ( str ) { li.notice ( str ) } ;
   if ( typeof li.info === 'function' ) 
 /**
   * Description
-  * @method info
   * @param {} str
-  * @return 
   */
  o.info = function ( str ) { li.info ( str ) } ;
   if ( typeof li.debug === 'function' ) 
 /**
   * Description
-  * @method debug
   * @param {} str
-  * @return 
   */
  o.debug = function ( str ) { li.debug ( str ) } ;
   if ( typeof li.log === 'function' ) 
 /**
   * Description
-  * @method log
   * @param {} str
-  * @return 
   */
  o.log = function ( str ) { li.log ( str ) } ;
 
@@ -160,9 +136,7 @@ LogFile.prototype.setLogger = function ( loggerInterface )
 };
 /**
  * Description
- * @method init
  * @param {} s
- * @return 
  */
 LogFile.prototype.init = function ( s )
 {
@@ -396,9 +370,7 @@ LogFile.prototype.init = function ( s )
 };
 /**
  * Description
- * @method setLevel
  * @param {} level
- * @return 
  */
 LogFile.prototype.setLevel = function ( level )
 {
@@ -413,7 +385,6 @@ LogFile.prototype.setLevel = function ( level )
 };
 /**
  * Description
- * @method getLevel
  * @return MemberExpression
  */
 LogFile.prototype.getLevel = function()
@@ -422,7 +393,6 @@ LogFile.prototype.getLevel = function()
 };
 /**
  * Description
- * @method getLevelName
  * @return MemberExpression
  */
 LogFile.prototype.getLevelName = function()
@@ -518,7 +488,6 @@ LogFile.prototype._writeToOutputBuffer = function ( s
 };
 /**
  * Description
- * @method getDatePrefix
  * @return BinaryExpression
  */
 LogFile.prototype.getDatePrefix = function()
@@ -529,8 +498,6 @@ LogFile.prototype.getDatePrefix = function()
 };
 /**
  * Description
- * @method openNewFile
- * @return 
  */
 LogFile.prototype.openNewFile = function()
 {
@@ -544,8 +511,6 @@ LogFile.prototype.openNewFile = function()
 };
 /**
  * Description
- * @method openNewFileIntern
- * @return 
  */
 LogFile.prototype.openNewFileIntern = function()
 {
@@ -640,9 +605,7 @@ LogFile.prototype.openNewFileIntern = function()
 };
 /**
  * Description
- * @method debug
  * @param {} str
- * @return 
  */
 LogFile.prototype.debug = function ( str )
 {
@@ -672,9 +635,7 @@ LogFile.prototype.debug = function ( str )
 };
 /**
  * Description
- * @method info
  * @param {} str
- * @return 
  */
 LogFile.prototype.info = function ( str )
 {
@@ -685,9 +646,7 @@ LogFile.prototype.info = function ( str )
 };
 /**
  * Description
- * @method notice
  * @param {} str
- * @return 
  */
 LogFile.prototype.notice = function ( str )
 {
@@ -698,9 +657,7 @@ LogFile.prototype.notice = function ( str )
 };
 /**
  * Description
- * @method warning
  * @param {} str
- * @return 
  */
 LogFile.prototype.warning = function ( str )
 {
@@ -711,9 +668,7 @@ LogFile.prototype.warning = function ( str )
 };
 /**
  * Description
- * @method error
  * @param {} str
- * @return 
  */
 LogFile.prototype.error = function ( str )
 {
@@ -724,9 +679,7 @@ LogFile.prototype.error = function ( str )
 };
 /**
  * Description
- * @method critical
  * @param {} str
- * @return 
  */
 LogFile.prototype.critical = function ( str )
 {
@@ -737,9 +690,7 @@ LogFile.prototype.critical = function ( str )
 };
 /**
  * Description
- * @method alert
  * @param {} str
- * @return 
  */
 LogFile.prototype.alert = function ( str )
 {
@@ -750,9 +701,7 @@ LogFile.prototype.alert = function ( str )
 };
 /**
  * Description
- * @method emergency
  * @param {} str
- * @return 
  */
 LogFile.prototype.emergency = function ( str )
 {
@@ -764,9 +713,7 @@ LogFile.prototype.emergency = function ( str )
 
 /**
  * Description
- * @method log
  * @param {} str
- * @return 
  */
 LogFile.prototype.log = function ( str )
 {
@@ -777,9 +724,7 @@ LogFile.prototype.log = function ( str )
 };
 /**
  * Description
- * @method logln
  * @param {} str
- * @return 
  */
 LogFile.prototype.logln = function ( str )
 {
@@ -790,8 +735,6 @@ LogFile.prototype.logln = function ( str )
 };
 /**
  * Description
- * @method flush
- * @return 
  */
 LogFile.prototype.flush = function()
 {
@@ -813,9 +756,7 @@ LogFile.prototype.flush = function()
 };
 /**
  * Description
- * @method redirectOutput
  * @param {} channelFlags
- * @return 
  */
 LogFile.prototype.redirectOutput = function ( channelFlags )
 {
@@ -835,8 +776,6 @@ LogFile.prototype.redirectOutput = function ( channelFlags )
       this.old_console_error = console.error ;
       /**
        * Description
-       * @method log
-       * @return 
        */
       console.log = function()
       {
@@ -844,8 +783,6 @@ LogFile.prototype.redirectOutput = function ( channelFlags )
       };
       /**
        * Description
-       * @method error
-       * @return 
        */
       console.error = function()
       {
@@ -853,8 +790,6 @@ LogFile.prototype.redirectOutput = function ( channelFlags )
       };
       /**
        * Description
-       * @method info
-       * @return 
        */
       console.info = function()
       {
@@ -862,8 +797,6 @@ LogFile.prototype.redirectOutput = function ( channelFlags )
       };
       /**
        * Description
-       * @method warn
-       * @return 
        */
       console.warn = function()
       {
@@ -891,9 +824,7 @@ LogFile.prototype.redirectOutput = function ( channelFlags )
 };
 /**
  * Description
- * @method unredirectOutput
  * @param {} channelFlags
- * @return 
  */
 LogFile.prototype.unredirectOutput = function ( channelFlags )
 {
@@ -940,10 +871,8 @@ LogFile.prototype.unredirectOutput = function ( channelFlags )
 };
 /**
  * Description
- * @method File
  * @param {} path
  * @param {} name
- * @return 
  */
 var File = function ( path, name )
 {
@@ -964,7 +893,6 @@ var File = function ( path, name )
 };
 /**
  * Description
- * @method toString
  * @return MemberExpression
  */
 File.prototype.toString = function()
@@ -973,7 +901,6 @@ File.prototype.toString = function()
 };
 /**
  * Description
- * @method getWriteStream
  * @param {} enc
  * @param {} mode
  * @return CallExpression
@@ -990,8 +917,6 @@ File.prototype.getWriteStream = function ( enc, mode )
 };
 /**
  * Description
- * @method exists
- * @return 
  */
 File.prototype.exists = function()
 {

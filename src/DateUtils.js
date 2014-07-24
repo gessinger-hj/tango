@@ -3,8 +3,6 @@ var Locale = require ( "./Locale" ) ;
 /**
  *  Global singleton <b>DateUtils</b>
  *  @constructor
- * @method DateUtilsClass
- * @return 
  */
 var DateUtilsClass = function()
 {
@@ -66,7 +64,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getDateTimeFormatShort
    * @return MemberExpression
    */
   getDateTimeFormatShort: function()
@@ -77,7 +74,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getWeekOfYear
    * @param {} date
    * @return iWeekOfYear
    */
@@ -117,7 +113,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getWeekOfYear2
    * @param {} date
    * @return CallExpression
    */
@@ -132,7 +127,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getDayOfYear
    * @param {} date
    * @return iDayOfYear
    */
@@ -152,7 +146,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getFirstDayOfWeek
    * @param {} localeCode
    * @return CallExpression
    */
@@ -171,7 +164,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getDayNames
    * @param {} lang
    * @return a
    */
@@ -184,7 +176,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getDayNamesShort
    * @param {} lang
    * @return b
    */
@@ -201,7 +192,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getMonthNames
    * @param {} lang
    * @return a
    */
@@ -214,7 +204,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method isLeapYear
    * @param {} date
    * @return Literal
    */
@@ -225,7 +214,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getMaxDays
    * @param {} y
    * @param {} m
    * @return Literal
@@ -251,7 +239,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method roundDownToDay
    * @param {} date
    * @return d
    */
@@ -267,7 +254,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method roundDownToWeek
    * @param {} date
    * @param {} localeCode
    * @return d
@@ -289,7 +275,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method roundDownToMonth
    * @param {} date
    * @return date
    */
@@ -305,7 +290,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method addWeek
    * @param {} date
    * @param {} nWeeks
    * @return CallExpression
@@ -316,7 +300,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method addDay
    * @param {} date
    * @param {} nDay
    * @return newDate
@@ -335,7 +318,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method addMonth
    * @param {} date
    * @param {} nMonth
    * @return d
@@ -377,7 +359,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getSoapDate
    * @param {} d
    * @return CallExpression
    */
@@ -387,7 +368,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getSoapDateTime
    * @param {} d
    * @return CallExpression
    */
@@ -397,7 +377,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getSoapDateTimeWithMillis
    * @param {} d
    * @return CallExpression
    */
@@ -407,7 +386,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method formatTimeShort
    * @param {} date
    * @return CallExpression
    */
@@ -418,7 +396,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method formatDateShort
    * @param {} date
    * @param {} locale
    * @return CallExpression
@@ -431,7 +408,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method formatDateTimeShort
    * @param {} date
    * @param {} locale
    * @return CallExpression
@@ -444,7 +420,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method formatDateMedium
    * @param {} date
    * @param {} locale
    * @return CallExpression
@@ -457,7 +432,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method formatDateTimeMedium
    * @param {} date
    * @param {} locale
    * @return CallExpression
@@ -470,7 +444,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method formatDateLong
    * @param {} date
    * @param {} locale
    * @return CallExpression
@@ -483,7 +456,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method formatDateTimeLong
    * @param {} date
    * @param {} locale
    * @return CallExpression
@@ -496,7 +468,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method formatDate
    * @param {} date
    * @param {} format
    * @param {} monthNames
@@ -665,7 +636,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method isStandardDateFormat
    * @param {} str
    * @return Literal
    */
@@ -729,7 +699,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method stringToDate
    * @param {} str
    * @return CallExpression
    */
@@ -739,7 +708,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method parseDate
    * @param {} str
    * @return date
    */
@@ -832,7 +800,6 @@ DateUtilsClass.prototype =
   },
   /**
    * Description
-   * @method getTimeZoneId
    * @return MemberExpression
    */
   getTimeZoneId: function()
@@ -852,14 +819,12 @@ DateUtilsClass.prototype =
 } ;
 /**
  * Description
- * @method LZ
  * @param {} x
  * @return BinaryExpression
  */
 DateUtilsClass.prototype.LZ = function (x){return(x<0||x>9?"":"0")+x;} ;
 /**
  * Description
- * @method LZ2
  * @param {} x
  * @return BinaryExpression
  */
@@ -871,7 +836,6 @@ DateUtilsClass.prototype.LZ2 = function (x)
 } ;
 /**
  * Description
- * @method MLZ
  * @param {} x
  * @return rc
  */

@@ -4,7 +4,6 @@ var LineReader = require ( './LineReader' ) ;
 
 /**
  * @constructor
- * @method FileLineReader
  * @param {} fileName
  */
 var FileLineReader = function ( fileName )

@@ -1,14 +1,9 @@
 // http://www.sebastianseilund.com/nodejs-async-in-practice
-/** 
- * @module Tango
- * @exports Tango
- */
 var util = require  ( "util" ) ;
 if ( ! String.prototype.startsWith )
 {
-  /**
+  /*
    * Description
-   * @method startsWith
    * @param {} needle
    * @return BinaryExpression
    */
@@ -20,9 +15,8 @@ if ( ! String.prototype.startsWith )
 }
 if ( ! String.prototype.endsWith )
 {
-  /**
+  /*
    * Description
-   * @method endsWith
    * @param {} needle
    * @return Literal
    */
@@ -37,12 +31,7 @@ if ( ! String.prototype.endsWith )
 };
 /**
  * @constructor
- */
- // @alias module:Tango
-/**
  * Description
- * @method TangoClass
- * @return 
  */
 var TangoClass = function()
 {
@@ -50,7 +39,6 @@ var TangoClass = function()
 };
 /**
  * Description
- * @method toString
  * @return BinaryExpression
  */
 TangoClass.prototype.toString = function()
@@ -59,7 +47,6 @@ TangoClass.prototype.toString = function()
 };
 /**
  * Description
- * @method isArguments
  * @param {} args
  * @return Literal
  */
@@ -74,7 +61,6 @@ TangoClass.prototype.isArguments = function ( args )
 };
 /**
  * Description
- * @method isObject
  * @param {} a
  * @return LogicalExpression
  */
@@ -82,14 +68,12 @@ TangoClass.prototype.isObject = function (a) { return a && typeof a == 'object';
 
 /**
  * Description
- * @method isArray
  * @param {} a
  * @return LogicalExpression
  */
 TangoClass.prototype.isArray = function (a) { return this.isObject(a) && a.constructor == Array; } ;
 /**
  * Description
- * @method isDate
  * @param {} a
  * @return LogicalExpression
  */
@@ -97,10 +81,8 @@ TangoClass.prototype.isDate = function (a) { return this.isObject(a) && a.constr
 
 /**
  * Description
- * @method initSuper
  * @param {} thiz
  * @param {} parentClass
- * @return 
  */
 TangoClass.prototype.initSuper = function ( thiz, parentClass )
 {
@@ -118,10 +100,8 @@ TangoClass.prototype.initSuper = function ( thiz, parentClass )
 };
 /**
  * Description
- * @method inherits
  * @param {} clazz
  * @param {} parentClazz
- * @return 
  */
 TangoClass.prototype.inherits = function ( clazz, parentClazz )
 {
@@ -131,10 +111,8 @@ TangoClass.prototype.inherits = function ( clazz, parentClazz )
 
 /**
  * Description
- * @method mixin
  * @param {} from
  * @param {} to
- * @return 
  */
 TangoClass.prototype.mixin = function ( from, to )
 {
@@ -152,11 +130,9 @@ TangoClass.prototype.mixin = function ( from, to )
 };
 /**
  * Description
- * @method callSuper
  * @param {} obj
  * @param {} name
  * @param {} a
- * @return 
  */
 TangoClass.prototype.callSuper = function ( obj, name, a )
 {
@@ -201,9 +177,7 @@ try {
 
 /**
  * Description
- * @method lwhere
  * @param {} str
- * @return 
  */
 TangoClass.prototype.lwhere = function ( str )
 {
@@ -246,9 +220,7 @@ TangoClass.prototype.lwhere = function ( str )
 }
 /**
  * Description
- * @method where
  * @param {} indexOfLine
- * @return 
  */
 TangoClass.prototype.where = function ( indexOfLine )
 {
@@ -270,7 +242,6 @@ TangoClass.prototype.where = function ( indexOfLine )
 }
 /**
  * Description
- * @method toArray
  * @param {} iterable
  * @return results
  */
@@ -290,10 +261,8 @@ TangoClass.prototype.toArray = function (iterable)
 };
 /**
  * Description
- * @method setProperty
  * @param {} name
  * @param {} value
- * @return 
  */
 TangoClass.prototype.setProperty = function ( name, value )
 {
@@ -302,10 +271,8 @@ TangoClass.prototype.setProperty = function ( name, value )
 };
 /**
  * Description
- * @method getInt
  * @param {} name
  * @param {} defaultValue
- * @return 
  */
 TangoClass.prototype.getInt = function ( name, defaultValue )
 {
@@ -313,7 +280,6 @@ TangoClass.prototype.getInt = function ( name, defaultValue )
 };
 /**
  * Description
- * @method getProperty
  * @param {} name
  * @param {} defaultValue
  * @return defaultValue
@@ -389,9 +355,7 @@ TangoClass.prototype.getProperty = function ( name, defaultValue )
 };
 /**
  * Description
- * @method log
  * @param {} object
- * @return 
  */
 TangoClass.prototype.log = function ( object )
 {
@@ -399,7 +363,6 @@ TangoClass.prototype.log = function ( object )
 };
 /**
  * Description
- * @method getConfigPath
  * @return __dirname
  */
 TangoClass.prototype.getConfigPath = function()
@@ -408,7 +371,6 @@ TangoClass.prototype.getConfigPath = function()
 };
 /**
  * Description
- * @method splitJSONObjects
  * @param {} str
  * @return list
  */
@@ -471,9 +433,7 @@ TangoClass.prototype.splitJSONObjects = function ( str )
 };
 /**
  * Description
- * @method serialize
  * @param {} obj
- * @return 
  */
 TangoClass.prototype.serialize = function ( obj )
 {
@@ -482,7 +442,6 @@ TangoClass.prototype.serialize = function ( obj )
   {
     /**
      * Description
-     * @method toJSON
      * @return ObjectExpression
      */
     Date.prototype.toJSON = function()
@@ -499,9 +458,7 @@ TangoClass.prototype.serialize = function ( obj )
 };
 /**
  * Description
- * @method deepDeserializeClass
  * @param {} obj
- * @return 
  */
 TangoClass.prototype.deepDeserializeClass = function ( obj )
 {
@@ -545,7 +502,6 @@ TangoClass.prototype.deepDeserializeClass = function ( obj )
 }
 /**
  * Description
- * @method deserialize
  * @param {} serializedObject
  * @param {} classNameToConstructor
  * @param {} deepClassInspection

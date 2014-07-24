@@ -5,10 +5,8 @@ var Locale = require ( './Locale' ) ;
 
 /**
  * @constructor
- * @method LocalizedMessages
  * @param {} file
  * @param {} localeString
- * @return 
  */
 var LocalizedMessages = function ( file, localeString )
 {
@@ -22,9 +20,7 @@ var LocalizedMessages = function ( file, localeString )
 };
 /**
  * Description
- * @method setLocaleCode
  * @param {} localeString
- * @return 
  */
 LocalizedMessages.prototype.setLocaleCode = function ( localeString )
 {
@@ -42,7 +38,6 @@ LocalizedMessages.prototype.setLocaleCode = function ( localeString )
 };
 /**
  * Description
- * @method getText
  * @param {} name
  * @param {} args
  * @param {} defaultString
@@ -126,7 +121,6 @@ LocalizedMessages.prototype.getText = function ( name, args, defaultString, lc )
 };
 /**
  * Description
- * @method substituteDollarParameter
  * @param {} str
  * @param {} args
  * @return str
