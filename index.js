@@ -1,13 +1,13 @@
 var Path = require ( "path" ) ;
 var dir = Path.join ( __dirname, "/src/" ) ;
 
-var tango = o = require ( Path.join ( dir, "./Tango" ) ) ;
-
+var tango = require ( Path.join ( dir, "./Tango" ) ) ;
 tango._vetoHash = {} ;
-for ( var k in tango )
+for ( var k in this )
 {
 	tango._vetoHash[k] = true ;
 }
+
 
 var fs = require ( "fs" ) ;
 var a = fs.readdirSync ( dir ) ;
@@ -31,15 +31,53 @@ for ( var i = 0 ; i < a.length ; i++ )
 			{
 				continue ;
 			}
-			o[k] = res[k] ;
+			tango[k] = res[k] ;
 		}
 	}
 	else
 	{
 		var n = a[i].substring ( 0, a[i].indexOf ( '.' ) ) ;
-		o[n] = require ( fname ) ;
+		tango[n] = require ( fname ) ;
 	}
 }
 a.length = 0 ;
 
-module.exports = o ;
+tango._displayLoadedModules = function ()
+{
+	var util = require ( "util" ) ;
+	
+	for ( var k in this )
+	{
+		if ( this._vetoHash[k] ) continue ;
+		if ( k.indexOf ( "_" ) === 0 ) continue ;
+		var o = this[k] ;
+		if ( typeof o === 'string' || typeof o === 'boolean' || typeof o === 'number' )
+		{
+			continue ;
+		}
+		process.stdout.write ( k ) ;
+		if ( typeof o === 'object' )
+		{
+			process.stdout.write ( "={}" ) ;
+		}
+		else
+		if ( typeof o === 'function' )
+		{
+			if ( util.inspect ( o.prototype, { showHidden: false, depth: 0 } ) === "{}" )
+			{
+				process.stdout.write ( "=(Function)" ) ;
+			}
+			else
+			{
+				process.stdout.write ( "=(Class)" ) ;
+			}
+		}
+		else
+		{
+			process.stdout.write ( "=" + util.inspect ( o, { showHidden: false, depth: 0 } ) ) ;
+		}
+		process.stdout.write ( "\n" ) ;
+	}
+}
+
+module.exports = tango ;

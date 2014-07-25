@@ -84,13 +84,20 @@ GPResourceSentinel.prototype.addChange = function ( resource )
   }
   this.resourceList.push ( resource ) ;
   var e ;
-  resource.on ( "change", function onchange ( name, resourceId, displayName )
+  resource.on ( "change", function onchange ( name, resourceId, displayName, params )
   {
     e = new GPEvent ( thiz.mainEventName ) ;
     e.data = thiz.make_data ( name, "show", resourceId ) ;
     e.data.type = this.getNotificationType() ;
     e.data.text = displayName ? displayName : name ;
     e.data.millis = 5000 ;
+    if ( params )
+    {
+      for ( var k in params )
+      {
+        e.data[k] = params[k] ;
+      }
+    }
     Log.debug ( e.data.id ) ;
     thiz.gpclient.fire ( e ) ;
   }) ;
@@ -201,7 +208,7 @@ MRTResource.prototype.setParent = function ( sentinel )
   this.w.on ( "create", function oncreate ( name )
   {
     e = new GPEvent ( thiz.parent.mainEventName ) ;
-    e.data = thiz.parent.make_data ( name, "start", "MRTExport" ) ;
+    e.data = thiz.parent.make_data ( name, "start", "MRTExport", { path:thiz.MRT_dir } ) ;
     Log.debug ( e.data ) ;
     thiz.parent.gpclient.fire ( e ) ;
   });
@@ -209,7 +216,7 @@ MRTResource.prototype.setParent = function ( sentinel )
   {
     previous_file_name = "" ;
     e = new GPEvent ( thiz.parent.mainEventName ) ;
-    e.data = thiz.parent.make_data ( name, "stop", "MRTExport" ) ;
+    e.data = thiz.parent.make_data ( name, "stop", "MRTExport", { path:thiz.MRT_dir } ) ;
     Log.debug ( e.data ) ;
     thiz.parent.gpclient.fire ( e ) ;
   });
@@ -226,7 +233,7 @@ MRTResource.prototype.setParent = function ( sentinel )
       }
       previous_file_name = name ;
       e = new GPEvent ( thiz.parent.mainEventName ) ;
-      e.data = thiz.parent.make_data ( name, "start", "MRTExport" ) ;
+      e.data = thiz.parent.make_data ( name, "start", "MRTExport", { path:thiz.log_dir } ) ;
       Log.debug ( e.data ) ;
       thiz.parent.gpclient.fire ( e ) ;
     }
@@ -371,7 +378,7 @@ DirectoryResource.prototype._onchange = function ( name )
       {
         displayName = this.displayPatternList[i] ;
       }
-      this.emit ( "change", name, resourceId, displayName ) ;
+      this.emit ( "change", name, resourceId, displayName, { path:this.dirname } ) ;
     }
   };
 };

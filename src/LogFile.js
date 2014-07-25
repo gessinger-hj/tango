@@ -869,7 +869,7 @@ LogFile.prototype.unredirectOutput = function ( channelFlags )
     }
   }
 };
-/**
+/*
  * Description
  * @param {} path
  * @param {} name
@@ -891,7 +891,7 @@ var File = function ( path, name )
   }
   this.path = Path.normalize ( this.path ) ;
 };
-/**
+/*
  * Description
  * @return MemberExpression
  */
@@ -915,7 +915,7 @@ File.prototype.getWriteStream = function ( enc, mode )
   }
   return fs.createWriteStream ( this.path, { encoding: enc } ) ;
 };
-/**
+/*
  * Description
  */
 File.prototype.exists = function()

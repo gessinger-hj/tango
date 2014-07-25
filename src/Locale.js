@@ -537,7 +537,7 @@ Locale.prototype.getJson = function()
 {
   return this.json ;
 };
-/**
+/*
  * Description
  * @param {} path
  * @param {} name
@@ -559,7 +559,7 @@ var File = function ( path, name )
   }
   this.path = Path.normalize ( this.path ) ;
 };
-/**
+/*
  * Description
  */
 File.prototype.exists = function()
@@ -574,7 +574,7 @@ File.prototype.exists = function()
     return false ;
   }
 };
-/**
+/*
  * Description
  * @return o
  */
