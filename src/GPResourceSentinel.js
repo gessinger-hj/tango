@@ -103,6 +103,7 @@ GPResourceSentinel.prototype.addChange = function ( resource )
   }) ;
 };
 /**
+ * 
  * Description
  */
 GPResourceSentinel.prototype.removeOutdated = function()
