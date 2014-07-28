@@ -568,8 +568,23 @@ if ( require.main === module )
 // console.log ( a ) ;
 // 	});
 
-	new File ( "User.js" ).lines ( function onarray(line)
-	{
-console.log ( "line=" + line ) ;
-	});
+// 	new File ( "User.js" ).lines ( function onarray(line)
+// 	{
+// console.log ( "line=" + line ) ;
+// 	});
+// 	var start = 0 ;
+// 	var end = -1 ;
+// 	var file = new File ( "x.log" ) ;
+// 	function read()
+// 	{
+// 		var opt = {} ;
+// 		opt.start = start ;
+// 		opt.end = file.length() ;
+// 		var str = fs.createReadStream ( file.path, opt ) ;
+// 		str.on ( "data", function ondata(data)
+// 		{
+// console.log ( "data=" + data ) ;
+// 		} ) ;
+// 		str.on ( "end", ) ;
+// 	}
 }

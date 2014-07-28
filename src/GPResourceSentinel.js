@@ -102,7 +102,7 @@ GPResourceSentinel.prototype.addChange = function ( resource )
     thiz.gpclient.fire ( e ) ;
   }) ;
 };
-/**
+/*
  * 
  * Description
  */

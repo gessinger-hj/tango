@@ -22,3 +22,4 @@ jsdoc -d ../doc -t ../../node_modules/ink-docstrap/template/ -c ../../node_modul
 RS.addChange ( new DirectoryResource ( "/home/gess/work/poi-3.8/de/devoteam/vge/acs" ) ) ;
 RS.addChange ( new DirectoryResource ( "/home/gess/work/poi-3.8/acs/customer/ACS52" ) ) ;
 RS.addChange ( new DirectoryResource ( "/home/gess/work/dev" ) ) ;
+RS.addChange ( new DirectoryResource ( "/home/gess/work/Projects/tangojs/src" ) ) ;
