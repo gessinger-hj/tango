@@ -23,3 +23,7 @@ RS.addChange ( new DirectoryResource ( "/home/gess/work/poi-3.8/de/devoteam/vge/
 RS.addChange ( new DirectoryResource ( "/home/gess/work/poi-3.8/acs/customer/ACS52" ) ) ;
 RS.addChange ( new DirectoryResource ( "/home/gess/work/dev" ) ) ;
 RS.addChange ( new DirectoryResource ( "/home/gess/work/Projects/tangojs/src" ) ) ;
+RS.addChange ( new DirectoryResource ( "/home/gess/acronyl/test/private/conf" ) ) ;
+RS.addChange ( new DirectoryResource ( "/home/gess/work/Repos/VGE_AWTK/private/conf/" ) ) ;
+RS.addChange ( new DirectoryResource ( "/home/gess/acronyl/test/public/apps/vgecb/axl" ) ) ;
+RS.addChange ( new DirectoryResource ( "/home/gess/acronyl/test/public/apps/vgecb/js" ) ) ;
