@@ -1110,6 +1110,7 @@ XmlTree.prototype._setCollectedElements = function ( list )
 };
 /**
  * Description
+ * @method
  * @return MemberExpression
  */
 XmlTree.prototype.getCollectedElements = function()
@@ -1120,6 +1121,7 @@ XmlTree.prototype.getCollectedElements = function()
 var EventEmitter = require ( "events" ).EventEmitter ;
 /**
  * @constructor
+ * @class
  * @param {requestCallback} callbackCloseTag
  */
 var XmlFactory = function ( callbackCloseTag )
@@ -1134,6 +1136,7 @@ var XmlFactory = function ( callbackCloseTag )
 util.inherits ( XmlFactory, EventEmitter ) ;
 /**
  * Description
+ * @method
  * @param {string|stream.Readable} source
  */
 XmlFactory.prototype.create = function ( source )
@@ -1160,17 +1163,17 @@ XmlFactory.prototype.create = function ( source )
       source = source.trim() ;
       parser = sax.parser(true)
     }
-    /**
+    /*
      * Description
      * @param {} text
      */
     parser.ontext = function ( text ) { thiz.currentChild._ontext ( text ) } ;
-    /**
+    /*
      * Description
      * @param {} cdata
      */
     parser.oncdata = function ( cdata ) { thiz.currentChild._oncdata ( cdata ) } ;
-    /**
+    /*
      * Description
      */
     parser.onprocessinginstruction = function()
@@ -1183,7 +1186,7 @@ XmlFactory.prototype.create = function ( source )
       }
     } ;
     var first = true ;
-    /**
+    /*
      * Description
      * @param {} tag
      */
@@ -1203,7 +1206,7 @@ XmlFactory.prototype.create = function ( source )
         elementStack.unshift ( child ) ;
       }
     } ;
-    /**
+    /*
      * Description
      */
     parser.onclosetag = function()
