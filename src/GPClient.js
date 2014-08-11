@@ -132,6 +132,8 @@ GPClient.prototype.connect = function()
         {
           if ( e.getType() === "shutdown" )
           {
+            this.end() ;
+            thiz.emit ( "shutdown" ) ;
             return ;
           }
           if ( e.isBad() )

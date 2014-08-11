@@ -119,7 +119,7 @@ GPBroker = function ( port, ip )
               Log.notice ( 'server shutting down' ) ;
               e.control.status = { code:0, name:"ack" } ;
               this.write ( e.serialize() ) ;
-              thiz.closeAllSockets ( this ) ;
+              thiz.closeAllSockets ( ) ; //this ) ;
               thiz.server.unref() ;
               Log.notice ( 'server shut down' ) ;
               thiz.emit ( "shutdown" ) ;

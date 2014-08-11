@@ -73,5 +73,12 @@ module.exports = GPAdmin ;
 if ( require.main === module )
 {
 	var ad = new GPAdmin() ;
-	ad.info() ;
+	if ( T.getProperty ( "shutdown" ) )
+	{
+		ad.shutdown() ;
+	}
+	else
+	{
+		ad.info() ;
+	}
 }
