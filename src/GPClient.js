@@ -228,6 +228,12 @@ GPClient.prototype.fireEvent = function ( params, callback )
     e = params ;
   }
   else
+  if ( typeof params === 'string' )
+  {
+    e = new GPEvent ( params ) ;
+  }
+  else
+  if ( params && typeof params === 'object' )
   {
     e = new GPEvent ( params.name, params.type ) ;
     e.setData ( params.data ) ;

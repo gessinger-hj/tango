@@ -71,60 +71,15 @@ LogFile.prototype.setLogger = function ( loggerInterface )
   // , log: function ( str ) {}
   } ;
   var li = loggerInterface ;
-  if ( typeof li.emergency === 'function' ) 
-/**
-  * Description
-  * @param {} str
-  */
- o.emergency = function ( str ) { li.emergency ( str ) } ;
-  if ( typeof li.alert === 'function' ) 
-/**
-  * Description
-  * @param {} str
-  */
- o.alert = function ( str ) { li.alert ( str ) } ;
-  if ( typeof li.critical === 'function' ) 
-/**
-  * Description
-  * @param {} str
-  */
- o.critical = function ( str ) { li.critical ( str ) } ;
-  if ( typeof li.error === 'function' ) 
-/**
-  * Description
-  * @param {} str
-  */
- o.error = function ( str ) { li.error ( str ) } ;
-  if ( typeof li.warning === 'function' ) 
-/**
-  * Description
-  * @param {} str
-  */
- o.warning = function ( str ) { li.warning ( str ) } ;
-  if ( typeof li.notice === 'function' ) 
-/**
-  * Description
-  * @param {} str
-  */
- o.notice = function ( str ) { li.notice ( str ) } ;
-  if ( typeof li.info === 'function' ) 
-/**
-  * Description
-  * @param {} str
-  */
- o.info = function ( str ) { li.info ( str ) } ;
-  if ( typeof li.debug === 'function' ) 
-/**
-  * Description
-  * @param {} str
-  */
- o.debug = function ( str ) { li.debug ( str ) } ;
-  if ( typeof li.log === 'function' ) 
-/**
-  * Description
-  * @param {} str
-  */
- o.log = function ( str ) { li.log ( str ) } ;
+  if ( typeof li.emergency === 'function' ) o.emergency = function ( str ) { li.emergency ( str ) } ;
+  if ( typeof li.alert     === 'function' ) o.alert = function ( str ) { li.alert ( str ) } ;
+  if ( typeof li.critical  === 'function' ) o.critical = function ( str ) { li.critical ( str ) } ;
+  if ( typeof li.error     === 'function' ) o.error = function ( str ) { li.error ( str ) } ;
+  if ( typeof li.warning   === 'function' ) o.warning = function ( str ) { li.warning ( str ) } ;
+  if ( typeof li.notice    === 'function' ) o.notice = function ( str ) { li.notice ( str ) } ;
+  if ( typeof li.info      === 'function' ) o.info = function ( str ) { li.info ( str ) } ;
+  if ( typeof li.debug     === 'function' ) o.debug = function ( str ) { li.debug ( str ) } ;
+  if ( typeof li.log       === 'function' ) o.log = function ( str ) { li.log ( str ) } ;
 
   if ( ! o.log ) o.log = o.info ;
   if ( ! o.emergency ) o.emergency = o.error ;
@@ -580,12 +535,12 @@ LogFile.prototype.openNewFileIntern = function()
   else
   if ( this._SizedFile )
   {
+    var toBeRemoved = new File ( this._fileName + "_" + this._MaxVersion ) ;
+    toBeRemoved.remove() ;
     for ( var i = this._MaxVersion - 1 ; i > 0 ; i-- )
     {
       var from = new File ( this._fileName + "_" + i ) ;
       var to   = new File ( this._fileName + "_" + ( i + 1 ) ) ;
-      try { to.remove() ; }
-      catch ( exc ) { }
       try { from.renameTo ( to ) ; }
       catch ( exc ) { }
     }
@@ -869,11 +824,6 @@ LogFile.prototype.unredirectOutput = function ( channelFlags )
     }
   }
 };
-/*
- * Description
- * @param {} path
- * @param {} name
- */
 var File = function ( path, name )
 {
   if ( path instanceof File )
@@ -891,20 +841,10 @@ var File = function ( path, name )
   }
   this.path = Path.normalize ( this.path ) ;
 };
-/*
- * Description
- * @return MemberExpression
- */
 File.prototype.toString = function()
 {
   return this.path ;
 };
-/**
- * Description
- * @param {} enc
- * @param {} mode
- * @return CallExpression
- */
 File.prototype.getWriteStream = function ( enc, mode )
 {
   if ( ! enc && enc !== null ) enc = "utf8" ;
@@ -915,9 +855,6 @@ File.prototype.getWriteStream = function ( enc, mode )
   }
   return fs.createWriteStream ( this.path, { encoding: enc } ) ;
 };
-/*
- * Description
- */
 File.prototype.exists = function()
 {
   try
@@ -928,6 +865,28 @@ File.prototype.exists = function()
   catch ( exc )
   {
     return false ;
+  }
+};
+File.prototype.remove = function()
+{
+  try
+  {
+    fs.unlinkSync ( this.path ) ;
+  }
+  catch ( exc )
+  {
+    // console.log ( exc ) ;
+  }
+};
+File.prototype.renameTo = function ( newName )
+{
+  if ( newName instanceof File )
+  {
+    fs.renameSync ( this.path, newName.toString() ) ;
+  }
+  else
+  {
+    fs.renameSync ( this.path, newName ) ;
   }
 };
 

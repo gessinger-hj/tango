@@ -138,6 +138,7 @@ GPBroker = function ( port, ip )
             {
               e.setType ( "getInfoResult" ) ;
               e.control.status = { code:0, name:"ack" } ;
+              e.data.log = { levelName: Log.getLevelName(), level:Log.getLevel() } ;
               e.data.currentEventNames = thiz._eventNameToSockets.getKeys() ;
               var mhclone = new MultiHash() ;
               for ( key in thiz._eventNameToSockets._hash )
@@ -173,21 +174,24 @@ GPBroker = function ( port, ip )
                 continue ;
               }
               ctx = thiz._sockets[this.sid] ;
-              if ( ! ctx.eventNameList )
+              if ( ! ctx.eventNameList ) ctx.eventNameList = [] ;
+
+              for  ( i = 0 ; i < eventNameList.length ; i++ )
               {
-                ctx.eventNameList = eventNameList ;
-              }
-              else
-              {
-                for  ( i = 0 ; i < eventNameList.length ; i++ )
+                if ( eventNameList[i].indexOf ( "*" ) < 0 )
                 {
                   ctx.eventNameList.push ( eventNameList[i] ) ;
                 }
               }
+
               for  ( i = 0 ; i < eventNameList.length ; i++ )
               {
-                thiz._eventNameToSockets.put ( eventNameList[i], this ) ;
+                if ( eventNameList[i].indexOf ( "*" ) < 0 )
+                {
+                  thiz._eventNameToSockets.put ( eventNameList[i], this ) ;
+                }
               }
+
               e.control.status = { code:0, name:"ack" } ;
               this.write ( e.serialize() ) ;
               continue ;
@@ -251,7 +255,7 @@ GPBroker = function ( port, ip )
             }
             if ( done2 ) continue ;
             Log.info ( "No listener found for " + e.getName() ) ;
-            Log.info ( e.toString() ) ;
+            // Log.info ( e.toString() ) ;
             continue ;
           }
           e.setSourceIdentifier ( this.sid ) ;
