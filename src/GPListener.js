@@ -6,7 +6,7 @@ gpc.addEventListener ( "notification", function(e)
 {
   T.log ( e.data.id ) ;
 });
-gpc.addEventListener ( "tail.*", function(e)
+gpc.addEventListener ( "tail.log.log", function(e)
 {
   T.log ( e ) ;
 });

@@ -4,7 +4,7 @@ var Tail, environment, events, fs,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 var Path = require ( "path" ) ;
-var debug = require('debug')('always-tail');
+// var debug = require('debug')('always-tail');
 var events = require("events");
 var fs = require('fs');
 
@@ -54,7 +54,7 @@ XTail = (function(_super) {
 
         var buffer = new Buffer(size);
 
-        debug("reading:", block.fd, size, start);
+        // debug("reading:", block.fd, size, start);
         fs.read(block.fd, buffer, 0, size, start, function(err, bytesRead, buff) {
           var chunk, parts, _i, _len, _results;
 
