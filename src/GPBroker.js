@@ -1,3 +1,9 @@
+#!/usr/bin/node
+
+/**
+ * [net description]
+ * @type {[type]}
+ */
 var net = require ( 'net' ) ;
 var util = require ( 'util' ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
@@ -6,13 +12,21 @@ var T = require ( "./Tango" ) ;
 var MultiHash = require ( "./MultiHash" ) ;
 var Log = require ( "./LogFile" ) ;
 
+
+var GPSocket = function ( socket )
+{
+  this.sid = socket.remoteAddress + "_" + socket.remotePort ;
+  this.socket = socket ;
+  this.socket.sid = this.sid ;
+  this.info = "none" ;
+}
 /**
  * @constructor
  * @extends {EventEmitter}
  * @param {} port
  * @param {} ip
  */
-GPBroker = function ( port, ip )
+var GPBroker = function ( port, ip )
 {
   EventEmitter.call ( this ) ;
   this._sockets = {} ;
@@ -39,23 +53,17 @@ GPBroker = function ( port, ip )
       socket.end() ;
       return ;
     }
-    var sid = socket.remoteAddress + "_" + socket.remotePort ;
-    socket.sid = sid ;
-    thiz._sockets[sid] = { sid:sid, socket:socket, info:"none" } ;
+    
+    // var sid = socket.remoteAddress + "_" + socket.remotePort ;
+    // socket.sid = sid ;
+    // thiz._sockets[sid] = { sid:sid, socket:socket, info:"none" } ;
+    var s = new GPSocket ( socket ) ;
+    thiz._sockets[s.sid] = s ;
 
     Log.info ( 'Socket connected' );
-    socket.on ( "error", function socket_on_error ( p )
-    {
-      thiz.ejectSocket ( this ) ;
-    });
-    socket.on ( "close", function socket_on_close ( p )
-    {
-      thiz.ejectSocket ( this ) ;
-    });
-    socket.on ( 'end', function socket_on_end()
-    {
-      thiz.ejectSocket ( this ) ;
-    });
+    socket.on ( "error", thiz.ejectSocket.bind ( thiz, socket ) ) ;
+    socket.on ( 'close', thiz.ejectSocket.bind ( thiz, socket ) ) ;
+    socket.on ( 'end', thiz.ejectSocket.bind ( thiz, socket ) ) ;
     socket.on ( "data", function socket_on_data ( chunk )
     {
       var mm = chunk.toString() ;
