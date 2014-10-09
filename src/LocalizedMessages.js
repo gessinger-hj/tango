@@ -11,7 +11,7 @@ var Locale = require ( './Locale' ) ;
 var LocalizedMessages = function ( file, localeString )
 {
 	this.file = new File ( file ) ;
-	this.xml = this.file.toXml() ;
+	this.xml = this.file.getXml() ;
 	this._localeStringToNameToText = [] ;
   this._LocaleString = null ;
   this._LanguageString = null ;

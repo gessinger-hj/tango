@@ -428,6 +428,10 @@ XmlElement.prototype.valueOf = function ( path )
   if ( path )
   {
     child = this.elem ( path ) ;
+    if ( ! child )
+    {
+      return "" ;
+    }
   }
   if ( attributeName )
   {
@@ -1226,10 +1230,7 @@ XmlFactory.prototype.create = function ( source )
       }) ;
       parser.on ( "error", function (e)
       {
-        // unhandled errors will throw, since this is a proper node
-        // event emitter.
-        console.error("error!", e)
-        // clear the error
+        thiz.emit ( "error", e ) ;
         this._parser.error = null
         this._parser.resume()
       });

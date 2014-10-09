@@ -119,7 +119,7 @@ LocaleFactoryClass.prototype.getLocaleJson = function ( localeCode )
   {
     f = new File ( this.getLocalePath(), "Locale." + "en_US" + ".json" ) ;
   }
-  return f.toJson() ;
+  return f.getJSON() ;
 };
 // LocaleFactoryClass.prototype.getLocaleXml = function ( localeCode )
 // {
@@ -138,7 +138,7 @@ LocaleFactoryClass.prototype.getLocaleJson = function ( localeCode )
 //   {
 //     f = new File ( this.getLocalePath(), "Locale." + "en_US" + ".xml" ) ;
 //   }
-//   return f.toXml() ;
+//   return f.getXml() ;
 // };
 var LocaleFactory = new LocaleFactoryClass() ;
 /**
@@ -578,7 +578,7 @@ File.prototype.exists = function()
  * Description
  * @return o
  */
-File.prototype.toJson = function()
+File.prototype.getJSON = function()
 {
   var str = fs.readFileSync ( this.path, 'utf8' ) ;
   var o = JSON.parse ( str ) ;

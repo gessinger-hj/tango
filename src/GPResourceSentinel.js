@@ -423,7 +423,7 @@ if ( require.main === module )
   var config = T.getProperty ( "watch.config" ) ;
   if ( config )
   {
-    xConfig = new File ( config ).toXml() ;
+    xConfig = new File ( config ).getXml() ;
   }
   else
   {

@@ -86,7 +86,7 @@ Process.prototype.lines = function ( callback )
  * Description
  * @param {} callback
  */
-Process.prototype.asString = function ( callback )
+Process.prototype.getString = function ( callback )
 {
 	this.callback = callback ;
 	var opts =
@@ -150,7 +150,7 @@ if ( require.main === module )
 {
 	// var p = new Process ( "ls", [ '-lh' ] )
 	// p.cwd = "/usr" ;
-	// p.asString ( function asString ( err, p )
+	// p.getString ( function getString ( err, p )
 	// {
 	// 	// console.log ( p.stdout() ) ;
 	// 	if ( err ) console.log ( err ) ;

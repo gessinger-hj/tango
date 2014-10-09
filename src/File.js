@@ -73,7 +73,7 @@ File.prototype.getParentAbsolute = function()
 /**
  * @return {type} [description]
  */
-File.prototype.asString = function()
+File.prototype.getString = function()
 {
 	return fs.readFileSync ( this.path, 'utf8' ) ;
 };
@@ -276,10 +276,10 @@ File.prototype.getAbsoluteFile = function()
  * @param {} elementCallback
  * @return CallExpression
  */
-File.prototype.toXml = function ( elementCallback )
+File.prototype.getXml = function ( elementCallback )
 {
-	var data = this.asString() ;
-	var xml = require ( 'Xml' ) ;
+	var data = this.getString() ;
+	var xml = require ( './Xml' ) ;
   var f = new xml.XmlFactory ( elementCallback ) ;
   return f.create ( data ) ;
 };
@@ -288,7 +288,7 @@ File.prototype.toXml = function ( elementCallback )
  * @param {} options
  * @return xmlTree
  */
-File.prototype.toXmlResolved = function ( options )
+File.prototype.getXmlResolved = function ( options )
 {
 	if ( ! options )
 	{
@@ -306,7 +306,7 @@ File.prototype.toXmlResolved = function ( options )
 		}
 	}
   var includeList = [] ;
-  var xmlTree = this.toXml ( function ( x )
+  var xmlTree = this.getXml ( function ( x )
 	{
 	  if ( m[x.getName()] )
 	  {
@@ -315,19 +315,19 @@ File.prototype.toXmlResolved = function ( options )
 	} ) ;
 	for ( var i = 0 ; i < includeList.length ; i++ )
 	{
-		this._toXmlResolved ( m, null, includeList[i] ) ;
+		this._getXmlResolved ( m, null, includeList[i] ) ;
 	}
 	includeList.length = 0 ;
 	return xmlTree ;
 };
-File.prototype._toXmlResolved = function ( includeTagNameMap, variablesMap, includeElement )
+File.prototype._getXmlResolved = function ( includeTagNameMap, variablesMap, includeElement )
 {
   var includeList = [] ;
 
   var href = includeElement.getAttribute ( "href" ) ;
   if ( ! href ) return ;
   var file = new File ( this.getParent(), href ) ;
-  var elem = file.toXml ( function ( x )
+  var elem = file.getXml ( function ( x )
 	{
 	  if ( includeTagNameMap[x.getName()] )
 	  {
@@ -338,7 +338,7 @@ File.prototype._toXmlResolved = function ( includeTagNameMap, variablesMap, incl
 
 	for ( var i = 0 ; i < includeList.length ; i++ )
 	{
-		this._toXmlResolved ( includeTagNameMap, variablesMap, includeList[i] ) ;
+		this._getXmlResolved ( includeTagNameMap, variablesMap, includeList[i] ) ;
 	}
 	includeList.length = 0 ;
 };
@@ -551,7 +551,7 @@ File.prototype.lines = function ( callback )
  * Description
  * @return o
  */
-File.prototype.toJson = function()
+File.prototype.getJSON = function()
 {
   var str = fs.readFileSync ( this.path, 'utf8' ) ;
   var o = JSON.parse ( str ) ;

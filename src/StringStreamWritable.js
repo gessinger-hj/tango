@@ -9,8 +9,9 @@ var util = require('util');
 StringStreamWritable = function ( enc )
 {
   if ( ! enc ) enc = "utf8" ;
+  this.enc = enc ;
   if (!(this instanceof StringStreamWritable)) {
-    return new StringStreamWritable ( enc ) ;
+    return new StringStreamWritable ( this.enc ) ;
   }
   stream.Writable.call ( this, arguments ) ;
   this._buffer = new Buffer('') ;
@@ -32,7 +33,7 @@ StringStreamWritable.prototype._write = function ( chunk, enc, cb )
  */
 StringStreamWritable.prototype.toString = function()
 {
-  return this._buffer.toString() ;
+  return this._buffer.toString ( this.enc ) ;
 };
 /**
  * Description
