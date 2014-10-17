@@ -6,15 +6,15 @@ var gpc = new GPClient() ;
 // {
 //   T.log ( e.data.id ) ;
 // });
-gpc.addEventListener ( "tail.*", function(e)
+gpc.on ( "tail.*", function(e)
 {
   T.log ( e ) ;
 });
-// gpc.addEventListener ( "tail.log.log", function(e)
+// gpc.on ( "tail.log.log", function(e)
 // {
 //   T.log ( e ) ;
 // });
-// gpc.on('end', function()
-// {
-//   console.log('socket disconnected');
-// });
+gpc.on('end', function()
+{
+  console.log('socket disconnected');
+});

@@ -28,7 +28,28 @@ if ( ! String.prototype.endsWith )
     if ( this.length - needle.length == pos ) return true ;
     return false ;
   };
-};
+}
+if ( ! Array.remove )
+{
+  Array.prototype.remove = function ( element )
+  {
+    var length = this.length ;
+    if ( typeof ( element ) == 'number' )
+    {
+      var index = Math.floor ( element ) ;
+      if ( index < 0 ) return null ;
+      if ( index >= length ) return null ;
+      var obj = this[index] ;
+      this.splice ( index, 1 ) ;
+      return obj ;
+    }
+    var i = this.indexOf ( element ) ;
+    if ( i < 0 ) return null ;
+    this.splice ( i, 1 ) ;
+    return element ;
+  } ;
+}
+
 /**
  * @constructor
  * Description

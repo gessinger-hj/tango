@@ -34,5 +34,5 @@ console.log ( " ----------write: function()----------------" ) ;
 */
 c.on('end', function()
 {
-  // console.log('socket disconnected');
+  console.log('socket disconnected');
 });

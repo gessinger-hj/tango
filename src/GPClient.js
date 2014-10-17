@@ -357,6 +357,20 @@ GPClient.prototype.addEventListener = function ( eventNameList, callback )
     s.write ( e.serialize() ) ;
   }
 };
+GPClient.prototype.on = function ( eventName, callback )
+{
+  if ( typeof eventName === "string"
+     && (  eventName === "shutdown"
+        || eventName === "end"
+        || eventName === "error"
+        )
+     )
+  {
+    EventEmitter.prototype.on.apply ( this, arguments ) ;
+    return ;
+  }
+  this.addEventListener ( eventName, callback ) ;
+};
 /**
  * Description
  * @param {} eventNameOrFunction
