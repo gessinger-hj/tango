@@ -216,7 +216,7 @@ tangojs.GPWebClient.prototype.fireEvent = function ( params, callback )
     if ( typeof callback === 'object' )
     {
       ctx.result = callback.result ;
-      if ( ctx.result ) e.setRequestResult() ;
+      if ( ctx.result ) e.setResultRequested() ;
       ctx.error = callback.error ;
       ctx.write = callback.write ;
     }

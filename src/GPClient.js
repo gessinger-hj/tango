@@ -29,6 +29,7 @@ var GPClient = function ( port, host )
   this.callbacks = {} ;
   this.pendingEventListenerList = [] ;
   this.eventListenerFunctions = new MultiHash() ;
+  this.listenerFunctionsList = [] ;
 } ;
 util.inherits ( GPClient, EventEmitter ) ;
 /**
@@ -93,13 +94,13 @@ GPClient.prototype.connect = function()
   } ) ;
   this.socket.on ( 'data', function socket_on_data ( data )
   {
+    var found ;
     var mm = data.toString() ;
     if ( ! this.partialMessage ) this.partialMessage = "" ;
     mm = this.partialMessage + mm ;
     this.partialMessage = "" ;
     var messageList = T.splitJSONObjects ( mm ) ;
-    var j = 0 ;
-    var k = 0 ;
+    var i, j, k ;
     for ( j = 0 ; j < messageList.length ; j++ )
     {
       var m = messageList[j] ;
@@ -168,15 +169,32 @@ GPClient.prototype.connect = function()
             }
             continue ;
           }
+          found = false ;
           var callbackList = thiz.eventListenerFunctions.get ( e.getName() ) ;
-          if ( ! callbackList )
+          if ( callbackList )
+          {
+            found = true ;
+            for  ( k = 0 ; k < callbackList.length ; k++ )
+            {
+              callbackList[k].call ( thiz, e ) ;
+            }
+          }
+          for ( k = 0 ; k < thiz.listenerFunctionsList.length ; k++ )
+          {
+            list = thiz.listenerFunctionsList[k]._regexpList ;
+            if ( ! list ) continue ;
+            for ( j = 0 ; j < list.length ; j++ )
+            {
+              if ( ! list[j].test ( e.getName() ) ) continue ;
+              found = true ;
+              thiz.listenerFunctionsList[k].call ( thiz, e ) ;
+            }
+          }
+          if ( ! found )
           {
             Log.logln ( "callbackList for " + e.getName() + " not found." ) ;
             Log.log ( e.toString() ) ;
-          }
-          for  ( k = 0 ; k < callbackList.length ; k++ )
-          {
-            callbackList[k].call ( thiz, e ) ;
+            continue ;
           }
         }
       }
@@ -249,7 +267,7 @@ GPClient.prototype.fireEvent = function ( params, callback )
     if ( typeof callback === 'object' )
     {
       ctx.result = callback.result ;
-      if ( ctx.result ) e.setRequestResult() ;
+      if ( ctx.result ) e.setResultRequested() ;
       ctx.error = callback.error ;
       ctx.write = callback.write ;
     }
@@ -337,6 +355,21 @@ GPClient.prototype.addEventListener = function ( eventNameList, callback )
   {
     this.eventListenerFunctions.put ( eventNameList[i], callback ) ;
   }
+  for ( i = 0 ; i < eventNameList.length ; i++ )
+  {
+    var pattern = eventNameList[i] ;
+    if ( pattern.indexOf ( "*" ) >= 0 )
+    {
+      if ( ! callback._regexpList )
+      {
+        callback._regexpList = [] ;
+      }
+      pattern = pattern.replace ( /\./, "\\." ).replace ( /\*/, ".*" ) ;
+      var regexp = new RegExp ( pattern ) ;
+      callback._regexpList.push ( regexp ) ;
+      this.listenerFunctionsList.push ( callback ) ;
+    }
+  }
 
   if ( ! this.socket )
   {
@@ -377,7 +410,7 @@ GPClient.prototype.on = function ( eventName, callback )
  */
 GPClient.prototype.removeEventListener = function ( eventNameOrFunction )
 {
-  var i ;
+  var i, j ;
   if ( typeof eventNameOrFunction === 'string' )
   {
     eventNameOrFunction = [ eventNameOrFunction ] ;
@@ -403,6 +436,14 @@ GPClient.prototype.removeEventListener = function ( eventNameOrFunction )
     if ( typeof item === 'string' )
     {
       eventNameList.push ( item ) ;
+      var list = this.eventListenerFunctions.get ( item ) ;
+      if ( list )
+      {
+        for ( j = 0 ; j < list.length ; j++ )
+        {
+          this.listenerFunctionsList.remove ( list[j] ) ;
+        }
+      }
       this.eventListenerFunctions.remove ( item ) ;
     }
     else
@@ -414,6 +455,7 @@ GPClient.prototype.removeEventListener = function ( eventNameOrFunction )
         eventNameList.push ( keys[i] ) ;
       }
       this.eventListenerFunctions.remove ( item ) ;
+      this.listenerFunctionsList.remove ( item ) ;
     }
     if ( ! eventNameList.length ) return ;
     var e = new GPEvent ( "system", "removeEventListener" ) ;

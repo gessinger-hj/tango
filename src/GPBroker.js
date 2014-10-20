@@ -72,7 +72,7 @@ var GPBroker = function ( port, ip )
       {
         return ;
       }
-      var i, j ;
+      var i, j, found ;
       var eventNameList ;
       var eOut ;
       var str ;
@@ -272,28 +272,45 @@ var GPBroker = function ( port, ip )
               continue ;
             }
           }
-          var found = false ;
-          var socketList = thiz._eventNameToSockets.get ( e.getName() ) ;
+          found = false ;
+          name = e.getName() ;
+          e.setSourceIdentifier ( this.sid ) ;
+          str = e.serialize() ;
+          var socketList = thiz._eventNameToSockets.get ( name ) ;
           if ( socketList )
           {
             found = true ;
-          }
-          name = e.getName() ;
-          str = null ;
-          e.setSourceIdentifier ( this.sid ) ;
-          for ( i = 0 ; i < thiz._socketList.length ; i++ )
-          {
-            list = thiz._socketList[i]._regexpList ;
-            if ( list )
+            for ( var i = 0 ; i < socketList.length ; i++ )
             {
-              if ( str === null ) str = e.serialize() ;
+              socketList[i].write ( str ) ;
+              if ( e.isResultRequested() )
+              {
+                break ;
+              }
+            }
+          }
+          if ( found && e.isResultRequested() )
+          {
+          }
+          else
+          {
+            for ( i = 0 ; i < thiz._socketList.length ; i++ )
+            {
+              list = thiz._socketList[i]._regexpList ;
+              if ( ! list ) continue ;
               for ( j = 0 ; j < list.length ; j++ )
               {
-                if ( list[j].test ( name ) )
+                if ( ! list[j].test ( name ) ) continue ;
+                found = true ;
+                thiz._socketList[i].socket.write ( str ) ;
+                if ( e.isResultRequested() )
                 {
-                  found = true ;
-                  thiz._socketList[i].socket.write ( str ) ;
+                  break ;
                 }
+              }
+              if ( found && e.isResultRequested() )
+              {
+                break ;
               }
             }
           }
@@ -306,40 +323,16 @@ var GPBroker = function ( port, ip )
               this.write ( e.serialize() ) ;
               continue ;
             }
-            var done2 = false ;
+            done = false ;
             for ( i = 0 ; i < thiz._multiplexerList.length ; i++ )
             {
               done2 = true ;
               if ( this === thiz._multiplexerList[i] ) continue ;
               thiz._multiplexerList[i].write ( e.serialize() ) ;
             }
-            if ( done2 ) continue ;
+            if ( done ) continue ;
             Log.info ( "No listener found for " + e.getName() ) ;
-            // Log.info ( e.toString() ) ;
             continue ;
-          }
-          e.setSourceIdentifier ( this.sid ) ;
-          var str = e.serialize() ;
-          var done = false ;
-          if ( socketList )
-          {
-            for ( var i = 0 ; i < socketList.length ; i++ )
-            {
-              socketList[i].write ( str ) ;
-              if ( e.isResultRequested() )
-              {
-                done = true ;
-                break ;
-              }
-            }
-          }
-          if ( ! done )
-          {
-            for ( i = 0 ; i < thiz._multiplexerList.length ; i++ )
-            {
-              if ( this === thiz._multiplexerList[i] ) continue ;
-              thiz._multiplexerList[i].write ( e.serialize() ) ;
-            }
           }
         }
       }
@@ -367,7 +360,7 @@ GPBroker.prototype.ejectSocket = function ( socket )
       this._eventNameToSockets.remove ( ctx.eventNameList[i], socket ) ;
     }
   }
-  this._socketList.remove ( socket ) ;
+  this._socketList.remove ( ctx ) ;
   delete this._sockets[sid] ;
   Log.info ( 'Socket disconnected, sid=' + sid ) ;
 };

@@ -237,7 +237,7 @@ tangojs.GPEvent.prototype =
 	/**
 	 * Description
 	 */
-	setRequestResult: function()
+	setResultRequested: function()
 	{
   	this.control._isResultRequested = true ;
 	},
