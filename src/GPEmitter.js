@@ -4,7 +4,7 @@ var GPClient = require ( "./GPClient" ) ;
 
 var c = new GPClient() ;
 
-c.fire ( "tail.log.log", function(p)
+c.fire ( "tail.log", function(p)
 {
   this.end() ;
 } ) ;

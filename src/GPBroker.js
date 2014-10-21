@@ -13,13 +13,156 @@ var MultiHash = require ( "./MultiHash" ) ;
 var Log = require ( "./LogFile" ) ;
 
 
-var GPSocket = function ( socket )
+var GPConnection = function ( broker, socket )
 {
-  this.sid = socket.remoteAddress + "_" + socket.remotePort ;
-  this.socket = socket ;
-  this.socket.sid = this.sid ;
-  this.info = "none" ;
-}
+  this.broker     = broker ;
+  this.socket     = socket ;
+  this.info       = "none" ;
+  if ( ! this.socket.sid )
+  {
+    this.sid        = socket.remoteAddress + "_" + socket.remotePort ;
+    this.socket.sid = this.sid ;
+  }
+  else
+  {
+    this.sid = socket.sid ;
+  }
+};
+GPConnection.prototype.toString = function()
+{
+  return "(GPConnection)[]" ;
+};
+GPConnection.prototype.removeEventListener = function ( e )
+{
+  var i, index ;
+  var eventNameList = e.data.eventNameList ;
+  if ( ! eventNameList || ! eventNameList.length )
+  {
+    eventNameList = this.eventNameList ;
+  }
+  if ( ! eventNameList || ! eventNameList.length )
+  {
+    e.control.status = { code:1, name:"error", reason:"Missing eventNameList" } ;
+    Log.error ( e.toString() ) ;
+    return ;
+  }
+  var toBeRemoved = [] ;
+  for  ( i = 0 ; i < eventNameList.length ; i++ )
+  {
+    this.broker._eventNameToSockets.remove ( eventNameList[i], this.socket ) ;
+    index  = this.eventNameList.indexOf ( eventNameList[i] ) ;
+    if ( index >= 0 )
+    {
+      toBeRemoved.push ( eventNameList[i] ) ;
+    }
+    index = this._patternList.indexOf ( eventNameList[i] ) ;
+    if ( index >= 0 )
+    {
+      this._patternList.remove ( index ) ;
+      this._regexpList.remove ( index ) ;
+    }
+  }
+  for  ( i = 0 ; i < toBeRemoved.length ; i++ )
+  {
+    this.eventNameList.remove ( toBeRemoved[i] ) ;
+  }
+  toBeRemoved.length = 0 ;
+};
+GPConnection.prototype.write = function ( data )
+{
+  if ( data instanceof GPEvent )
+  {
+    this.socket.write ( data.serialize() ) ;
+  }
+  if ( typeof data === 'string' )
+  {
+    this.socket.write ( data ) ;
+  }
+};
+GPConnection.prototype.sendInfoRequest = function ( e )
+{
+  var i ;
+  e.setType ( "getInfoResult" ) ;
+  e.control.status = { code:0, name:"ack" } ;
+  e.data.log = { levelName: Log.getLevelName(), level:Log.getLevel() } ;
+  e.data.currentEventNames = this.broker._eventNameToSockets.getKeys() ;
+  for ( i = 0 ; i < this.broker._connectionList.length ; i++ )
+  {
+    list = this.broker._connectionList[i]._regexpList ;
+    if ( list )
+    {
+      if ( ! e.data.currentEventPattern ) e.data.currentEventPattern = [] ;
+      for ( j = 0 ; j < list.length ; j++ )
+      {
+        e.data.currentEventPattern.push ( list[j].toString() ) ;
+      }
+    }
+  }     
+  var mhclone = new MultiHash() ;
+  for ( key in this.broker._eventNameToSockets._hash )
+  {
+    var afrom = this.broker._eventNameToSockets.get ( key ) ;
+    if ( typeof ( afrom ) === 'function' ) continue ;
+    for ( var ii = 0 ; ii < afrom.length ; ii++ )
+    {
+      mhclone.put ( key, afrom[ii].sid ) ;
+    }
+  }
+  e.data.mapping = mhclone._hash ;
+  var kk ;
+  e.data.connectionList = [] ;
+  for ( kk in this.broker._connections )
+  {
+    var client_info = this.broker._connections[kk].client_info ;
+    if ( ! client_info ) continue ;
+    e.data.connectionList.push ( client_info ) ;
+  }
+  this.write ( e ) ;
+};
+GPConnection.prototype.addEventListener = function ( e )
+{
+  var eventNameList = e.data.eventNameList ;
+  if ( ! eventNameList || ! eventNameList.length )
+  {
+    e.control.status = { code:1, name:"error", reason:"Missing eventNameList" } ;
+    Log.error ( e.toString() ) ;
+    this.write ( e ) ;
+    return ;
+  }
+  if ( ! this.eventNameList ) this.eventNameList = [] ;
+
+  for  ( i = 0 ; i < eventNameList.length ; i++ )
+  {
+    str = eventNameList[i] ;
+    if ( str.indexOf ( "*" ) < 0 )
+    {
+      this.eventNameList.push ( str ) ;
+    }
+    else
+    {
+      if ( ! this._regexpList )
+      {
+        this._regexpList = [] ;
+        this._patternList = [] ;
+      }
+      this._patternList.push ( str ) ;
+      str = str.replace ( /\./, "\\." ).replace ( /\*/, ".*" ) ;
+      regexp = new RegExp ( str ) ;
+      this._regexpList.push ( regexp ) ;
+    }
+  }
+  for  ( i = 0 ; i < eventNameList.length ; i++ )
+  {
+    str = eventNameList[i] ;
+    if ( str.indexOf ( "*" ) < 0 )
+    {
+      this.broker._eventNameToSockets.put ( str, this.socket ) ;
+    }
+  }
+  e.control.status = { code:0, name:"ack" } ;
+  this.write ( e ) ;
+};
+
 /**
  * @constructor
  * @extends {EventEmitter}
@@ -29,23 +172,25 @@ var GPSocket = function ( socket )
 var GPBroker = function ( port, ip )
 {
   EventEmitter.call ( this ) ;
-  this._sockets = {} ;
+  this._connections = {} ;
   this._eventNameToSockets = new MultiHash() ;
-  this._socketList = [] ;
+  this._connectionList = [] ;
   this.port = port ;
   this.ip = ip ;
   this.closing = false ;
   var thiz = this ;
-  var ctx ;
+  var conn ;
   this._multiplexerList = [] ;
   this.server = net.createServer() ;
   this.server.on ( "error", function onerror ( p )
   {
     Log.error ( p ) ;
+    this.emit ( "error" ) ;
   });
   this.server.on ( "close", function onclose ( p )
   {
     Log.info ( p ) ;
+    this.emit ( "close" ) ;
   });
   this.server.on ( "connection", function server_on_connection ( socket )
   {
@@ -54,13 +199,9 @@ var GPBroker = function ( port, ip )
       socket.end() ;
       return ;
     }
-    
-    // var sid = socket.remoteAddress + "_" + socket.remotePort ;
-    // socket.sid = sid ;
-    // thiz._sockets[sid] = { sid:sid, socket:socket, info:"none" } ;
-    var s = new GPSocket ( socket ) ;
-    thiz._sockets[s.sid] = s ;
-    thiz._socketList.push ( s ) ;
+    conn = new GPConnection ( thiz, socket ) ;
+    thiz._connections[conn.sid] = conn ;
+    thiz._connectionList.push ( conn ) ;
     Log.info ( 'Socket connected' );
     socket.on ( "error", thiz.ejectSocket.bind ( thiz, socket ) ) ;
     socket.on ( 'close', thiz.ejectSocket.bind ( thiz, socket ) ) ;
@@ -110,236 +251,152 @@ var GPBroker = function ( port, ip )
           if ( e.isResult() )
           {
             sid = e.getSourceIdentifier() ;
-            ctx = thiz._sockets[sid] ;
-            if ( ctx )
+            conn = thiz._connections[sid] ;
+            if ( conn )
             {
-              ctx.socket.write ( e.serialize() ) ;
+              conn.write ( e ) ;
             }
             continue ;
           }
           if ( e.getName() === 'system' )
           {
-            if ( e.getType() === "addMultiplexer" )
-            {
-              thiz._multiplexerList.push ( this ) ;
-              ctx = thiz._sockets[this.sid] ;
-              ctx.isMultiplexer = true ;
-              return ;
-            }
-            if ( e.getType() === "shutdown" )
-            {
-              Log.notice ( 'server shutting down' ) ;
-              e.control.status = { code:0, name:"ack" } ;
-              this.write ( e.serialize() ) ;
-              thiz.closeAllSockets ( ) ; //this ) ;
-              thiz.server.unref() ;
-              Log.notice ( 'server shut down' ) ;
-              thiz.emit ( "shutdown" ) ;
-              return ;
-            }
-            else
-            if ( e.getType() === "client_info" )
-            {
-              ctx = thiz._sockets[this.sid] ;
-              ctx.client_info = e.data ; e.data = {} ;
-              ctx.client_info.sid = this.sid ;
-              continue ;
-            }
-            else
-            if ( e.getType() === "getInfoRequest" )
-            {
-              e.setType ( "getInfoResult" ) ;
-              e.control.status = { code:0, name:"ack" } ;
-              e.data.log = { levelName: Log.getLevelName(), level:Log.getLevel() } ;
-              e.data.currentEventNames = thiz._eventNameToSockets.getKeys() ;
-              for ( i = 0 ; i < thiz._socketList.length ; i++ )
-              {
-                list = thiz._socketList[i]._regexpList ;
-                if ( list )
-                {
-                  if ( ! e.data.currentEventPattern ) e.data.currentEventPattern = [] ;
-                  for ( j = 0 ; j < list.length ; j++ )
-                  {
-                    e.data.currentEventPattern.push ( list[j].toString() ) ;
-                  }
-                }
-              }     
-
-              var mhclone = new MultiHash() ;
-              for ( key in thiz._eventNameToSockets._hash )
-              {
-                var afrom = thiz._eventNameToSockets.get ( key ) ;
-                if ( typeof ( afrom ) === 'function' ) continue ;
-                for ( var ii = 0 ; ii < afrom.length ; ii++ )
-                {
-                  mhclone.put ( key, afrom[ii].sid ) ;
-                }
-              }
-              e.data.mapping = mhclone._hash ;
-              var kk ;
-              e.data.connectionList = [] ;
-              for ( kk in thiz._sockets )
-              {
-                var client_info = thiz._sockets[kk].client_info ;
-                if ( ! client_info ) continue ;
-                e.data.connectionList.push ( client_info ) ;
-              }
-              this.write ( e.serialize() ) ;
-              continue ;
-            }
-            else
-            if ( e.getType() === "addEventListener" )
-            {
-              eventNameList = e.data.eventNameList ;
-              if ( ! eventNameList || ! eventNameList.length )
-              {
-                e.control.status = { code:1, name:"error", reason:"Missing eventNameList" } ;
-                Log.error ( e.toString() ) ;
-                this.write ( e.serialize() ) ;
-                continue ;
-              }
-              ctx = thiz._sockets[this.sid] ;
-              if ( ! ctx.eventNameList ) ctx.eventNameList = [] ;
-
-              for  ( i = 0 ; i < eventNameList.length ; i++ )
-              {
-                str = eventNameList[i] ;
-                if ( str.indexOf ( "*" ) < 0 )
-                {
-                  ctx.eventNameList.push ( str ) ;
-                }
-                else
-                {
-                  if ( ! ctx._regexpList )
-                  {
-                    ctx._regexpList = [] ;
-                  }
-                  str = str.replace ( /\./, "\\." ).replace ( /\*/, ".*" ) ;
-                  regexp = new RegExp ( str ) ;
-                  ctx._regexpList.push ( regexp ) ;
-                }
-              }
-
-              for  ( i = 0 ; i < eventNameList.length ; i++ )
-              {
-                str = eventNameList[i] ;
-                if ( str.indexOf ( "*" ) < 0 )
-                {
-                  thiz._eventNameToSockets.put ( str, this ) ;
-                }
-              }
-
-              e.control.status = { code:0, name:"ack" } ;
-              this.write ( e.serialize() ) ;
-              continue ;
-            }
-            else
-            if ( e.getType() === "removeEventListener" )
-            {
-              eventNameList = e.data.eventNameList ;
-              ctx = thiz._sockets[this.sid] ;
-              if ( ! eventNameList || ! eventNameList.length )
-              {
-                eventNameList = ctx.eventNameList ;
-              }
-              if ( ! eventNameList || ! eventNameList.length )
-              {
-                e.control.status = { code:1, name:"error", reason:"Missing eventNameList" } ;
-                Log.error ( e.toString() ) ;
-                continue ;
-              }
-              var toBeRemoved = [] ;
-              for  ( i = 0 ; i < eventNameList.length ; i++ )
-              {
-                thiz._eventNameToSockets.remove ( eventNameList[i], this ) ;
-                index  = ctx.eventNameList.indexOf ( eventNameList[i] ) ;
-                if ( index >= 0 )
-                {
-                  toBeRemoved.push ( eventNameList[i] ) ;
-                }
-              }
-              for  ( i = 0 ; i < toBeRemoved.length ; i++ )
-              {
-                ctx.eventNameList.remove ( toBeRemoved[i] ) ;
-              }
-              toBeRemoved.length = 0 ;
-              continue ;
-            }
-            else
-            {
-              Log.error ( "Invalid type: '" + e.getType() + "' for " + e.getName() ) ;
-              Log.error ( e.toString() ) ;
-              continue ;
-            }
-          }
-          found = false ;
-          name = e.getName() ;
-          e.setSourceIdentifier ( this.sid ) ;
-          str = e.serialize() ;
-          var socketList = thiz._eventNameToSockets.get ( name ) ;
-          if ( socketList )
-          {
-            found = true ;
-            for ( var i = 0 ; i < socketList.length ; i++ )
-            {
-              socketList[i].write ( str ) ;
-              if ( e.isResultRequested() )
-              {
-                break ;
-              }
-            }
-          }
-          if ( found && e.isResultRequested() )
-          {
-          }
-          else
-          {
-            for ( i = 0 ; i < thiz._socketList.length ; i++ )
-            {
-              list = thiz._socketList[i]._regexpList ;
-              if ( ! list ) continue ;
-              for ( j = 0 ; j < list.length ; j++ )
-              {
-                if ( ! list[j].test ( name ) ) continue ;
-                found = true ;
-                thiz._socketList[i].socket.write ( str ) ;
-                if ( e.isResultRequested() )
-                {
-                  break ;
-                }
-              }
-              if ( found && e.isResultRequested() )
-              {
-                break ;
-              }
-            }
-          }
-          if ( ! found )
-          {
-            if ( e.isResultRequested() )
-            {
-              e.control.status = { code:1, name:"warning", reason:"No listener found for event: " + e.getName() } ;
-              e.control.requestedName = e.getName() ;
-              this.write ( e.serialize() ) ;
-              continue ;
-            }
-            done = false ;
-            for ( i = 0 ; i < thiz._multiplexerList.length ; i++ )
-            {
-              done2 = true ;
-              if ( this === thiz._multiplexerList[i] ) continue ;
-              thiz._multiplexerList[i].write ( e.serialize() ) ;
-            }
-            if ( done ) continue ;
-            Log.info ( "No listener found for " + e.getName() ) ;
+            thiz.handleSystemMessages ( this, e ) ;
             continue ;
           }
+          thiz.sendEventToClients ( socket, e ) ;
         }
       }
     });
   });
 };
 util.inherits ( GPBroker, EventEmitter ) ;
+
+GPBroker.prototype.toString = function()
+{
+  return "(GPBroker)[]" ;
+};
+GPBroker.prototype.sendEventToClients = function ( socket, e )
+{
+  var i, found = false, done = false, str ;
+  var name = e.getName() ;
+  e.setSourceIdentifier ( socket.sid ) ;
+  var str = e.serialize() ;
+  var socketList = this._eventNameToSockets.get ( name ) ;
+  if ( socketList )
+  {
+    found = true ;
+    for ( i = 0 ; i < socketList.length ; i++ )
+    {
+      socketList[i].write ( str ) ;
+      if ( e.isResultRequested() )
+      {
+        break ;
+      }
+    }
+  }
+  if ( found && e.isResultRequested() )
+  {
+  }
+  else
+  {
+    for ( i = 0 ; i < this._connectionList.length ; i++ )
+    {
+      list = this._connectionList[i]._regexpList ;
+      if ( ! list ) continue ;
+      for ( j = 0 ; j < list.length ; j++ )
+      {
+        if ( ! list[j].test ( name ) ) continue ;
+        found = true ;
+        this._connectionList[i].socket.write ( str ) ;
+        if ( e.isResultRequested() )
+        {
+          break ;
+        }
+      }
+      if ( found && e.isResultRequested() )
+      {
+        break ;
+      }
+    }
+  }
+  if ( ! found )
+  {
+    if ( e.isResultRequested() )
+    {
+      e.control.status = { code:1, name:"warning", reason:"No listener found for event: " + e.getName() } ;
+      e.control.requestedName = e.getName() ;
+      socket.write ( e.serialize() ) ;
+      return ;
+    }
+    done = false ;
+    str = null ;
+    for ( i = 0 ; i < this._multiplexerList.length ; i++ )
+    {
+      if ( socket === this._multiplexerList[i] ) continue ;
+      if ( ! str )
+      {
+        str = e.serialize() ;
+      }
+      done = true ;
+      this._multiplexerList[i].write ( str ) ;
+    }
+    if ( ! done )
+    {
+      Log.info ( "No listener found for " + e.getName() ) ;
+    }
+  }
+};
+GPBroker.prototype.handleSystemMessages = function ( socket, e )
+{
+  var conn ;
+  if ( e.getType() === "addMultiplexer" )
+  {
+    this._multiplexerList.push ( socket ) ;
+    conn = thiz._connections[socket.sid] ;
+    conn.isMultiplexer = true ;
+  }
+  else
+  if ( e.getType() === "shutdown" )
+  {
+    Log.notice ( 'server shutting down' ) ;
+    e.control.status = { code:0, name:"ack" } ;
+    socket.write ( e.serialize() ) ;
+    this.closeAllSockets() ;
+    this.server.unref() ;
+    Log.notice ( 'server shut down' ) ;
+    this.emit ( "shutdown" ) ;
+  }
+  else
+  if ( e.getType() === "client_info" )
+  {
+    conn = this._connections[socket.sid] ;
+    conn.client_info = e.data ; e.data = {} ;
+    conn.client_info.sid = socket.sid ;
+  }
+  else
+  if ( e.getType() === "getInfoRequest" )
+  {
+    conn = new GPConnection ( this, socket )
+    conn.sendInfoRequest ( e ) ;
+  }
+  else
+  if ( e.getType() === "addEventListener" )
+  {
+    conn = this._connections[socket.sid] ;
+    conn.addEventListener ( e ) ;
+  }
+  else
+  if ( e.getType() === "removeEventListener" )
+  {
+    conn = this._connections[socket.sid] ;
+    conn.removeEventListener ( e ) ;
+  }
+  else
+  {
+    Log.error ( "Invalid type: '" + e.getType() + "' for " + e.getName() ) ;
+    Log.error ( e.toString() ) ;
+  }
+};
 /**
  * Description
  * @param {} socket
@@ -348,20 +405,20 @@ GPBroker.prototype.ejectSocket = function ( socket )
 {
   var sid = socket.sid ;
   if ( ! sid ) return ;
-  var ctx = this._sockets[sid] ;
-  if ( ! ctx ) return ;
+  var conn = this._connections[sid] ;
+  if ( ! conn ) return ;
 
   this._multiplexerList.remove ( socket ) ;
 
-  if ( ctx.eventNameList )
+  if ( conn.eventNameList )
   {
-    for  ( i = 0 ; i < ctx.eventNameList.length ; i++ )
+    for  ( i = 0 ; i < conn.eventNameList.length ; i++ )
     {
-      this._eventNameToSockets.remove ( ctx.eventNameList[i], socket ) ;
+      this._eventNameToSockets.remove ( conn.eventNameList[i], socket ) ;
     }
   }
-  this._socketList.remove ( ctx ) ;
-  delete this._sockets[sid] ;
+  this._connectionList.remove ( conn ) ;
+  delete this._connections[sid] ;
   Log.info ( 'Socket disconnected, sid=' + sid ) ;
 };
 /**
@@ -375,17 +432,17 @@ GPBroker.prototype.closeAllSockets = function ( exceptSocket )
     return ;
   }
   this.closing = true ;
-  var list = Object.keys ( this._sockets ) ;
+  var list = Object.keys ( this._connections ) ;
   var e = new GPEvent ( "system", "shutdown" ) ;
   for ( var i = 0 ; i < list.length ; i++ )
   {
-    var ctx = this._sockets[list[i]] ;
-    if ( ctx.socket === exceptSocket )
+    var conn = this._connections[list[i]] ;
+    if ( conn.socket === exceptSocket )
     {
       continue ;
     }
-    ctx.socket.write ( e.serialize() ) ;
-    ctx.socket.end() ;
+    conn.socket.write ( e.serialize() ) ;
+    conn.socket.end() ;
   }
 };
 

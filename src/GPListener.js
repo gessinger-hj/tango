@@ -9,6 +9,7 @@ var gpc = new GPClient() ;
 gpc.on ( "tail.*", function(e)
 {
   T.log ( e ) ;
+  gpc.removeEventListener ( "tail.*" ) ;
 });
 // gpc.on ( "tail.log.log", function(e)
 // {
@@ -17,4 +18,8 @@ gpc.on ( "tail.*", function(e)
 gpc.on('end', function()
 {
   console.log('socket disconnected');
+});
+gpc.on('shutdown', function()
+{
+  console.log('broker shut down');
 });

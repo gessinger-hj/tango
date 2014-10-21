@@ -325,6 +325,7 @@ GPClient.prototype.end = function()
   this.pendingResultList = {} ;
   this.pendingEventListenerList = [] ;
   this.eventListenerFunctions.flush() ;
+  this.listenerFunctionsList = [] ;
 };
 /**
  * Description
