@@ -27,6 +27,7 @@ var GPConnection = function ( broker, socket )
   {
     this.sid = socket.sid ;
   }
+  this._lockedResourcesIdList = [] ;
 };
 GPConnection.prototype.toString = function()
 {
@@ -81,7 +82,7 @@ GPConnection.prototype.write = function ( data )
 };
 GPConnection.prototype.sendInfoRequest = function ( e )
 {
-  var i ;
+  var i, first, str ;
   e.setType ( "getInfoResult" ) ;
   e.control.status = { code:0, name:"ack" } ;
   e.data.log = { levelName: Log.getLevelName(), level:Log.getLevel() } ;
@@ -116,6 +117,15 @@ GPConnection.prototype.sendInfoRequest = function ( e )
     var client_info = this.broker._connections[kk].client_info ;
     if ( ! client_info ) continue ;
     e.data.connectionList.push ( client_info ) ;
+  }
+  str = "" ;
+  for ( kk in this.broker._lockedResources )
+  {
+    if ( ! str )
+    {
+      e.data.lockList = [] ;
+    }
+    e.data.lockList.push ( { resourceId: kk, owner: this.broker._lockedResources[kk].client_info } ) ;
   }
   this.write ( e ) ;
 };
@@ -181,6 +191,7 @@ var GPBroker = function ( port, ip )
   var thiz = this ;
   var conn ;
   this._multiplexerList = [] ;
+  this._lockedResources = {} ;
   this.server = net.createServer() ;
   this.server.on ( "error", function onerror ( p )
   {
@@ -392,6 +403,44 @@ GPBroker.prototype.handleSystemMessages = function ( socket, e )
     conn.removeEventListener ( e ) ;
   }
   else
+  if ( e.getType() === "lockResourceRequest" )
+  {
+    conn = this._connections[socket.sid] ;
+    var resourceId = e.data.resourceId ;
+    e.setType ( "lockResourceResult" ) ;
+    if ( this._lockedResources[resourceId] )
+    {
+      e.data.isLockOwner = false ;
+    }
+    else
+    {
+      this._lockedResources[resourceId] = conn ;
+      conn._lockedResourcesIdList.push ( resourceId ) ;
+      e.data.isLockOwner = true ;
+    }
+    conn.write ( e ) ;
+  }
+  else
+  if ( e.getType() === "freeResourceRequest" )
+  {
+    conn = this._connections[socket.sid] ;
+    var resourceId = e.data.resourceId ;
+    e.setType ( "freeResourceResult" ) ;
+    e.data.isLockOwner = false ;
+    if ( ! this._lockedResources[resourceId] )
+    {
+      e.control.status = { code:1, name:"error", reason:"not owner of resourceId=" + resourceId } ;
+
+    }
+    else
+    {
+      e.control.status = { code:0, name:"ack" } ;
+    }
+    delete this._lockedResources[resourceId] ;
+    conn._lockedResourcesIdList.remove ( resourceId ) ;
+    conn.write ( e ) ;
+  }
+  else
   {
     Log.error ( "Invalid type: '" + e.getType() + "' for " + e.getName() ) ;
     Log.error ( e.toString() ) ;
@@ -403,6 +452,7 @@ GPBroker.prototype.handleSystemMessages = function ( socket, e )
  */
 GPBroker.prototype.ejectSocket = function ( socket )
 {
+  var i ;
   var sid = socket.sid ;
   if ( ! sid ) return ;
   var conn = this._connections[sid] ;
@@ -418,6 +468,10 @@ GPBroker.prototype.ejectSocket = function ( socket )
     }
   }
   this._connectionList.remove ( conn ) ;
+  for ( i = 0 ; i < conn._lockedResourcesIdList.length ; i++ )
+  {
+    delete this._lockedResources [ conn._lockedResourcesIdList ] ;
+  }
   delete this._connections[sid] ;
   Log.info ( 'Socket disconnected, sid=' + sid ) ;
 };

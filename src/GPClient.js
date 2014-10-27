@@ -30,6 +30,8 @@ var GPClient = function ( port, host )
   this.pendingEventListenerList = [] ;
   this.eventListenerFunctions = new MultiHash() ;
   this.listenerFunctionsList = [] ;
+  this.pendingLockList = [] ;
+  this.lockedResources = {} ;
 } ;
 util.inherits ( GPClient, EventEmitter ) ;
 /**
@@ -84,12 +86,23 @@ GPClient.prototype.connect = function()
         counter++ ;
         var uid = os.hostname() + "_" + this.localPort + "-" + counter ;
         var ctx = thiz.pendingEventListenerList[i] ;
-        var e = ctx.e ;
-        var callback = ctx.callback ;
-        e.setUniqueId ( uid ) ;
-        this.write ( e.serialize() ) ;
+        ctx.e.setUniqueId ( uid ) ;
+        this.write ( ctx.e.serialize() ) ;
       }
       thiz.pendingEventListenerList.length = 0 ;
+    }
+    if ( thiz.pendingLockList.length )
+    {
+      for ( i = 0 ; i < thiz.pendingLockList.length ; i++ )
+      {
+        counter++ ;
+        var uid = os.hostname() + "_" + this.localPort + "-" + counter ;
+        var ctx = thiz.pendingLockList[i] ;
+        ctx.e.setUniqueId ( uid ) ;
+        this.write ( ctx.e.serialize() ) ;
+        thiz.lockedResources[e.data.resourceId] = ctx;
+      }
+      thiz.pendingLockList.length = 0 ;
     }
   } ) ;
   this.socket.on ( 'data', function socket_on_data ( data )
@@ -147,6 +160,21 @@ GPClient.prototype.connect = function()
             {
               rcb.call ( thiz, e ) ;
             }
+            continue ;
+          }
+          if ( e.getType() === "lockResourceResult" )
+          {
+            var ctx = thiz.lockedResources[e.data.resourceId] ;
+            if ( ! e.data.isLockOwner )
+            {
+              delete thiz.lockedResources[e.data.resourceId] ;
+            }
+            ctx.callback.call ( thiz, null, e ) ;
+            continue ;
+          }
+          if ( e.getType() === "freeResourceResult" )
+          {
+            delete thiz.lockedResources[e.data.resourceId] ;
             continue ;
           }
         }
@@ -465,5 +493,53 @@ GPClient.prototype.removeEventListener = function ( eventNameOrFunction )
     var s = this.getSocket() ;
     s.write ( e.serialize() ) ;
   }
+};
+/**
+ * Description
+ * @param {} eventNameOrFunction
+ */
+GPClient.prototype.lockResource = function ( resourceId, callback )
+{
+  if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "GPClient.lockResource: resourceId must be a string." ) ;
+  if ( typeof callback !== 'function' ) throw new Error ( "GPClient.lockResource: callback must be a function." ) ;
+
+  var e = new GPEvent ( "system", "lockResourceRequest" ) ;
+  e.data.resourceId = resourceId ;
+  var s = this.getSocket() ;
+  var ctx = {} ;
+  ctx.resourceId = resourceId ;
+  ctx.callback = callback ;
+  ctx.e = e ;
+
+  if ( this.pendingLockList.length )
+  {
+    this.pendingLockList.push ( ctx ) ;
+  }
+  if ( ! this.pendingLockList.length )
+  {
+    counter++ ;
+    var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
+    e.setUniqueId ( uid ) ;
+    this.lockedResources[resourceId] = ctx;
+    s.write ( e.serialize() ) ;
+  }
+};
+/**
+ * Description
+ * @param {} eventNameOrFunction
+ */
+GPClient.prototype.freeResource = function ( resourceId )
+{
+  if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "GPClient.lockResource: resourceId must be a string." ) ;
+  if ( ! this.lockedResources[resourceId] ) throw new Error ( "GPClient.freeResource: not owner of resourceId=" + resourceId ) ;
+
+  var e = new GPEvent ( "system", "freeResourceRequest" ) ;
+  e.data.resourceId = resourceId ;
+  var s = this.getSocket() ;
+  counter++ ;
+  var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
+  e.setUniqueId ( uid ) ;
+  delete this.lockedResources[resourceId] ;
+  s.write ( e.serialize() ) ;
 };
 module.exports = GPClient ;

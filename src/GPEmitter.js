@@ -6,7 +6,14 @@ var c = new GPClient() ;
 
 c.fire ( "tail.log", function(p)
 {
-  this.end() ;
+  // this.end() ;
+} ) ;
+c.lockResource ( "4711", function ( p1, p2 )
+{
+  console.log ( "p1=" + p1 ) ;
+  console.log ( "p2=" + p2 ) ;
+  c.freeResource ( "4711" ) ;
+  // this.end() ;
 } ) ;
 /*
 var ne = new GPEvent ( "alarm", "file" ) ;
@@ -32,7 +39,7 @@ console.log ( " ----------write: function()----------------" ) ;
          }
        ) ;
 */
-c.on('end', function()
-{
-  console.log('socket disconnected');
-});
+// c.on('end', function()
+// {
+//   console.log('socket disconnected');
+// });
