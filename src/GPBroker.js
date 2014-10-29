@@ -369,13 +369,37 @@ GPBroker.prototype.handleSystemMessages = function ( socket, e )
   else
   if ( e.getType() === "shutdown" )
   {
-    Log.notice ( 'server shutting down' ) ;
-    e.control.status = { code:0, name:"ack" } ;
-    socket.write ( e.serialize() ) ;
-    this.closeAllSockets() ;
-    this.server.unref() ;
-    Log.notice ( 'server shut down' ) ;
-    this.emit ( "shutdown" ) ;
+    var shutdown_sid = e.data.shutdown_sid ;
+    if ( shutdown_sid )
+    {
+      conn = this._connections[socket.sid] ;
+      var target_conn = this._connections[shutdown_sid] ;
+      if ( ! target_conn )
+      {
+        e.control.status = { code:1, name:"error", reason:"no connection for sid=" + shutdown_sid } ;
+T.lwhere (  ) ;
+console.log ( e ) ;
+        socket.write ( e.serialize() ) ;
+        return ;
+      }
+      target_conn.write ( new GPEvent ( "system", "shutdown" ) ) ;
+      target_conn.socket.end() ;
+      e.control.status = { code:0, name:"ack" } ;
+T.lwhere (  ) ;
+console.log ( e ) ;
+      socket.write ( e.serialize() ) ;
+      return ;
+    }
+    else
+    {
+      Log.notice ( 'server shutting down' ) ;
+      e.control.status = { code:0, name:"ack" } ;
+      socket.write ( e.serialize() ) ;
+      this.closeAllSockets() ;
+      this.server.unref() ;
+      Log.notice ( 'server shut down' ) ;
+      this.emit ( "shutdown" ) ;
+    }
   }
   else
   if ( e.getType() === "client_info" )
@@ -430,7 +454,6 @@ GPBroker.prototype.handleSystemMessages = function ( socket, e )
     if ( ! this._lockedResources[resourceId] )
     {
       e.control.status = { code:1, name:"error", reason:"not owner of resourceId=" + resourceId } ;
-
     }
     else
     {

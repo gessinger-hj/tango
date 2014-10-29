@@ -16,9 +16,9 @@ var GPAdmin = function ( port, host )
 /**
  * Shutdown GPBroker
  */
-GPAdmin.prototype.shutdown = function()
+GPAdmin.prototype.shutdown = function ( what )
 {
-	this._execute ( "shutdown" ) ;
+	this._execute ( "shutdown", what ) ;
 };
 /**
  * Display an info from GPBroker
@@ -29,7 +29,7 @@ GPAdmin.prototype.info = function()
 };
 /*
  */
-GPAdmin.prototype._execute = function ( action )
+GPAdmin.prototype._execute = function ( action, what )
 {
 	this.socket = net.connect ( { port: this.port, host: this.host } ) ;
 	if ( action === "shutdown" )
@@ -37,6 +37,7 @@ GPAdmin.prototype._execute = function ( action )
 		this.socket.on ( "connect", function()
 		{
 		  var e = new GPEvent ( "system", "shutdown" ) ;
+		  e.data.shutdown_sid = what ;
 		  this.write ( e.serialize() ) ;
 		});
 		return ;
@@ -60,6 +61,7 @@ GPAdmin.prototype._execute = function ( action )
 	});
 	this.socket.on ( 'data', function ondata ( data )
 	{
+console.log ( "1 --------------------------" ) ;
 	  var m = data.toString() ;
 	  if ( m.charAt ( 0 ) === '{' )
 	  {
@@ -73,9 +75,10 @@ module.exports = GPAdmin ;
 if ( require.main === module )
 {
 	var ad = new GPAdmin() ;
-	if ( T.getProperty ( "shutdown" ) )
+	var what = T.getProperty ( "shutdown" ) ;
+	if ( what )
 	{
-		ad.shutdown() ;
+		ad.shutdown ( what ) ;
 	}
 	else
 	{
