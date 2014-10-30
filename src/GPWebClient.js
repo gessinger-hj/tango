@@ -140,7 +140,7 @@ tangojs.GPWebClient.prototype.connect = function()
    */
   this.socket.onopen = function()
   {
-    var einfo = new tangojs.GPEvent ( "system", "client_info" ) ;
+    var einfo = new tangojs.Event ( "system", "client_info" ) ;
     einfo.data.userAgent = navigator.userAgent ;
     einfo.data.connectionTime = new Date() ;
     einfo.data.domain = document.domain ;
@@ -196,13 +196,13 @@ tangojs.GPWebClient.prototype.getSocket = function()
 tangojs.GPWebClient.prototype.fireEvent = function ( params, callback )
 {
   var e = null ;
-  if ( params instanceof tangojs.GPEvent )
+  if ( params instanceof tangojs.Event )
   {
     e = params ;
   }
   else
   {
-    e = new tangojs.GPEvent ( params.name, params.type ) ;
+    e = new tangojs.Event ( params.name, params.type ) ;
     e.setData ( params.data ) ;
     if ( params.user ) u = params.user ;
   }
@@ -259,7 +259,7 @@ tangojs.GPWebClient.prototype.addEventListener = function ( eventNameList, callb
   {
     throw new Error ( "Client.addEventListener: eventNameList must not be empty." ) ;
   }
-  var e = new tangojs.GPEvent ( "system", "addEventListener" ) ;
+  var e = new tangojs.Event ( "system", "addEventListener" ) ;
   if ( this.user )
   {
     e.setUser ( this.user ) ;
@@ -333,7 +333,7 @@ tangojs.GPWebClient.prototype.removeEventListener = function ( eventNameOrFuncti
       this.eventListenerFunctions.remove ( item ) ;
     }
     if ( ! eventNameList.length ) return ;
-    var e = new tangojs.GPEvent ( "system", "removeEventListener" ) ;
+    var e = new tangojs.Event ( "system", "removeEventListener" ) ;
     e.setUser ( this.user ) ;
     e.data.eventNameList = eventNameList ;
     var s = this.getSocket() ;

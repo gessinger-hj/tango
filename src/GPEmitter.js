@@ -1,13 +1,13 @@
 var T = require ( "./Tango" ) ;
-var GPEvent = require ( "./GPEvent" ) ;
-var GPClient = require ( "./GPClient" ) ;
+var Event = require ( "./gp/Event" ) ;
+var Client = require ( "./gp/Client" ) ;
 
-var c = new GPClient() ;
+var c = new Client() ;
 
 GPLock = function ( port, host )
 {
   this.className = "GPLock" ;
-  if ( port instanceof GPClient )
+  if ( port instanceof Client )
   {
     this._isClientOwner = false ;
     this._client = port ;
@@ -17,7 +17,7 @@ GPLock = function ( port, host )
     this._port = port ;
     this._host = host ;
     this._isClientOwner = true ;
-    this._client = new GPClient ( this._port, this._host ) ;
+    this._client = new Client ( this._port, this._host ) ;
   }
   this._isLockOwner = false ;
 };
@@ -29,7 +29,7 @@ GPLock.prototype.aquire = function ( resourceId, callback )
 {
   if ( ! this._client )
   {
-    this._client = new GPClient ( this._port, this._host ) ;
+    this._client = new Client ( this._port, this._host ) ;
   }
   this._resourceId = resourceId ;
   this._callback = callback ;
@@ -67,13 +67,15 @@ GPLock.prototype.release = function()
     this._client = null ;
   }
 };
-var lock = new GPLock ( c ) ;
-lock.aquire ( "user:11", function ( err, l )
+if ( require.main === module )
 {
-  console.log ( "err=" + err ) ;
-  console.log ( "l=" + l ) ;
-  l.release() ;
-} ) ;
+  var lock = new GPLock ( c ) ;
+  lock.aquire ( "user:11", function ( err, l )
+  {
+    console.log ( "err=" + err ) ;
+    console.log ( "l=" + l ) ;
+    // l.release() ;
+  } ) ;
 
 /*
 c.fire ( "tail.log", function(p)
@@ -89,7 +91,7 @@ c.lockResource ( "4711", function ( p1, p2 )
 } ) ;
 */
 /*
-var ne = new GPEvent ( "alarm", "file" ) ;
+var ne = new Event ( "alarm", "file" ) ;
 c.fire ( ne
        , { 
            result: function(e)
@@ -116,3 +118,4 @@ console.log ( " ----------write: function()----------------" ) ;
 // {
 //   console.log('socket disconnected');
 // });
+}
