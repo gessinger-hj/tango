@@ -1,13 +1,13 @@
 var T = require ( "Tango" ) ;
 var Log = require ( "LogFile" ) ;
 var GPNotificationBroker = require ( "GPNotificationBroker" ) ;
-var GPWebSocketEventProxy = require ( "GPWebSocketEventProxy" ) ;
-var GPBroker = require ( "GPBroker" ) ;
+var WebSocketEventProxy = require ( "gp/WebSocketEventProxy" ) ;
+var Broker = require ( "gp/Broker" ) ;
 
 Log.init ( "level=info,Xedirect=3,file=%APPNAME%.log:max=1m:v=4") ;
 
-new GPBroker().listen() ;
-new GPWebSocketEventProxy().listen() ;
+new Broker().listen() ;
+new WebSocketEventProxy().listen() ;
 new GPNotificationBroker().init() ;
 
 var GPResourceSentinel = require ( "GPResourceSentinel" ).GPResourceSentinel ;

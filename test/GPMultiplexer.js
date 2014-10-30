@@ -1,6 +1,6 @@
 var net = require('net');
 var os = require('os');
-var GPEvent = require ( "./GPEvent" ) ;
+var Event = require ( "./Event" ) ;
 var T = require ( "./Tango" ) ;
 
 var port = T.getProperty ( "gepard.port", 17501 ) ;
@@ -43,13 +43,13 @@ socket1.on ( "connect", function socket1_on_connect()
 	{
 	});
 	socket1_connected = true ;
-  var einfo = new GPEvent ( "system", "client_info" ) ;
+  var einfo = new Event ( "system", "client_info" ) ;
   einfo.data.hostname = os.hostname() ;
   einfo.data.connectionTime = new Date() ;
   einfo.data.application = process.argv[1] ;
   this.write ( einfo.serialize() ) ;
 
-  var e = new GPEvent ( "system", "addMultiplexer" ) ;
+  var e = new Event ( "system", "addMultiplexer" ) ;
 	this.write ( e.serialize() ) ;
 
 	if ( to_socket1_list.length )
@@ -70,13 +70,13 @@ socket2.on ( "connect", function socket2_on_connect()
 	this.on ( 'end', function socket1_on_end( data )
 	{
 	});
-  var einfo = new GPEvent ( "system", "client_info" ) ;
+  var einfo = new Event ( "system", "client_info" ) ;
   einfo.data.hostname = os.hostname() ;
   einfo.data.connectionTime = new Date() ;
   einfo.data.application = process.argv[1] ;
   this.write ( einfo.serialize() ) ;
 	socket2_connected = true ;
-  var e = new GPEvent ( "system", "addMultiplexer" ) ;
+  var e = new Event ( "system", "addMultiplexer" ) ;
 	this.write ( e.serialize() ) ;
 
 	if ( to_socket2_list.length )

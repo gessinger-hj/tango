@@ -1,8 +1,8 @@
 var T = require ( "Tango" ) ;
 var NEvent = require ( "NEvent" ) ;
-var GPClient = require ( "GPClient" ) ;
+var Client = require ( "./gp/Client" ) ;
 
-var gpclient = new GPClient() ;
+var gpclient = new Client() ;
 
 gpclient.on ( 'error', function gpclient_on_error ( e )
 {
