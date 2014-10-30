@@ -7,10 +7,10 @@
 var net = require ( 'net' ) ;
 var util = require ( 'util' ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
-var GPEvent = require ( "./GPEvent" ) ;
-var T = require ( "./Tango" ) ;
-var MultiHash = require ( "./MultiHash" ) ;
-var Log = require ( "./LogFile" ) ;
+var Event = require ( "./Event" ) ;
+var T = require ( "../Tango" ) ;
+var MultiHash = require ( "../MultiHash" ) ;
+var Log = require ( "../LogFile" ) ;
 
 
 var GPConnection = function ( broker, socket )
@@ -71,7 +71,7 @@ GPConnection.prototype.removeEventListener = function ( e )
 };
 GPConnection.prototype.write = function ( data )
 {
-  if ( data instanceof GPEvent )
+  if ( data instanceof Event )
   {
     this.socket.write ( data.serialize() ) ;
   }
@@ -119,13 +119,13 @@ GPConnection.prototype.sendInfoRequest = function ( e )
     e.data.connectionList.push ( client_info ) ;
   }
   str = "" ;
-  for ( kk in this.broker._lockedResources )
+  for ( kk in this.broker._lockOwner )
   {
     if ( ! str )
     {
       e.data.lockList = [] ;
     }
-    e.data.lockList.push ( { resourceId: kk, owner: this.broker._lockedResources[kk].client_info } ) ;
+    e.data.lockList.push ( { resourceId: kk, owner: this.broker._lockOwner[kk].client_info } ) ;
   }
   this.write ( e ) ;
 };
@@ -191,7 +191,7 @@ var GPBroker = function ( port, ip )
   var thiz = this ;
   var conn ;
   this._multiplexerList = [] ;
-  this._lockedResources = {} ;
+  this._lockOwner = {} ;
   this.server = net.createServer() ;
   this.server.on ( "error", function onerror ( p )
   {
@@ -258,7 +258,7 @@ var GPBroker = function ( port, ip )
         }
         if ( m.charAt ( 0 ) === '{' )
         {
-          var e = GPEvent.prototype.deserialize ( m ) ;
+          var e = Event.prototype.deserialize ( m ) ;
           if ( e.isResult() )
           {
             sid = e.getSourceIdentifier() ;
@@ -363,7 +363,7 @@ GPBroker.prototype.handleSystemMessages = function ( socket, e )
   if ( e.getType() === "addMultiplexer" )
   {
     this._multiplexerList.push ( socket ) ;
-    conn = thiz._connections[socket.sid] ;
+    conn = this._connections[socket.sid] ;
     conn.isMultiplexer = true ;
   }
   else
@@ -377,16 +377,12 @@ GPBroker.prototype.handleSystemMessages = function ( socket, e )
       if ( ! target_conn )
       {
         e.control.status = { code:1, name:"error", reason:"no connection for sid=" + shutdown_sid } ;
-T.lwhere (  ) ;
-console.log ( e ) ;
         socket.write ( e.serialize() ) ;
         return ;
       }
-      target_conn.write ( new GPEvent ( "system", "shutdown" ) ) ;
+      target_conn.write ( new Event ( "system", "shutdown" ) ) ;
       target_conn.socket.end() ;
       e.control.status = { code:0, name:"ack" } ;
-T.lwhere (  ) ;
-console.log ( e ) ;
       socket.write ( e.serialize() ) ;
       return ;
     }
@@ -432,13 +428,13 @@ console.log ( e ) ;
     conn = this._connections[socket.sid] ;
     var resourceId = e.data.resourceId ;
     e.setType ( "lockResourceResult" ) ;
-    if ( this._lockedResources[resourceId] )
+    if ( this._lockOwner[resourceId] )
     {
       e.data.isLockOwner = false ;
     }
     else
     {
-      this._lockedResources[resourceId] = conn ;
+      this._lockOwner[resourceId] = conn ;
       conn._lockedResourcesIdList.push ( resourceId ) ;
       e.data.isLockOwner = true ;
     }
@@ -451,7 +447,7 @@ console.log ( e ) ;
     var resourceId = e.data.resourceId ;
     e.setType ( "freeResourceResult" ) ;
     e.data.isLockOwner = false ;
-    if ( ! this._lockedResources[resourceId] )
+    if ( ! this._lockOwner[resourceId] )
     {
       e.control.status = { code:1, name:"error", reason:"not owner of resourceId=" + resourceId } ;
     }
@@ -459,7 +455,7 @@ console.log ( e ) ;
     {
       e.control.status = { code:0, name:"ack" } ;
     }
-    delete this._lockedResources[resourceId] ;
+    delete this._lockOwner[resourceId] ;
     conn._lockedResourcesIdList.remove ( resourceId ) ;
     conn.write ( e ) ;
   }
@@ -493,7 +489,7 @@ GPBroker.prototype.ejectSocket = function ( socket )
   this._connectionList.remove ( conn ) ;
   for ( i = 0 ; i < conn._lockedResourcesIdList.length ; i++ )
   {
-    delete this._lockedResources [ conn._lockedResourcesIdList ] ;
+    delete this._lockOwner [ conn._lockedResourcesIdList ] ;
   }
   delete this._connections[sid] ;
   Log.info ( 'Socket disconnected, sid=' + sid ) ;
@@ -510,7 +506,7 @@ GPBroker.prototype.closeAllSockets = function ( exceptSocket )
   }
   this.closing = true ;
   var list = Object.keys ( this._connections ) ;
-  var e = new GPEvent ( "system", "shutdown" ) ;
+  var e = new Event ( "system", "shutdown" ) ;
   for ( var i = 0 ; i < list.length ; i++ )
   {
     var conn = this._connections[list[i]] ;

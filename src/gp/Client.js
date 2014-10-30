@@ -1,12 +1,13 @@
 var net = require('net');
 var os = require('os');
-var T = require ( "./Tango" ) ;
-var GPEvent = require ( "./GPEvent" ) ;
-var MultiHash = require ( "./MultiHash" ) ;
-var Log = require ( "./LogFile" ) ;
-var User = require ( "./User" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var util = require ( "util" ) ;
+
+var T = require ( "../Tango" ) ;
+var Event = require ( "./Event" ) ;
+var MultiHash = require ( "../MultiHash" ) ;
+var Log = require ( "../LogFile" ) ;
+var User = require ( "../User" ) ;
 
 var counter = 0 ;
 /**
@@ -53,7 +54,7 @@ GPClient.prototype.connect = function()
   var thiz = this ;
   this.socket = net.connect ( p, function()
   {
-    var einfo = new GPEvent ( "system", "client_info" ) ;
+    var einfo = new Event ( "system", "client_info" ) ;
     einfo.data.hostname = os.hostname() ;
     einfo.data.connectionTime = new Date() ;
     einfo.data.application = process.argv[1] ;
@@ -132,7 +133,7 @@ GPClient.prototype.connect = function()
 
       if ( m.charAt ( 0 ) === '{' )
       {
-        var e = GPEvent.prototype.deserialize ( m ) ;
+        var e = Event.prototype.deserialize ( m ) ;
         if ( e.isResult() )
         {
           var uid = e.getUniqueId() ;
@@ -269,19 +270,19 @@ GPClient.prototype.fire = function ( params, callback )
 GPClient.prototype.fireEvent = function ( params, callback )
 {
   var e = null ;
-  if ( params instanceof GPEvent )
+  if ( params instanceof Event )
   {
     e = params ;
   }
   else
   if ( typeof params === 'string' )
   {
-    e = new GPEvent ( params ) ;
+    e = new Event ( params ) ;
   }
   else
   if ( params && typeof params === 'object' )
   {
-    e = new GPEvent ( params.name, params.type ) ;
+    e = new Event ( params.name, params.type ) ;
     e.setData ( params.data ) ;
     if ( params.user ) u = params.user ;
   }
@@ -373,7 +374,7 @@ GPClient.prototype.addEventListener = function ( eventNameList, callback )
   {
     throw new Error ( "GPClient.addEventListener: eventNameList must not be empty." ) ;
   }
-  var e = new GPEvent ( "system", "addEventListener" ) ;
+  var e = new Event ( "system", "addEventListener" ) ;
   if ( this.user )
   {
     e.setUser ( this.user ) ;
@@ -487,7 +488,7 @@ GPClient.prototype.removeEventListener = function ( eventNameOrFunction )
       this.listenerFunctionsList.remove ( item ) ;
     }
     if ( ! eventNameList.length ) return ;
-    var e = new GPEvent ( "system", "removeEventListener" ) ;
+    var e = new Event ( "system", "removeEventListener" ) ;
     e.setUser ( this.user ) ;
     e.data.eventNameList = eventNameList ;
     var s = this.getSocket() ;
@@ -503,7 +504,7 @@ GPClient.prototype.lockResource = function ( resourceId, callback )
   if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "GPClient.lockResource: resourceId must be a string." ) ;
   if ( typeof callback !== 'function' ) throw new Error ( "GPClient.lockResource: callback must be a function." ) ;
 
-  var e = new GPEvent ( "system", "lockResourceRequest" ) ;
+  var e = new Event ( "system", "lockResourceRequest" ) ;
   e.data.resourceId = resourceId ;
   var s = this.getSocket() ;
   var ctx = {} ;
@@ -533,7 +534,7 @@ GPClient.prototype.freeResource = function ( resourceId )
   if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "GPClient.lockResource: resourceId must be a string." ) ;
   if ( ! this.lockedResources[resourceId] ) throw new Error ( "GPClient.freeResource: not owner of resourceId=" + resourceId ) ;
 
-  var e = new GPEvent ( "system", "freeResourceRequest" ) ;
+  var e = new Event ( "system", "freeResourceRequest" ) ;
   e.data.resourceId = resourceId ;
   var s = this.getSocket() ;
   counter++ ;

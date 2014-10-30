@@ -1,43 +1,42 @@
-var GPEvent = require ( "./GPEvent" ) ;
-var Log = require ( "./LogFile" ) ;
-var GPClient = require ( "./GPClient" ) ;
+var Event = require ( "./Event" ) ;
+var Log = require ( "../LogFile" ) ;
+var Client = require ( "./Client" ) ;
 
-var MultiHash = require ( "./MultiHash" ) ;
-var T = require ( "./Tango" ) ;
+var MultiHash = require ( "../MultiHash" ) ;
+var T = require ( "../Tango" ) ;
 var ws = require ( "nodejs-websocket" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var util = require ( 'util' ) ;
-
 
 /**
  * Description
  * @constructor
  * @param {} port
  */
-var GPWebSocketEventProxy = function ( port )
+var WebSocketEventProxy = function ( port )
 {
   EventEmitter.call ( this ) ;
-	this.className = "GPWebSocketEventProxy" ;
+	this.className = "WebSocketEventProxy" ;
   this._sockets = {} ;
   this._eventNameToSocketContext = new MultiHash() ;
 	this.client = null ;
 	this.port = port ;
 	this._create() ;
 };
-util.inherits ( GPWebSocketEventProxy, EventEmitter ) ;
+util.inherits ( WebSocketEventProxy, EventEmitter ) ;
 
 /**
  * Description
  * @return BinaryExpression
  */
-GPWebSocketEventProxy.prototype.toString = function()
+WebSocketEventProxy.prototype.toString = function()
 {
 	return "(" + this.className + ")[port=" + this.port + "]" ;
 };
 /**
  * Description
  */
-GPWebSocketEventProxy.prototype.closeAllWebsockets = function()
+WebSocketEventProxy.prototype.closeAllWebsockets = function()
 {
 	if ( ! this.server ) return ;
 
@@ -50,7 +49,7 @@ GPWebSocketEventProxy.prototype.closeAllWebsockets = function()
  * Description
  * @param {} e
  */
-GPWebSocketEventProxy.prototype.sendToWebSocket = function ( e )
+WebSocketEventProxy.prototype.sendToWebSocket = function ( e )
 {
 	var pid = e.getProxyIdentifier() ;
 	var ctx = this._sockets[pid]
@@ -63,7 +62,7 @@ GPWebSocketEventProxy.prototype.sendToWebSocket = function ( e )
  * Description
  * @param {} e
  */
-GPWebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
+WebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 {
 	var se = e.serialize() ;
 	var i, ctx ;
@@ -82,7 +81,7 @@ GPWebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
  * Description
  * @param {} socket
  */
-GPWebSocketEventProxy.prototype.removeWebsocket = function ( socket )
+WebSocketEventProxy.prototype.removeWebsocket = function ( socket )
 {
 	var ctx = this._sockets[socket.key] ;
 	var eventNamesToBeRemoved = [] ;
@@ -109,7 +108,7 @@ GPWebSocketEventProxy.prototype.removeWebsocket = function ( socket )
 	}
 };
 
-GPWebSocketEventProxy.prototype._create = function()
+WebSocketEventProxy.prototype._create = function()
 {
 	var wssOptions = {} ;
 	var thiz = this ;
@@ -122,7 +121,7 @@ GPWebSocketEventProxy.prototype._create = function()
 		Log.info ( 'web connects' ) ;
 		conn.on ( "text", function ( message )
 		{
-			var ne = GPEvent.prototype.deserialize ( message ) ;
+			var ne = Event.prototype.deserialize ( message ) ;
 			ne.setProxyIdentifier ( conn.key ) ;
 			var ctx = thiz._sockets[this.key] ;
 			if ( ! ctx )
@@ -132,7 +131,7 @@ GPWebSocketEventProxy.prototype._create = function()
 			}
 			if ( ! thiz.client )
 			{
-				thiz.client = new GPClient() ;
+				thiz.client = new Client() ;
 				thiz.client.on ( 'end', function()
 				{
 					// thiz.client.removeAllListeners() ;
@@ -196,7 +195,7 @@ GPWebSocketEventProxy.prototype._create = function()
  * @param {} ctx
  * @param {} ne
  */
-GPWebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
+WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 {
 	if ( ne.getType() === "client_info" )
 	{
@@ -292,7 +291,7 @@ GPWebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
  * Description
  * @param {} port
  */
-GPWebSocketEventProxy.prototype.listen = function ( port )
+WebSocketEventProxy.prototype.listen = function ( port )
 {
 	if ( port )
 	{
@@ -307,15 +306,15 @@ GPWebSocketEventProxy.prototype.listen = function ( port )
 /**
  * Description
  */
-GPWebSocketEventProxy.prototype.listenSocketBound = function()
+WebSocketEventProxy.prototype.listenSocketBound = function()
 {
-	Log.notice ( "GPWebSocketEventProxy bound to port=" + this.port ) ;
+	Log.notice ( "WebSocketEventProxy bound to port=" + this.port ) ;
 };
-module.exports = GPWebSocketEventProxy ;
+module.exports = WebSocketEventProxy ;
 
 if ( require.main === module )
 {
-	var ep = new GPWebSocketEventProxy() ;
+	var ep = new WebSocketEventProxy() ;
 	var WEBSOCKET_PORT = T.getProperty ( "gepard.websocket.port", 17502 ) ;
 	ep.listen ( WEBSOCKET_PORT ) ;
 }

@@ -1,6 +1,6 @@
 var net = require('net');
-var GPEvent = require ( "./GPEvent" ) ;
-var T = require ( "./Tango" ) ;
+var Event = require ( "./Event" ) ;
+var T = require ( "../Tango" ) ;
 
 /**
  * @class Admin tool for Gepard
@@ -23,9 +23,9 @@ GPAdmin.prototype.shutdown = function ( what )
 /**
  * Display an info from GPBroker
  */
-GPAdmin.prototype.info = function()
+GPAdmin.prototype.info = function ( what )
 {
-	this._execute ( "info" ) ;
+	this._execute ( "info", what ) ;
 };
 /*
  */
@@ -36,17 +36,20 @@ GPAdmin.prototype._execute = function ( action, what )
 	{
 		this.socket.on ( "connect", function()
 		{
-		  var e = new GPEvent ( "system", "shutdown" ) ;
-		  e.data.shutdown_sid = what ;
+		  var e = new Event ( "system", "shutdown" ) ;
 		  this.write ( e.serialize() ) ;
 		});
-		return ;
+		if ( ! what )
+		{
+			return ;
+		}
 	}
 	else
 	{
 		this.socket.on ( "connect", function()
 		{
-		  var e = new GPEvent ( "system", "getInfoRequest" ) ;
+		  var e = new Event ( "system", "getInfoRequest" ) ;
+		  e.data.info_type = what ;
 		  this.write ( e.serialize() ) ;
 		});
 	}
@@ -61,12 +64,59 @@ GPAdmin.prototype._execute = function ( action, what )
 	});
 	this.socket.on ( 'data', function ondata ( data )
 	{
-console.log ( "1 --------------------------" ) ;
+		var list, i, desc, str, app ;
 	  var m = data.toString() ;
 	  if ( m.charAt ( 0 ) === '{' )
 	  {
-	    var e = GPEvent.prototype.deserialize ( m ) ;
-	    T.log ( e ) ;
+	    var e = Event.prototype.deserialize ( m ) ;
+	    if ( e.getType() === "getInfoResult" )
+	    {
+	    	if ( what === "lsconn" )
+	    	{
+	    		list = e.data.connectionList ;
+	    		if ( ! list || ! list.length )
+	    		{
+	    			console.log ( "No Connections" ) ;
+	    		}
+	    		else
+	    		{
+		    		for ( i = 0 ; i < list.length ; i++ )
+		    		{
+		    			desc = list[i] ;
+		    			str = desc.application ;
+		    			app = str.substring ( str.lastIndexOf ( '/' ) + 1, str.lastIndexOf ( '.' ) ) ;
+		    			console.log ( "%s\t%s:%s", desc.sid, desc.hostname, app ) ;
+		    		}
+		    	}
+	    	}
+	    	else
+	    	if ( what === "lslock" )
+	    	{
+	    		list = e.data.lockList ;
+	    		if ( ! list || ! list.length )
+	    		{
+	    			console.log ( "No locks" ) ;
+	    		}
+	    		else
+	    		{
+		    		for ( i = 0 ; i < list.length ; i++ )
+		    		{
+		    			desc = list[i] ;
+		    			str = desc.owner.application ;
+		    			app = str.substring ( str.lastIndexOf ( '/' ) + 1, str.lastIndexOf ( '.' ) ) ;
+		    			console.log ( "%s\t%s\t%s:%s", desc.resourceId, desc.owner.sid, desc.owner.hostname, app ) ;
+		    		}
+	    		}
+	    	}
+	    	else
+	    	{
+	    		T.log ( e ) ;
+	    	}
+	    }
+	    else
+	    {
+		    T.log ( e ) ;
+	    }
 	  }
 	  this.end();
 	});
@@ -78,10 +128,16 @@ if ( require.main === module )
 	var what = T.getProperty ( "shutdown" ) ;
 	if ( what )
 	{
+		if ( what === "true" ) what = null ;
 		ad.shutdown ( what ) ;
+		return ;
 	}
-	else
+	what = T.getProperty ( "info" ) ;
+	if ( what && what !== "true" )
 	{
-		ad.info() ;
+		ad.info ( what ) ;
+		return ;
 	}
+	ad.info() ;
+	return ;
 }
