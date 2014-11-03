@@ -19,8 +19,11 @@ function collectFiles ( target, packageName, dir )
 		var fname = Path.join ( dir, a[i] ) ;
 		if ( fs.statSync ( fname ).isDirectory() )
 		{
-			collectFiles ( target, a[i], fname ) ;
-			continue ;
+			if ( a[i] !== "node_modules" )
+			{
+				collectFiles ( target, a[i], fname ) ;
+				continue ;
+			}
 		}
 		if ( a[i].indexOf ( ".js" ) !== a[i].length - 3 ) continue ;
 		if ( fs.statSync ( fname ).isDirectory() ) continue ;

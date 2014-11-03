@@ -6,19 +6,19 @@ var util = require('util');
  * @param {} enc
  * @extends stream.Writable
  */
-StringStreamWritable = function ( enc )
+StringWritable = function ( enc )
 {
   if ( ! enc ) enc = "utf8" ;
   this.enc = enc ;
-  if (!(this instanceof StringStreamWritable)) {
-    return new StringStreamWritable ( this.enc ) ;
+  if (!(this instanceof StringWritable)) {
+    return new StringWritable ( this.enc ) ;
   }
   stream.Writable.call ( this, arguments ) ;
   this._buffer = new Buffer('') ;
 }
-util.inherits(StringStreamWritable, stream.Writable);
+util.inherits(StringWritable, stream.Writable);
 
-StringStreamWritable.prototype._write = function ( chunk, enc, cb )
+StringWritable.prototype._write = function ( chunk, enc, cb )
 {
   var buffer = (Buffer.isBuffer(chunk))
                 ? chunk
@@ -31,15 +31,15 @@ StringStreamWritable.prototype._write = function ( chunk, enc, cb )
  * Description
  * @return CallExpression
  */
-StringStreamWritable.prototype.toString = function()
+StringWritable.prototype.toString = function()
 {
   return this._buffer.toString ( this.enc ) ;
 };
 /**
  * Description
  */
-StringStreamWritable.prototype.flush = function()
+StringWritable.prototype.flush = function()
 {
   delete this._buffer ;
 };
-module.exports = StringStreamWritable ;
+module.exports = StringWritable ;

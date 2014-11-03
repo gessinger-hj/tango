@@ -7,7 +7,7 @@ var util = require('util');
  * @param {} inputBufferOrString
  * @param {} options
  */
-var StringStreamReadable = function ( inputBufferOrString, options )
+var StringReadable = function ( inputBufferOrString, options )
 {
   var enc  = "utf8" ;
   if ( ! options ) options = { encoding:"utf8" } ;
@@ -17,9 +17,9 @@ var StringStreamReadable = function ( inputBufferOrString, options )
   this._buffer = inputBufferOrString ;
   this.done = false ;
 }
-util.inherits ( StringStreamReadable, stream.Readable ) ;
+util.inherits ( StringReadable, stream.Readable ) ;
 
-StringStreamReadable.prototype._read = function ( size )
+StringReadable.prototype._read = function ( size )
 {
   if ( this.done )
   {
@@ -33,23 +33,23 @@ StringStreamReadable.prototype._read = function ( size )
  * Description
  * @return CallExpression
  */
-StringStreamReadable.prototype.toString = function()
+StringReadable.prototype.toString = function()
 {
   return this._buffer.toString() ;
 };
 /**
  * Description
  */
-StringStreamReadable.prototype.flush = function()
+StringReadable.prototype.flush = function()
 {
   delete this._buffer ;
 };
 
-module.exports = StringStreamReadable ;
+module.exports = StringReadable ;
 
 if ( require.main === module )
 {
-  var r = new StringStreamReadable ( "<xml><result><A>nÜnn</A></result></xml>" ) ;
+  var r = new StringReadable ( "<xml><result><A>nÜnn</A></result></xml>" ) ;
   // r.on ( 'data', function(data)
   // {
   //   console.log ( data ) ;

@@ -2,6 +2,7 @@ if ( !Array.isArray )
 {
   /**
    * Description
+   * @method isArray
    * @param {} arg
    * @return LogicalExpression
    */
@@ -14,9 +15,11 @@ var tangojs = {} ;
 /**
  * Description
  * @constructor
+ * @method Event
  * @param {} name
  * @param {} type
  * @param {} data
+ * @return 
  */
 tangojs.Event = function ( name, type, data )
 {
@@ -26,7 +29,9 @@ tangojs.Event.prototype =
 {
 	/**
 	 * Description
+	 * @method serialize
 	 * @param {} obj
+	 * @return 
 	 */
 	serialize: function ( obj )
 	{
@@ -39,6 +44,7 @@ tangojs.Event.prototype =
 	  {
 	    /**
     	 * Description
+    	 * @method toJSON
     	 * @return ObjectExpression
     	 */
     	Date.prototype.toJSON = function()
@@ -54,6 +60,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method deserialize
 	 * @param {} serializedObject
 	 * @param {} classNameToConstructor
 	 * @param {} deepClassInspection
@@ -91,6 +98,8 @@ tangojs.Event.prototype =
 		    {
 			    /**
     			 * Description
+    			 * @method F
+    			 * @return 
     			 */
     			function F() { } ;
 			    F.prototype = f.prototype ;
@@ -117,7 +126,9 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method deepDeserializeClass
 	 * @param {} obj
+	 * @return 
 	 */
 	deepDeserializeClass: function ( obj )
 	{
@@ -178,6 +189,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method getClassName
 	 * @return MemberExpression
 	 */
 	getClassName: function()
@@ -186,6 +198,8 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method toString
+	 * @return 
 	 */
 	toString: function()
 	{
@@ -213,6 +227,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method getCreatedAt
 	 * @return MemberExpression
 	 */
 	getCreatedAt: function()
@@ -221,6 +236,8 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method setIsResult
+	 * @return 
 	 */
 	setIsResult: function()
 	{
@@ -228,6 +245,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method isResult
 	 * @return MemberExpression
 	 */
 	isResult: function()
@@ -236,6 +254,8 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method setResultRequested
+	 * @return 
 	 */
 	setResultRequested: function()
 	{
@@ -243,6 +263,7 @@ tangojs.Event.prototype =
 	},
 		/**
 	 * Description
+	 * @method isResultRequested
 	 * @return MemberExpression
 	 */
 	isResultRequested: function()
@@ -251,6 +272,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method getSourceIdentifier
 	 * @return MemberExpression
 	 */
 	getSourceIdentifier: function()
@@ -259,7 +281,9 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method setSourceIdentifier
 	 * @param {} sourceIdentifier
+	 * @return 
 	 */
 	setSourceIdentifier: function ( sourceIdentifier )
 	{
@@ -267,6 +291,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method getProxyIdentifier
 	 * @return MemberExpression
 	 */
 	getProxyIdentifier: function()
@@ -275,7 +300,9 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method setProxyIdentifier
 	 * @param {} proxyIdentifier
+	 * @return 
 	 */
 	setProxyIdentifier: function ( proxyIdentifier )
 	{
@@ -283,6 +310,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method getWebIdentifier
 	 * @return MemberExpression
 	 */
 	getWebIdentifier: function()
@@ -291,7 +319,9 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method setWebIdentifier
 	 * @param {} webIdentifier
+	 * @return 
 	 */
 	setWebIdentifier: function ( webIdentifier )
 	{
@@ -299,6 +329,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method getName
 	 * @return MemberExpression
 	 */
 	getName: function()
@@ -307,7 +338,9 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method setName
 	 * @param {} name
+	 * @return 
 	 */
 	setName: function ( name )
 	{
@@ -315,6 +348,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method getType
 	 * @return MemberExpression
 	 */
 	getType: function()
@@ -323,7 +357,9 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method setType
 	 * @param {} type
+	 * @return 
 	 */
 	setType: function ( type )
 	{
@@ -332,6 +368,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method getData
 	 * @return MemberExpression
 	 */
 	getData: function()
@@ -340,7 +377,9 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method setData
 	 * @param {} data
+	 * @return 
 	 */
 	setData: function ( data )
 	{
@@ -348,6 +387,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method getUser
 	 * @return MemberExpression
 	 */
 	getUser: function()
@@ -356,7 +396,9 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method setUser
 	 * @param {} u
+	 * @return 
 	 */
 	setUser: function ( u )
 	{
@@ -364,6 +406,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method getControl
 	 * @return MemberExpression
 	 */
 	getControl: function()
@@ -372,7 +415,9 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method setUniqueId
 	 * @param {} uid
+	 * @return 
 	 */
 	setUniqueId: function ( uid )
 	{
@@ -383,6 +428,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method getUniqueId
 	 * @return MemberExpression
 	 */
 	getUniqueId: function()
@@ -391,6 +437,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method isBad
 	 * @return BinaryExpression
 	 */
 	isBad: function()
@@ -402,6 +449,7 @@ tangojs.Event.prototype =
 	},
 	/**
 	 * Description
+	 * @method getStatusReason
 	 * @return MemberExpression
 	 */
 	getStatusReason: function()

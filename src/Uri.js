@@ -1,5 +1,5 @@
 var request = require ( "request" ) ;
-var StringStreamWritable = require ( "./StringStreamWritable" ) ;
+var StringWritable = require ( "./StringWritable" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var util = require ( "util" ) ;
 
@@ -31,7 +31,7 @@ Uri.prototype.getString = function ( callback )
 };
 Uri.prototype._getString = function ( parameter )
 {
-  var writable = new StringStreamWritable() ;
+  var writable = new StringWritable() ;
   this.callback = parameter.callback ;
   var thiz = this ;
   var req = new request (

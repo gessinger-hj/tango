@@ -4,7 +4,7 @@ var T = require ( "./Tango" ) ;
 var Utils = require ( "./Utils" ) ;
 var DateUtils = require ( "./DateUtils" ) ;
 
-var StringStreamWritable = require ( "./StringStreamWritable" ) ;
+var StringWritable = require ( "./StringWritable" ) ;
 var stream = require('stream');
 'use strict' ;
 /**
@@ -535,7 +535,7 @@ XmlElement.prototype.toString = function ( wstream )
 {
   if ( ! wstream )
   {
-    wstream = new StringStreamWritable() ;
+    wstream = new StringWritable() ;
     this._toString ( "", wstream ) ;
     var s = wstream.toString() ;
     wstream.end() ;

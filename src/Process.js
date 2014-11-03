@@ -1,5 +1,5 @@
 var spawn = require('child_process').spawn ;
-var StringStreamWritable = require ( "./StringStreamWritable" ) ;
+var StringWritable = require ( "./StringWritable" ) ;
 var LineReader = require ( "./LineReader" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var util = require ( "util" ) ;
@@ -44,7 +44,7 @@ Process.prototype.lines = function ( callback )
 	, env: process.env
 	} ;
 	var p = spawn ( this.cmd, this.args, opts ) ;
-	this._stderr = new StringStreamWritable() ;
+	this._stderr = new StringWritable() ;
 	var thiz = this ;
 
 	var lr = new LineReader ( p.stdout ) ;
@@ -94,8 +94,8 @@ Process.prototype.getString = function ( callback )
 	, env: process.env
 	} ;
 	var p = spawn ( this.cmd, this.args, opts ) ;
-	this._stdout = new StringStreamWritable() ;
-	this._stderr = new StringStreamWritable() ;
+	this._stdout = new StringWritable() ;
+	this._stderr = new StringWritable() ;
 	var thiz = this ;
 
 	p.stdout.on ( 'data', function ( data )

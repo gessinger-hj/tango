@@ -13,8 +13,10 @@ var counter = 0 ;
 /**
  * @constructor
  * @extends EventEmitter
+ * @method GPClient
  * @param {} port
  * @param {} host
+ * @return 
  */
 var GPClient = function ( port, host )
 {
@@ -37,7 +39,9 @@ var GPClient = function ( port, host )
 util.inherits ( GPClient, EventEmitter ) ;
 /**
  * Description
+ * @method setUser
  * @param {} user
+ * @return 
  */
 GPClient.prototype.setUser = function ( user )
 {
@@ -45,6 +49,8 @@ GPClient.prototype.setUser = function ( user )
 } ;
 /**
  * Description
+ * @method connect
+ * @return 
  */
 GPClient.prototype.connect = function()
 {
@@ -243,6 +249,7 @@ GPClient.prototype._writeCallback = function()
 } ;
 /**
  * Description
+ * @method getSocket
  * @return MemberExpression
  */
 GPClient.prototype.getSocket = function()
@@ -255,8 +262,10 @@ GPClient.prototype.getSocket = function()
 };
 /**
  * Description
+ * @method fire
  * @param {} params
  * @param {} callback
+ * @return 
  */
 GPClient.prototype.fire = function ( params, callback )
 {
@@ -264,8 +273,10 @@ GPClient.prototype.fire = function ( params, callback )
 };
 /**
  * Description
+ * @method fireEvent
  * @param {} params
  * @param {} callback
+ * @return 
  */
 GPClient.prototype.fireEvent = function ( params, callback )
 {
@@ -329,7 +340,9 @@ GPClient.prototype.fireEvent = function ( params, callback )
 };
 /**
  * Description
+ * @method sendResult
  * @param {} message
+ * @return 
  */
 GPClient.prototype.sendResult = function ( message )
 {
@@ -344,6 +357,8 @@ GPClient.prototype.sendResult = function ( message )
 };
 /**
  * Description
+ * @method end
+ * @return 
  */
 GPClient.prototype.end = function()
 {
@@ -358,8 +373,10 @@ GPClient.prototype.end = function()
 };
 /**
  * Description
+ * @method addEventListener
  * @param {} eventNameList
  * @param {} callback
+ * @return 
  */
 GPClient.prototype.addEventListener = function ( eventNameList, callback )
 {
@@ -420,6 +437,13 @@ GPClient.prototype.addEventListener = function ( eventNameList, callback )
     s.write ( e.serialize() ) ;
   }
 };
+/**
+ * Description
+ * @method on
+ * @param {} eventName
+ * @param {} callback
+ * @return 
+ */
 GPClient.prototype.on = function ( eventName, callback )
 {
   if ( typeof eventName === "string"
@@ -436,7 +460,9 @@ GPClient.prototype.on = function ( eventName, callback )
 };
 /**
  * Description
+ * @method removeEventListener
  * @param {} eventNameOrFunction
+ * @return 
  */
 GPClient.prototype.removeEventListener = function ( eventNameOrFunction )
 {
@@ -497,7 +523,10 @@ GPClient.prototype.removeEventListener = function ( eventNameOrFunction )
 };
 /**
  * Description
- * @param {} eventNameOrFunction
+ * @method lockResource
+ * @param {} resourceId
+ * @param {} callback
+ * @return 
  */
 GPClient.prototype.lockResource = function ( resourceId, callback )
 {
@@ -527,7 +556,9 @@ GPClient.prototype.lockResource = function ( resourceId, callback )
 };
 /**
  * Description
- * @param {} eventNameOrFunction
+ * @method freeResource
+ * @param {} resourceId
+ * @return 
  */
 GPClient.prototype.freeResource = function ( resourceId )
 {

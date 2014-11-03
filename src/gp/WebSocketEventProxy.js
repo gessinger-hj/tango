@@ -11,7 +11,9 @@ var util = require ( 'util' ) ;
 /**
  * Description
  * @constructor
+ * @method WebSocketEventProxy
  * @param {} port
+ * @return 
  */
 var WebSocketEventProxy = function ( port )
 {
@@ -27,6 +29,7 @@ util.inherits ( WebSocketEventProxy, EventEmitter ) ;
 
 /**
  * Description
+ * @method toString
  * @return BinaryExpression
  */
 WebSocketEventProxy.prototype.toString = function()
@@ -35,6 +38,8 @@ WebSocketEventProxy.prototype.toString = function()
 };
 /**
  * Description
+ * @method closeAllWebsockets
+ * @return 
  */
 WebSocketEventProxy.prototype.closeAllWebsockets = function()
 {
@@ -47,7 +52,9 @@ WebSocketEventProxy.prototype.closeAllWebsockets = function()
 };
 /**
  * Description
+ * @method sendToWebSocket
  * @param {} e
+ * @return 
  */
 WebSocketEventProxy.prototype.sendToWebSocket = function ( e )
 {
@@ -60,7 +67,9 @@ WebSocketEventProxy.prototype.sendToWebSocket = function ( e )
 };
 /**
  * Description
+ * @method generalEventListenerFunction
  * @param {} e
+ * @return 
  */
 WebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 {
@@ -79,7 +88,9 @@ WebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 };
 /**
  * Description
+ * @method removeWebsocket
  * @param {} socket
+ * @return 
  */
 WebSocketEventProxy.prototype.removeWebsocket = function ( socket )
 {
@@ -153,7 +164,11 @@ WebSocketEventProxy.prototype._create = function()
 			{
 				thiz.client.fire ( ne
 	      , { 
-/*
+/**
+  * Description
+  * @method result
+  * @param {} e
+  * @return 
   */
  result: function(e)
 	          {
@@ -163,14 +178,21 @@ WebSocketEventProxy.prototype._create = function()
 							}
 	          }
 	        	, 
-/*
+/**
+  * Description
+  * @method error
+  * @param {} e
+  * @return 
   */
  error: function(e)
 	          	{
 								thiz.sendToWebSocket ( e ) ;
 	          	}
 	         	, 
-/*
+/**
+  * Description
+  * @method write
+  * @return 
   */
  write: function()
 	          	{
@@ -192,8 +214,10 @@ WebSocketEventProxy.prototype._create = function()
 };
 /**
  * Description
+ * @method handleSystemMessages
  * @param {} ctx
  * @param {} ne
+ * @return 
  */
 WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 {
@@ -289,7 +313,9 @@ WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 };
 /**
  * Description
+ * @method listen
  * @param {} port
+ * @return 
  */
 WebSocketEventProxy.prototype.listen = function ( port )
 {
@@ -305,6 +331,8 @@ WebSocketEventProxy.prototype.listen = function ( port )
 };
 /**
  * Description
+ * @method listenSocketBound
+ * @return 
  */
 WebSocketEventProxy.prototype.listenSocketBound = function()
 {

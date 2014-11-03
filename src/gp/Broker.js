@@ -1,4 +1,4 @@
-#!/usr/bin/node
+//#!/usr/bin/node
 
 /**
  * [net description]
@@ -13,6 +13,13 @@ var MultiHash = require ( "../MultiHash" ) ;
 var Log = require ( "../LogFile" ) ;
 
 
+/**
+ * Description
+ * @method GPConnection
+ * @param {} broker
+ * @param {} socket
+ * @return 
+ */
 var GPConnection = function ( broker, socket )
 {
   this.broker     = broker ;
@@ -29,10 +36,21 @@ var GPConnection = function ( broker, socket )
   }
   this._lockedResourcesIdList = [] ;
 };
+/**
+ * Description
+ * @method toString
+ * @return Literal
+ */
 GPConnection.prototype.toString = function()
 {
   return "(GPConnection)[]" ;
 };
+/**
+ * Description
+ * @method removeEventListener
+ * @param {} e
+ * @return 
+ */
 GPConnection.prototype.removeEventListener = function ( e )
 {
   var i, index ;
@@ -69,6 +87,12 @@ GPConnection.prototype.removeEventListener = function ( e )
   }
   toBeRemoved.length = 0 ;
 };
+/**
+ * Description
+ * @method write
+ * @param {} data
+ * @return 
+ */
 GPConnection.prototype.write = function ( data )
 {
   if ( data instanceof Event )
@@ -80,6 +104,12 @@ GPConnection.prototype.write = function ( data )
     this.socket.write ( data ) ;
   }
 };
+/**
+ * Description
+ * @method sendInfoRequest
+ * @param {} e
+ * @return 
+ */
 GPConnection.prototype.sendInfoRequest = function ( e )
 {
   var i, first, str ;
@@ -129,6 +159,12 @@ GPConnection.prototype.sendInfoRequest = function ( e )
   }
   this.write ( e ) ;
 };
+/**
+ * Description
+ * @method addEventListener
+ * @param {} e
+ * @return 
+ */
 GPConnection.prototype.addEventListener = function ( e )
 {
   var eventNameList = e.data.eventNameList ;
@@ -176,8 +212,10 @@ GPConnection.prototype.addEventListener = function ( e )
 /**
  * @constructor
  * @extends {EventEmitter}
+ * @method GPBroker
  * @param {} port
  * @param {} ip
+ * @return 
  */
 var GPBroker = function ( port, ip )
 {
@@ -282,10 +320,22 @@ var GPBroker = function ( port, ip )
 };
 util.inherits ( GPBroker, EventEmitter ) ;
 
+/**
+ * Description
+ * @method toString
+ * @return Literal
+ */
 GPBroker.prototype.toString = function()
 {
   return "(GPBroker)[]" ;
 };
+/**
+ * Description
+ * @method sendEventToClients
+ * @param {} socket
+ * @param {} e
+ * @return 
+ */
 GPBroker.prototype.sendEventToClients = function ( socket, e )
 {
   var i, found = false, done = false, str ;
@@ -357,6 +407,13 @@ GPBroker.prototype.sendEventToClients = function ( socket, e )
     }
   }
 };
+/**
+ * Description
+ * @method handleSystemMessages
+ * @param {} socket
+ * @param {} e
+ * @return 
+ */
 GPBroker.prototype.handleSystemMessages = function ( socket, e )
 {
   var conn ;
@@ -467,7 +524,9 @@ GPBroker.prototype.handleSystemMessages = function ( socket, e )
 };
 /**
  * Description
+ * @method ejectSocket
  * @param {} socket
+ * @return 
  */
 GPBroker.prototype.ejectSocket = function ( socket )
 {
@@ -496,7 +555,9 @@ GPBroker.prototype.ejectSocket = function ( socket )
 };
 /**
  * Description
+ * @method closeAllSockets
  * @param {} exceptSocket
+ * @return 
  */
 GPBroker.prototype.closeAllSockets = function ( exceptSocket )
 {
@@ -521,8 +582,10 @@ GPBroker.prototype.closeAllSockets = function ( exceptSocket )
 
 /**
  * Description
+ * @method listen
  * @param {} port
  * @param {} callback
+ * @return 
  */
 GPBroker.prototype.listen = function ( port, callback )
 {
@@ -536,6 +599,7 @@ GPBroker.prototype.listen = function ( port, callback )
     var thiz = this ;
     /**
      * Description
+     * @return 
      */
     callback = function() { Log.notice ( 'server bound to port=' + thiz.port ); } ;
   }

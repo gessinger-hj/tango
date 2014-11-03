@@ -3,10 +3,12 @@ var Event = require ( "./Event" ) ;
 var T = require ( "../Tango" ) ;
 
 /**
- * @class Admin tool for Gepard
  * @constructor
- * @param {string|int} port
- * @param {string} [host]
+ * @class Admin tool for Gepard
+ * @method GPAdmin
+ * @param {} port
+ * @param {} host
+ * @return 
  */
 var GPAdmin = function ( port, host )
 {
@@ -15,6 +17,9 @@ var GPAdmin = function ( port, host )
 };
 /**
  * Shutdown GPBroker
+ * @method shutdown
+ * @param {} what
+ * @return 
  */
 GPAdmin.prototype.shutdown = function ( what )
 {
@@ -22,6 +27,9 @@ GPAdmin.prototype.shutdown = function ( what )
 };
 /**
  * Display an info from GPBroker
+ * @method info
+ * @param {} what
+ * @return 
  */
 GPAdmin.prototype.info = function ( what )
 {

@@ -340,7 +340,7 @@ Substitutor.prototype._substitute = function ( r, w, map, useEnv, delimiter, dep
         if ( ! found )
         {
           w += "${" ;
-          var sr = new StringStreamReadable ( sb3 ) ;
+          var sr = new StringReadable ( sb3 ) ;
 	        count += _substitute ( sr, w, map, useEnv, delimiter, depth++ ) ;
           continue ;
         }
@@ -441,7 +441,7 @@ Substitutor.prototype._substitute = function ( r, w, map, useEnv, delimiter, dep
 			if ( ! found )
 			{
         w.write ( delimiter ) ;
-        var sr = new StringStreamReadable ( sb3 ) ;
+        var sr = new StringReadable ( sb3 ) ;
 	      count += _substitute ( sr, w, map, delimiter, useEnv, depth++ ) ;
 				continue ;
 			}
@@ -479,8 +479,8 @@ module.exports = Substitutor ;
 
 if ( require.main === module )
 {
-  var StringStreamReadable = require ( "StringStreamReadable" ) ;
-  var StringStreamWritable = require ( "StringStreamWritable" ) ;
+  var StringReadable = require ( "StringReadable" ) ;
+  var StringWritable = require ( "StringWritable" ) ;
 
   //     String week = h.get ( "WEEK" ) ;
 //     String date = h.get ( "DATE" ) ;
@@ -488,8 +488,8 @@ if ( require.main === module )
 
   var str = "------%NN%----%%------${N}----------${CC${cc}}---${firstTimeOfWeekOf(week=\"0\",locale=de_DE)}--" ;
   var sub = new Substitutor() ;
-  var r = new StringStreamReadable ( str ) ;
-  var w = new StringStreamWritable() ;
+  var r = new StringReadable ( str ) ;
+  var w = new StringWritable() ;
   var t = sub.substitute ( r, w, { N: "value-${N3}-", N2: "ABC", N3: "XYZ", CCC: "12345", cc:"C" } ) ;
   console.log ( w.toString() ) ;
   
@@ -497,8 +497,8 @@ if ( require.main === module )
   // console.log ( t ) ;
   var t = sub.substitute ( str, { NN: "XXXX" }, true, '%' ) ;
   console.log ( t ) ;
-  var r = new StringStreamReadable ( str ) ;
-  var w = new StringStreamWritable() ;
+  var r = new StringReadable ( str ) ;
+  var w = new StringWritable() ;
   var t = sub.substitute ( r, w, { NN: "XXXX" }, true, '%' ) ;
   console.log ( w.toString() ) ;
   // console.log ( sub.substitute ( "--${firstTimeOfMonthOf(month=0)}--" ) ) ;
