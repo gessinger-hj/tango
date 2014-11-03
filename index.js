@@ -1,46 +1,63 @@
 var Path = require ( "path" ) ;
-var dir = Path.join ( __dirname, "/src/" ) ;
+var fs = require ( "fs" ) ;
 
-var tango = require ( Path.join ( dir, "./Tango" ) ) ;
+var d = Path.join ( __dirname, "/src/" ) ;
+var tango = require ( Path.join ( d, "./Tango" ) ) ;
+
+function collectFiles ( target, packageName, dir )
+{
+	if ( packageName )
+	{
+		target[packageName] = {} ;
+		target = target[packageName] ;
+		tango._packageNames[packageName] = true ;
+	}
+	var a = fs.readdirSync ( dir ) ;
+	for ( var i = 0 ; i < a.length ; i++ )
+	{
+		if ( a[i] === "Tango.js" ) continue ;
+		var fname = Path.join ( dir, a[i] ) ;
+		if ( fs.statSync ( fname ).isDirectory() )
+		{
+			collectFiles ( target, a[i], fname ) ;
+			continue ;
+		}
+		if ( a[i].indexOf ( ".js" ) !== a[i].length - 3 ) continue ;
+		if ( fs.statSync ( fname ).isDirectory() ) continue ;
+		var res = require ( fname ) ;
+		if ( ! res )
+		{
+			continue ;
+		}
+		if ( res.ignore ) continue ;
+		if ( res.enumerate )
+		{
+			for ( var k in res )
+			{
+				if ( k === "enumerate" )
+				{
+					continue ;
+				}
+				target[k] = res[k] ;
+			}
+		}
+		else
+		{
+			var n = a[i].substring ( 0, a[i].indexOf ( '.' ) ) ;
+			target[n] = require ( fname ) ;
+		}
+	}
+	a.length = 0 ;
+}
+
 tango._vetoHash = {} ;
 for ( var k in this )
 {
 	tango._vetoHash[k] = true ;
 }
+tango._packageNames = {} ;
 
-
-var fs = require ( "fs" ) ;
-var a = fs.readdirSync ( dir ) ;
-for ( var i = 0 ; i < a.length ; i++ )
-{
-	if ( a[i].indexOf ( ".js" ) !== a[i].length - 3 ) continue ;
-	if ( a[i] === "Tango.js" ) continue ;
-	var fname = dir + a[i] ;
-	if ( fs.statSync ( fname ).isDirectory() ) continue ;
-	var res = require ( fname ) ;
-	if ( ! res )
-	{
-		continue ;
-	}
-	if ( res.ignore ) continue ;
-	if ( res.enumerate )
-	{
-		for ( var k in res )
-		{
-			if ( k === "enumerate" )
-			{
-				continue ;
-			}
-			tango[k] = res[k] ;
-		}
-	}
-	else
-	{
-		var n = a[i].substring ( 0, a[i].indexOf ( '.' ) ) ;
-		tango[n] = require ( fname ) ;
-	}
-}
-a.length = 0 ;
+collectFiles ( tango, "", d ) ;
 
 tango._displayLoadedModules = function ()
 {
@@ -54,6 +71,39 @@ tango._displayLoadedModules = function ()
 		if ( typeof o === 'string' || typeof o === 'boolean' || typeof o === 'number' )
 		{
 			continue ;
+		}
+		if ( o && typeof o === 'object' )
+		{
+			if ( this._packageNames[k] )
+			{
+				for ( var kk in o )
+				{
+					var oo = o[kk] ;
+					process.stdout.write ( k + "." + kk ) ;
+					if ( typeof oo === 'object' )
+					{
+						process.stdout.write ( "={}" ) ;
+					}
+					else
+					if ( typeof oo === 'function' )
+					{
+						if ( util.inspect ( oo.prototype, { showHidden: false, depth: 0 } ) === "{}" )
+						{
+							process.stdout.write ( "=(Function)" ) ;
+						}
+						else
+						{
+							process.stdout.write ( "=(Class)" ) ;
+						}
+					}
+					else
+					{
+						process.stdout.write ( "=" + util.inspect ( oo, { showHidden: false, depth: 0 } ) ) ;
+					}
+					process.stdout.write ( "\n" ) ;
+				}
+				continue ;
+			}
 		}
 		process.stdout.write ( k ) ;
 		if ( typeof o === 'object' )
