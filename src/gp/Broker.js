@@ -15,12 +15,12 @@ var Log = require ( "../LogFile" ) ;
 
 /**
  * Description
- * @method GPConnection
+ * @constructor Connection
  * @param {} broker
  * @param {} socket
  * @return 
  */
-var GPConnection = function ( broker, socket )
+var Connection = function ( broker, socket )
 {
   this.broker     = broker ;
   this.socket     = socket ;
@@ -35,15 +35,17 @@ var GPConnection = function ( broker, socket )
     this.sid = socket.sid ;
   }
   this._lockedResourcesIdList = [] ;
+  this._patternList = [] ;
+  this._regexpList = [] ;
 };
 /**
  * Description
  * @method toString
  * @return Literal
  */
-GPConnection.prototype.toString = function()
+Connection.prototype.toString = function()
 {
-  return "(GPConnection)[]" ;
+  return "(Connection)[]" ;
 };
 /**
  * Description
@@ -51,7 +53,7 @@ GPConnection.prototype.toString = function()
  * @param {} e
  * @return 
  */
-GPConnection.prototype.removeEventListener = function ( e )
+Connection.prototype.removeEventListener = function ( e )
 {
   var i, index ;
   var eventNameList = e.data.eventNameList ;
@@ -93,7 +95,7 @@ GPConnection.prototype.removeEventListener = function ( e )
  * @param {} data
  * @return 
  */
-GPConnection.prototype.write = function ( data )
+Connection.prototype.write = function ( data )
 {
   if ( data instanceof Event )
   {
@@ -110,7 +112,7 @@ GPConnection.prototype.write = function ( data )
  * @param {} e
  * @return 
  */
-GPConnection.prototype.sendInfoRequest = function ( e )
+Connection.prototype.sendInfoRequest = function ( e )
 {
   var i, first, str ;
   e.setType ( "getInfoResult" ) ;
@@ -165,7 +167,7 @@ GPConnection.prototype.sendInfoRequest = function ( e )
  * @param {} e
  * @return 
  */
-GPConnection.prototype.addEventListener = function ( e )
+Connection.prototype.addEventListener = function ( e )
 {
   var eventNameList = e.data.eventNameList ;
   if ( ! eventNameList || ! eventNameList.length )
@@ -186,11 +188,6 @@ GPConnection.prototype.addEventListener = function ( e )
     }
     else
     {
-      if ( ! this._regexpList )
-      {
-        this._regexpList = [] ;
-        this._patternList = [] ;
-      }
       this._patternList.push ( str ) ;
       str = str.replace ( /\./, "\\." ).replace ( /\*/, ".*" ) ;
       regexp = new RegExp ( str ) ;
@@ -248,7 +245,7 @@ var GPBroker = function ( port, ip )
       socket.end() ;
       return ;
     }
-    conn = new GPConnection ( thiz, socket ) ;
+    conn = new Connection ( thiz, socket ) ;
     thiz._connections[conn.sid] = conn ;
     thiz._connectionList.push ( conn ) ;
     Log.info ( 'Socket connected' );
@@ -349,13 +346,13 @@ GPBroker.prototype.sendEventToClients = function ( socket, e )
     for ( i = 0 ; i < socketList.length ; i++ )
     {
       socketList[i].write ( str ) ;
-      if ( e.isResultRequested() )
+      if ( e.isResultRequested() && ! e.isBroadcast() )
       {
         break ;
       }
     }
   }
-  if ( found && e.isResultRequested() )
+  if ( found && e.isResultRequested() && ! e.isBroadcast() )
   {
   }
   else
@@ -369,12 +366,12 @@ GPBroker.prototype.sendEventToClients = function ( socket, e )
         if ( ! list[j].test ( name ) ) continue ;
         found = true ;
         this._connectionList[i].socket.write ( str ) ;
-        if ( e.isResultRequested() )
+        if ( e.isResultRequested() && ! e.isBroadcast() )
         {
           break ;
         }
       }
-      if ( found && e.isResultRequested() )
+      if ( found && e.isResultRequested() && ! e.isBroadcast() )
       {
         break ;
       }
@@ -464,7 +461,7 @@ GPBroker.prototype.handleSystemMessages = function ( socket, e )
   else
   if ( e.getType() === "getInfoRequest" )
   {
-    conn = new GPConnection ( this, socket )
+    conn = new Connection ( this, socket )
     conn.sendInfoRequest ( e ) ;
   }
   else

@@ -13,12 +13,11 @@ var counter = 0 ;
 /**
  * @constructor
  * @extends EventEmitter
- * @method GPClient
  * @param {} port
  * @param {} host
  * @return 
  */
-var GPClient = function ( port, host )
+var Client = function ( port, host )
 {
   EventEmitter.call ( this ) ;
   this.port = port ;
@@ -36,14 +35,14 @@ var GPClient = function ( port, host )
   this.pendingLockList = [] ;
   this.lockedResources = {} ;
 } ;
-util.inherits ( GPClient, EventEmitter ) ;
+util.inherits ( Client, EventEmitter ) ;
 /**
  * Description
  * @method setUser
  * @param {} user
  * @return 
  */
-GPClient.prototype.setUser = function ( user )
+Client.prototype.setUser = function ( user )
 {
   this.user = user ;
 } ;
@@ -52,7 +51,7 @@ GPClient.prototype.setUser = function ( user )
  * @method connect
  * @return 
  */
-GPClient.prototype.connect = function()
+Client.prototype.connect = function()
 {
   var p = {} ;
   if ( this.port  ) p.port = this.port ;
@@ -144,7 +143,10 @@ GPClient.prototype.connect = function()
         {
           var uid = e.getUniqueId() ;
           var ctx = thiz.callbacks[uid] ;
-          delete thiz.callbacks[uid] ;
+          if ( ! e.isBroadcast() )
+          {
+            delete thiz.callbacks[uid] ;
+          }
           var rcb = ctx.result ;
           rcb.call ( thiz, e ) ;
           continue ;
@@ -244,7 +246,7 @@ GPClient.prototype.connect = function()
     thiz.emit ( "error", e ) ;
   });
 } ;
-GPClient.prototype._writeCallback = function()
+Client.prototype._writeCallback = function()
 {
 } ;
 /**
@@ -252,7 +254,7 @@ GPClient.prototype._writeCallback = function()
  * @method getSocket
  * @return MemberExpression
  */
-GPClient.prototype.getSocket = function()
+Client.prototype.getSocket = function()
 {
   if ( ! this.socket )
   {
@@ -267,9 +269,20 @@ GPClient.prototype.getSocket = function()
  * @param {} callback
  * @return 
  */
-GPClient.prototype.fire = function ( params, callback )
+Client.prototype.fire = function ( params, callback )
 {
   this.fireEvent ( params, callback ) ;
+};
+/**
+ * Description
+ * @method broadcast
+ * @param {} params
+ * @param {} callback
+ * @return 
+ */
+Client.prototype.broadcast = function ( params, callback )
+{
+  this.fireEvent ( params, callback, { isBroadcast:true } ) ;
 };
 /**
  * Description
@@ -278,7 +291,7 @@ GPClient.prototype.fire = function ( params, callback )
  * @param {} callback
  * @return 
  */
-GPClient.prototype.fireEvent = function ( params, callback )
+Client.prototype.fireEvent = function ( params, callback, opts )
 {
   var e = null ;
   if ( params instanceof Event )
@@ -310,11 +323,23 @@ GPClient.prototype.fireEvent = function ( params, callback )
       if ( ctx.result ) e.setResultRequested() ;
       ctx.error = callback.error ;
       ctx.write = callback.write ;
+      if ( opts && opts.isBroadcast )
+      {
+        e.setIsBroadcast() ;
+      }
     }
     else
     if ( typeof callback === 'function' )
     {
-      ctx.write = callback ;
+      if ( opts && opts.isBroadcast )
+      {
+        ctx.result = callback ;
+        e.setIsBroadcast() ;
+      }
+      else
+      {
+        ctx.write = callback ;
+      }
     }
   }
   var s = this.getSocket() ;
@@ -344,7 +369,7 @@ GPClient.prototype.fireEvent = function ( params, callback )
  * @param {} message
  * @return 
  */
-GPClient.prototype.sendResult = function ( message )
+Client.prototype.sendResult = function ( message )
 {
   if ( ! message.isResultRequested() )
   {
@@ -360,7 +385,7 @@ GPClient.prototype.sendResult = function ( message )
  * @method end
  * @return 
  */
-GPClient.prototype.end = function()
+Client.prototype.end = function()
 {
   if ( this.socket ) this.socket.end() ;
   this.socket = null ;
@@ -378,18 +403,18 @@ GPClient.prototype.end = function()
  * @param {} callback
  * @return 
  */
-GPClient.prototype.addEventListener = function ( eventNameList, callback )
+Client.prototype.addEventListener = function ( eventNameList, callback )
 {
-  if ( ! eventNameList ) throw new Error ( "GPClient.addEventListener: Missing eventNameList." ) ;
-  if ( typeof callback !== 'function' ) throw new Error ( "GPClient.addEventListener: callback must be a function." ) ;
+  if ( ! eventNameList ) throw new Error ( "Client.addEventListener: Missing eventNameList." ) ;
+  if ( typeof callback !== 'function' ) throw new Error ( "Client.addEventListener: callback must be a function." ) ;
   if ( typeof eventNameList === 'string' ) eventNameList = [ eventNameList ] ;
   if ( ! Array.isArray ( eventNameList ) )
   {
-    throw new Error ( "GPClient.addEventListener: eventNameList must be a string or an array of strings." ) ;
+    throw new Error ( "Client.addEventListener: eventNameList must be a string or an array of strings." ) ;
   }
   if ( ! eventNameList.length )
   {
-    throw new Error ( "GPClient.addEventListener: eventNameList must not be empty." ) ;
+    throw new Error ( "Client.addEventListener: eventNameList must not be empty." ) ;
   }
   var e = new Event ( "system", "addEventListener" ) ;
   if ( this.user )
@@ -444,7 +469,7 @@ GPClient.prototype.addEventListener = function ( eventNameList, callback )
  * @param {} callback
  * @return 
  */
-GPClient.prototype.on = function ( eventName, callback )
+Client.prototype.on = function ( eventName, callback )
 {
   if ( typeof eventName === "string"
      && (  eventName === "shutdown"
@@ -464,7 +489,7 @@ GPClient.prototype.on = function ( eventName, callback )
  * @param {} eventNameOrFunction
  * @return 
  */
-GPClient.prototype.removeEventListener = function ( eventNameOrFunction )
+Client.prototype.removeEventListener = function ( eventNameOrFunction )
 {
   var i, j ;
   if ( typeof eventNameOrFunction === 'string' )
@@ -482,7 +507,7 @@ GPClient.prototype.removeEventListener = function ( eventNameOrFunction )
   }
   else
   {
-    throw new Error ( "GPClient.removeEventListener: eventNameOrFunction must be a function, a string or an array of strings." ) ;
+    throw new Error ( "Client.removeEventListener: eventNameOrFunction must be a function, a string or an array of strings." ) ;
   }
 
   var eventNameList = [] ;
@@ -528,10 +553,10 @@ GPClient.prototype.removeEventListener = function ( eventNameOrFunction )
  * @param {} callback
  * @return 
  */
-GPClient.prototype.lockResource = function ( resourceId, callback )
+Client.prototype.lockResource = function ( resourceId, callback )
 {
-  if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "GPClient.lockResource: resourceId must be a string." ) ;
-  if ( typeof callback !== 'function' ) throw new Error ( "GPClient.lockResource: callback must be a function." ) ;
+  if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.lockResource: resourceId must be a string." ) ;
+  if ( typeof callback !== 'function' ) throw new Error ( "Client.lockResource: callback must be a function." ) ;
 
   var e = new Event ( "system", "lockResourceRequest" ) ;
   e.data.resourceId = resourceId ;
@@ -560,10 +585,10 @@ GPClient.prototype.lockResource = function ( resourceId, callback )
  * @param {} resourceId
  * @return 
  */
-GPClient.prototype.freeResource = function ( resourceId )
+Client.prototype.freeResource = function ( resourceId )
 {
-  if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "GPClient.lockResource: resourceId must be a string." ) ;
-  if ( ! this.lockedResources[resourceId] ) throw new Error ( "GPClient.freeResource: not owner of resourceId=" + resourceId ) ;
+  if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.lockResource: resourceId must be a string." ) ;
+  if ( ! this.lockedResources[resourceId] ) throw new Error ( "Client.freeResource: not owner of resourceId=" + resourceId ) ;
 
   var e = new Event ( "system", "freeResourceRequest" ) ;
   e.data.resourceId = resourceId ;
@@ -574,4 +599,4 @@ GPClient.prototype.freeResource = function ( resourceId )
   delete this.lockedResources[resourceId] ;
   s.write ( e.serialize() ) ;
 };
-module.exports = GPClient ;
+module.exports = Client ;

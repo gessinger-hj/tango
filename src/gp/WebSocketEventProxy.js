@@ -83,6 +83,10 @@ WebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 		{
 			ctx = list[i] ;
 			ctx.socket.sendText ( se ) ;
+	    // if ( e.isResultRequested() )
+	    // {
+	    //   break ;
+	    // }
 		}
 	}
 };

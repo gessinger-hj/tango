@@ -15,7 +15,6 @@ var tangojs = {} ;
 /**
  * Description
  * @constructor
- * @method Event
  * @param {} name
  * @param {} type
  * @param {} data
@@ -269,6 +268,24 @@ tangojs.Event.prototype =
 	isResultRequested: function()
 	{
   	return this.control._isResultRequested ;
+	},
+	/**
+	 * Description
+	 * @method setIsBroadcast
+	 * @return 
+	 */
+	setIsBroadcast: function()
+	{
+  	this.control._isBroadcast = true ;
+	},
+		/**
+	 * Description
+	 * @method isBroadcast
+	 * @return MemberExpression
+	 */
+	isBroadcast: function()
+	{
+  	return this.control._isBroadcast ;
 	},
 	/**
 	 * Description

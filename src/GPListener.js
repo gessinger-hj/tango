@@ -8,6 +8,11 @@ if ( require.main === module )
 // {
 //   T.log ( e.data.id ) ;
 // });
+	gpc.on ( "message-test", function(e)
+	{
+	  T.log ( e ) ;
+	  gpc.sendResult ( e ) ;
+	});
 	gpc.on ( "tail.*", function(e)
 	{
 	  T.log ( e ) ;
