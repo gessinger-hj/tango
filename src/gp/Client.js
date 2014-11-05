@@ -271,7 +271,7 @@ Client.prototype.getSocket = function()
  */
 Client.prototype.fire = function ( params, callback )
 {
-  this.fireEvent ( params, callback ) ;
+  this._fireEvent ( params, callback, null ) ;
 };
 /**
  * Description
@@ -282,7 +282,7 @@ Client.prototype.fire = function ( params, callback )
  */
 Client.prototype.broadcast = function ( params, callback )
 {
-  this.fireEvent ( params, callback, { isBroadcast:true } ) ;
+  this._fireEvent ( params, callback, { isBroadcast:true } ) ;
 };
 /**
  * Description
@@ -291,7 +291,11 @@ Client.prototype.broadcast = function ( params, callback )
  * @param {} callback
  * @return 
  */
-Client.prototype.fireEvent = function ( params, callback, opts )
+Client.prototype.fireEvent = function ( params, callback )
+{
+  return this._fireEvent ( params, callback, null ) ;
+};
+Client.prototype._fireEvent = function ( params, callback, opts )
 {
   var e = null ;
   if ( params instanceof Event )
