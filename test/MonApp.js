@@ -1,10 +1,10 @@
 var T = require ( "Tango" ) ;
 var Log = require ( "LogFile" ) ;
-var GPBroker = require ( "GPBroker" ) ;
+var Broker = require ( "gp/Broker" ) ;
 
 Log.init ( "level=info,Xedirect=3,file=%APPNAME%.log:max=1m:v=4") ;
 
-new GPBroker().listen() ;
+new Broker().listen() ;
 var GPResourceSentinel = require ( "GPResourceSentinel" ).GPResourceSentinel ;
 var DirectoryResource = require ( "GPResourceSentinel" ).DirectoryResource ;
 var MRTResource = require ( "GPResourceSentinel" ).MRTResource ;

@@ -27,3 +27,4 @@ RS.addChange ( new DirectoryResource ( "/home/gess/acronyl/test/private/conf" ) 
 RS.addChange ( new DirectoryResource ( "/home/gess/work/Repos/VGE_AWTK/private/conf/" ) ) ;
 RS.addChange ( new DirectoryResource ( "/home/gess/acronyl/test/public/apps/vgecb/axl" ) ) ;
 RS.addChange ( new DirectoryResource ( "/home/gess/acronyl/test/public/apps/vgecb/js" ) ) ;
+RS.addChange ( new DirectoryResource ( "/home/gess/acronyl/test/public/js" ) ) ;
