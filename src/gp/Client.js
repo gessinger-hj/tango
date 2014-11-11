@@ -34,6 +34,7 @@ var Client = function ( port, host )
   this.listenerFunctionsList = [] ;
   this.pendingLockList = [] ;
   this.lockedResources = {} ;
+  this.alive = false ;
 } ;
 util.inherits ( Client, EventEmitter ) ;
 /**
@@ -59,6 +60,7 @@ Client.prototype.connect = function()
   var thiz = this ;
   this.socket = net.connect ( p, function()
   {
+    thiz.alive = true ;
     var einfo = new Event ( "system", "client_info" ) ;
     einfo.data.hostname = os.hostname() ;
     einfo.data.connectionTime = new Date() ;
@@ -155,7 +157,7 @@ Client.prototype.connect = function()
         {
           if ( e.getType() === "shutdown" )
           {
-            this.end() ;
+            thiz.end() ;
             thiz.emit ( "shutdown" ) ;
             return ;
           }
@@ -239,10 +241,12 @@ Client.prototype.connect = function()
   } ) ;
   this.socket.on ( 'end', function socket_on_end()
   {
+    thiz.alive = false ;
     thiz.emit ( "end" ) ;
   });
   this.socket.on ( 'error', function socket_on_error ( e )
   {
+    thiz.alive = false ;
     thiz.emit ( "error", e ) ;
   });
 } ;
@@ -272,6 +276,25 @@ Client.prototype.getSocket = function()
 Client.prototype.fire = function ( params, callback )
 {
   this._fireEvent ( params, callback, null ) ;
+};
+/**
+ * Description
+ * @method request
+ * @param {} params
+ * @param {} callback
+ * @return 
+ */
+Client.prototype.request = function ( params, callback )
+{
+  if ( typeof callback === 'function' )
+  {
+    callback = { result: callback } ;
+  }
+  if ( typeof callback.result !== 'function' )
+  {
+    throw new Error ( "Missing result function.")
+  }
+  this._fireEvent ( params, callback, { isBroadcast:false } ) ;
 };
 /**
  * Description
@@ -391,6 +414,7 @@ Client.prototype.sendResult = function ( message )
  */
 Client.prototype.end = function()
 {
+  this.alive = false ;
   if ( this.socket ) this.socket.end() ;
   this.socket = null ;
   this.pendingEventList = [] ;
@@ -495,6 +519,10 @@ Client.prototype.on = function ( eventName, callback )
  */
 Client.prototype.removeEventListener = function ( eventNameOrFunction )
 {
+  if ( ! this.alive )
+  {
+    return ;
+  }
   var i, j ;
   if ( typeof eventNameOrFunction === 'string' )
   {

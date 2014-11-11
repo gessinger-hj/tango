@@ -209,12 +209,12 @@ Connection.prototype.addEventListener = function ( e )
 /**
  * @constructor
  * @extends {EventEmitter}
- * @method GPBroker
+ * @method Broker
  * @param {} port
  * @param {} ip
  * @return 
  */
-var GPBroker = function ( port, ip )
+var Broker = function ( port, ip )
 {
   EventEmitter.call ( this ) ;
   this._connections = {} ;
@@ -315,16 +315,16 @@ var GPBroker = function ( port, ip )
     });
   });
 };
-util.inherits ( GPBroker, EventEmitter ) ;
+util.inherits ( Broker, EventEmitter ) ;
 
 /**
  * Description
  * @method toString
  * @return Literal
  */
-GPBroker.prototype.toString = function()
+Broker.prototype.toString = function()
 {
-  return "(GPBroker)[]" ;
+  return "(Broker)[]" ;
 };
 /**
  * Description
@@ -333,7 +333,7 @@ GPBroker.prototype.toString = function()
  * @param {} e
  * @return 
  */
-GPBroker.prototype.sendEventToClients = function ( socket, e )
+Broker.prototype.sendEventToClients = function ( socket, e )
 {
   var i, found = false, done = false, str ;
   var name = e.getName() ;
@@ -411,7 +411,7 @@ GPBroker.prototype.sendEventToClients = function ( socket, e )
  * @param {} e
  * @return 
  */
-GPBroker.prototype.handleSystemMessages = function ( socket, e )
+Broker.prototype.handleSystemMessages = function ( socket, e )
 {
   var conn ;
   if ( e.getType() === "addMultiplexer" )
@@ -525,7 +525,7 @@ GPBroker.prototype.handleSystemMessages = function ( socket, e )
  * @param {} socket
  * @return 
  */
-GPBroker.prototype.ejectSocket = function ( socket )
+Broker.prototype.ejectSocket = function ( socket )
 {
   var i ;
   var sid = socket.sid ;
@@ -556,7 +556,7 @@ GPBroker.prototype.ejectSocket = function ( socket )
  * @param {} exceptSocket
  * @return 
  */
-GPBroker.prototype.closeAllSockets = function ( exceptSocket )
+Broker.prototype.closeAllSockets = function ( exceptSocket )
 {
   if ( this.closing )
   {
@@ -584,7 +584,7 @@ GPBroker.prototype.closeAllSockets = function ( exceptSocket )
  * @param {} callback
  * @return 
  */
-GPBroker.prototype.listen = function ( port, callback )
+Broker.prototype.listen = function ( port, callback )
 {
   if ( port ) this.port = port ;
   if ( ! this.port )
@@ -605,10 +605,10 @@ GPBroker.prototype.listen = function ( port, callback )
 
 var host = T.getProperty ( "gepard.host" ) ;
 
-module.exports = GPBroker ;
+module.exports = Broker ;
 
 if ( require.main === module )
 {
-  var b = new GPBroker() ;
+  var b = new Broker() ;
   b.listen() ;
 }

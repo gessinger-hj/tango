@@ -21,7 +21,7 @@ var GPResourceSentinel = function ( port, host )
 {
   this.port = port ; 
   this.host = host ; 
-  this.gpclient = null ;
+  this.client = null ;
   this.hostname = os.hostname() ;
   this.resourceList = [] ;
   var thiz = this ;
@@ -36,7 +36,7 @@ var GPResourceSentinel = function ( port, host )
  */
 GPResourceSentinel.prototype.init = function()
 {
-  this.gpclient = new Client ( this.port, this.host ) ;
+  this.client = new Client ( this.port, this.host ) ;
 };
 /**
  * Description
@@ -99,7 +99,7 @@ GPResourceSentinel.prototype.addChange = function ( resource )
       }
     }
     Log.debug ( e.data.id ) ;
-    thiz.gpclient.fire ( e ) ;
+    thiz.client.fire ( e ) ;
   }) ;
 };
 /*
@@ -127,7 +127,7 @@ GPResourceSentinel.prototype.removeOutdated = function()
         e.data.text = p.displayName ? p.displayName : p.name ;
         e.data.millis = 5000 ;
         Log.debug ( e.data.id ) ;
-        this.gpclient.fire ( e ) ;
+        this.client.fire ( e ) ;
       }
     }
   }
@@ -211,7 +211,7 @@ MRTResource.prototype.setParent = function ( sentinel )
     e = new Event ( thiz.parent.mainEventName ) ;
     e.data = thiz.parent.make_data ( name, "start", "MRTExport", { path:thiz.MRT_dir } ) ;
     Log.debug ( e.data ) ;
-    thiz.parent.gpclient.fire ( e ) ;
+    thiz.parent.client.fire ( e ) ;
   });
   this.w.on ( "delete", function ondelete ( name )
   {
@@ -219,7 +219,7 @@ MRTResource.prototype.setParent = function ( sentinel )
     e = new Event ( thiz.parent.mainEventName ) ;
     e.data = thiz.parent.make_data ( name, "stop", "MRTExport", { path:thiz.MRT_dir } ) ;
     Log.debug ( e.data ) ;
-    thiz.parent.gpclient.fire ( e ) ;
+    thiz.parent.client.fire ( e ) ;
   });
   this.w.watch() ;
   this.w2 = new FSWatcher ( this.log_dir ) ;
@@ -236,7 +236,7 @@ MRTResource.prototype.setParent = function ( sentinel )
       e = new Event ( thiz.parent.mainEventName ) ;
       e.data = thiz.parent.make_data ( name, "start", "MRTExport", { path:thiz.log_dir } ) ;
       Log.debug ( e.data ) ;
-      thiz.parent.gpclient.fire ( e ) ;
+      thiz.parent.client.fire ( e ) ;
     }
   })
   this.w2.watch() ;

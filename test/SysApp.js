@@ -1,5 +1,6 @@
 var T = require ( "Tango" ) ;
 var Log = require ( "LogFile" ) ;
+var File = require ( "File" ) ;
 var GPNotificationBroker = require ( "GPNotificationBroker" ) ;
 var WebSocketEventProxy = require ( "gp/WebSocketEventProxy" ) ;
 var Broker = require ( "gp/Broker" ) ;
@@ -16,15 +17,17 @@ var DirectoryResource = require ( "GPResourceSentinel" ).DirectoryResource ;
 var RS = new GPResourceSentinel() ;
 RS.init() ;
 
+var watchList = new File ( __dirname, "SysApp.json" ).getJSON() ;
+console.log ( watchList ) ;
+for ( var i = 0 ; i < watchList.length ; i++ )
+{
+	RS.addChange ( new DirectoryResource ( watchList[i] ) ) ;
+}
+RS.client.on ( "getWatchResourceList", function ( e )
+{
+	e.data.watchList = watchList ;
+  this.sendResult ( e ) ;
+});
 /*
 jsdoc -d ../doc -t ../../node_modules/ink-docstrap/template/ -c ../../node_modules/ink-docstrap/template/conf.json *.js
  */
-RS.addChange ( new DirectoryResource ( "/home/gess/work/poi-3.8/de/devoteam/vge/acs" ) ) ;
-RS.addChange ( new DirectoryResource ( "/home/gess/work/poi-3.8/acs/customer/ACS52" ) ) ;
-RS.addChange ( new DirectoryResource ( "/home/gess/work/dev" ) ) ;
-RS.addChange ( new DirectoryResource ( "/home/gess/work/Projects/tangojs/src" ) ) ;
-RS.addChange ( new DirectoryResource ( "/home/gess/acronyl/test/private/conf" ) ) ;
-RS.addChange ( new DirectoryResource ( "/home/gess/work/Repos/VGE_AWTK/private/conf/" ) ) ;
-RS.addChange ( new DirectoryResource ( "/home/gess/acronyl/test/public/apps/vgecb/axl" ) ) ;
-RS.addChange ( new DirectoryResource ( "/home/gess/acronyl/test/public/apps/vgecb/js" ) ) ;
-RS.addChange ( new DirectoryResource ( "/home/gess/acronyl/test/public/js" ) ) ;

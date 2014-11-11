@@ -3,6 +3,8 @@ var File = require ( "./File" ) ;
 var Event = require ( "./gp/Event" ) ;
 var Client = require ( "./gp/Client" ) ;
 
+var e ;
+
 // var event = T.getProperty ( "event", "notify" ) ;
 // var type = T.getProperty ( "type" ) ;
 // var json ;
@@ -48,9 +50,17 @@ var c = new Client() ;
 //          }
 //          }
 //        ) ;
+c.request ( "getWatchResourceList"
+, function result(e)
+  {
+    T.log ( e ) ;
+    // this.end() ;
+  });
+return ;
 var ee = new Event ( "alarm" ) ;
 // ee.setIsBroadcast() ;
-c.broadcast ( ee
+// c.broadcast ( ee
+c.request ( ee
        , { 
            result: function(e)
            {

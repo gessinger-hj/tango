@@ -1,3 +1,6 @@
+if ( typeof tangojs === 'undefined' ) tangojs = {} ;
+if ( typeof tangojs.gp === 'undefined' ) tangojs.gp = {} ;
+
 if ( !Array.isArray )
 {
   /**
@@ -10,8 +13,6 @@ if ( !Array.isArray )
   	return arg && arg.constructor === Array ;
   };
 }
-var tangojs = {} ;
-
 /**
  * Description
  * @constructor
@@ -20,11 +21,11 @@ var tangojs = {} ;
  * @param {} data
  * @return 
  */
-tangojs.Event = function ( name, type, data )
+tangojs.gp.Event = function ( name, type, data )
 {
 	this._init ( name, type, data ) ;
 };
-tangojs.Event.prototype =
+tangojs.gp.Event.prototype =
 {
 	/**
 	 * Description
@@ -74,10 +75,10 @@ tangojs.Event.prototype =
 	  {
 	    obj = JSON.parse ( serializedObject ) ;
 	  }
-	  if ( deepClassInspection ) tangojs.Event.prototype.deepDeserializeClass ( obj ) ;
+	  if ( deepClassInspection ) tangojs.gp.Event.prototype.deepDeserializeClass ( obj ) ;
 	  if ( ! classNameToConstructor )
 	  {
-	  	classNameToConstructor = { "Event": tangojs.Event } ;
+	  	classNameToConstructor = { "Event": tangojs.gp.Event } ;
 	  }
 	  if ( obj.className && typeof obj.className === 'string' )
 	  {
@@ -478,12 +479,12 @@ tangojs.Event.prototype =
 };
 if ( typeof document !== 'undefined' )
 {
-	tangojs.serialize = tangojs.Event.prototype.serialize ;
-	tangojs.deserialize = tangojs.Event.prototype.deserialize ;
+	tangojs.gp.serialize = tangojs.gp.Event.prototype.serialize ;
+	tangojs.gp.deserialize = tangojs.gp.Event.prototype.deserialize ;
 }
 else
 {
-	module.exports = tangojs.Event ;
+	module.exports = tangojs.gp.Event ;
 
 	if ( require.main === module )
 	{
@@ -495,7 +496,7 @@ else
 
 		// var f = new File ( "r.txt" ) ;
 		// var buf = f.toBuffer() ;
-		var ne = new tangojs.Event ( 'BC', "T" ) ;
+		var ne = new tangojs.gp.Event ( 'BC', "T" ) ;
 		// ne.setUser ( new User ( "admin", 17 ) ) ;
 		// ne.data.fileContent = buf ;
 		// var tree = new tangojs.XmlTree() ;
@@ -509,8 +510,8 @@ else
 		var str = ne.serialize() ;
 	console.log ( "str=" + str ) ;
 		new File ( "nevent.json" ).write ( str ) ;
-		// var o = T.deserialize ( str, { "Event": tangojs.Event } ) ;
-		var o = tangojs.Event.prototype.deserialize ( str ) ;
+		// var o = T.deserialize ( str, { "Event": tangojs.gp.Event } ) ;
+		var o = tangojs.gp.Event.prototype.deserialize ( str ) ;
 		T.log ( o ) ;
 
 	// 	console.log ( "o.getUser()=" + o.getUser() ) ;
