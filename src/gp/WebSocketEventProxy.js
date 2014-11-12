@@ -342,6 +342,12 @@ WebSocketEventProxy.prototype.listenSocketBound = function()
 {
 	Log.notice ( "WebSocketEventProxy bound to port=" + this.port ) ;
 };
+WebSocketEventProxy.prototype.shutdown = function()
+{
+	if ( ! this.server ) return ;
+	this.server.socket.close() ;
+	this.server = null ;
+};
 module.exports = WebSocketEventProxy ;
 
 if ( require.main === module )

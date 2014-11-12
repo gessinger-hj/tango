@@ -106,6 +106,15 @@ FSWatcher.prototype.toString = function()
 /**
  * Description
  */
+FSWatcher.prototype.close = function()
+{
+	if ( ! this.watcher ) return ;
+	this.watcher.close() ;
+	this.watcher = null ;
+};
+/**
+ * Description
+ */
 FSWatcher.prototype.watch = function()
 {
 	if ( this.basename )
@@ -123,7 +132,7 @@ FSWatcher.prototype.watch = function()
 	try
 	{
 		var thiz = this ;
-		this.watcher = fs.watch ( this.dirname, function ( ename, fname )
+		this.watcher = fs.watch ( this.dirname, function fs_watch_callback( ename, fname )
 		{
 			if ( ename === 'change' )
 			{

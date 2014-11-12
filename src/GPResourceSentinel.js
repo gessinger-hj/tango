@@ -132,6 +132,19 @@ GPResourceSentinel.prototype.removeOutdated = function()
     }
   }
 };
+GPResourceSentinel.prototype.shutdown = function()
+{
+  this.closeAll() ;
+  this.client.end() ;
+};
+GPResourceSentinel.prototype.closeAll = function()
+{
+  for ( var i = 0 ; i < this.resourceList.length ; i++ )
+  {
+    this.resourceList[i].close() ;
+  }
+  this.resourceList.length = null ;
+};
 /**
  * Description
  * @constructor
@@ -143,6 +156,7 @@ var WatchResource = function()
   this.notificationType = "notify" ;
   this.parent = null ;
   this._canOutdate = false ;
+  this.watcher = null ;
 };
 util.inherits ( WatchResource, EventEmitter ) ;
 /**
@@ -178,6 +192,14 @@ WatchResource.prototype.setParent = function ( sentinel )
 {
   this.parent = sentinel ;
 };
+WatchResource.prototype.close = function()
+{
+  if ( this.watcher )
+  {
+    this.watcher.close() ;
+  }
+  this.watcher = null ;
+};
 /**
  * Description
  * @constructor
@@ -190,8 +212,18 @@ var MRTResource = function ( log_dir, MRT_dir )
   WatchResource.apply ( this, arguments ) ;
   this.MRT_dir = MRT_dir ;
   this.log_dir = log_dir ;
+  this.watcher2 = null ;
 };
 util.inherits ( MRTResource, WatchResource ) ;
+MRTResource.prototype.close = function()
+{
+  WatchResource.prototype.close.apply ( this, arguments ) ;
+  if ( this.watcher2 )
+  {
+    this.watcher2.close() ;
+  }
+  this.watcher2 = null ;
+};
 /**
  * Description
  * @param {} sentinel
@@ -204,16 +236,16 @@ MRTResource.prototype.setParent = function ( sentinel )
   var previous_file_name = "" ;
 
   var thiz = this ;
-  this.w = new FSWatcher ( this.MRT_dir + "/rating.guiding.rul.tmp" ) ;
+  this.watcher = new FSWatcher ( this.MRT_dir + "/rating.guiding.rul.tmp" ) ;
   var e ;
-  this.w.on ( "create", function oncreate ( name )
+  this.watcher.on ( "create", function oncreate ( name )
   {
     e = new Event ( thiz.parent.mainEventName ) ;
     e.data = thiz.parent.make_data ( name, "start", "MRTExport", { path:thiz.MRT_dir } ) ;
     Log.debug ( e.data ) ;
     thiz.parent.client.fire ( e ) ;
   });
-  this.w.on ( "delete", function ondelete ( name )
+  this.watcher.on ( "delete", function ondelete ( name )
   {
     previous_file_name = "" ;
     e = new Event ( thiz.parent.mainEventName ) ;
@@ -221,9 +253,9 @@ MRTResource.prototype.setParent = function ( sentinel )
     Log.debug ( e.data ) ;
     thiz.parent.client.fire ( e ) ;
   });
-  this.w.watch() ;
-  this.w2 = new FSWatcher ( this.log_dir ) ;
-  this.w2.on ( "change", function onchange ( name )
+  this.watcher.watch() ;
+  this.watcher2 = new FSWatcher ( this.log_dir ) ;
+  this.watcher2.on ( "change", function onchange ( name )
   {
     Log.debug ( "name=" + name ) ;
     if ( regexp_MRTExport.test ( name ) )
@@ -239,7 +271,7 @@ MRTResource.prototype.setParent = function ( sentinel )
       thiz.parent.client.fire ( e ) ;
     }
   })
-  this.w2.watch() ;
+  this.watcher2.watch() ;
 };
 /**
  * Description

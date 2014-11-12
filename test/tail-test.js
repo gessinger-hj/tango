@@ -1,8 +1,8 @@
 // var Tail = require('always-tail');
 var T = require ( 'Tango' ) ;
 var Tail = require ( './Tail' ) ;
-var Event = require ( 'Event' ) ;
-var Client = require ( './gp/Client' ) ;
+var Event = require ( 'gp/Event' ) ;
+var Client = require ( 'gp/Client' ) ;
 
 // var filename = "./log.log";
 var filename = "/home/gess/work/poi-3.8/ServiceContainer.ACS.log_1";
@@ -15,10 +15,11 @@ var gpc = new Client() ;
 
 tail.on ( 'line', function ( data )
 {
-	var ne = new Event ( "tail.log.log", filename ) ;
+	var ne = new Event ( "tail.log", filename ) ;
+	ne.setAckRequested() ;
 	ne.data.text = data.toString() ;
 	gpc.fire ( ne ) ;
-  // console.log("got line:", data);
+//  console.log("got line:", data);
 });
 
 

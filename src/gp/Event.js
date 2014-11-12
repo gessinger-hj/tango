@@ -270,6 +270,14 @@ tangojs.gp.Event.prototype =
 	{
   	return this.control._isResultRequested ;
 	},
+	setAckRequested: function()
+	{
+  	this.control._isAckRequested = true ;
+	},
+	isAckRequested: function()
+	{
+  	return this.control._isAckRequested ;
+	},
 	/**
 	 * Description
 	 * @method setIsBroadcast

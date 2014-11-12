@@ -114,7 +114,7 @@ Connection.prototype.write = function ( data )
  */
 Connection.prototype.sendInfoRequest = function ( e )
 {
-  var i, first, str ;
+  var i, first, str, key ;
   e.setType ( "getInfoResult" ) ;
   e.control.status = { code:0, name:"ack" } ;
   e.data.log = { levelName: Log.getLevelName(), level:Log.getLevel() } ;
@@ -142,22 +142,21 @@ Connection.prototype.sendInfoRequest = function ( e )
     }
   }
   e.data.mapping = mhclone._hash ;
-  var kk ;
   e.data.connectionList = [] ;
-  for ( kk in this.broker._connections )
+  for ( key in this.broker._connections )
   {
-    var client_info = this.broker._connections[kk].client_info ;
+    var client_info = this.broker._connections[key].client_info ;
     if ( ! client_info ) continue ;
     e.data.connectionList.push ( client_info ) ;
   }
   str = "" ;
-  for ( kk in this.broker._lockOwner )
+  for ( key in this.broker._lockOwner )
   {
     if ( ! str )
     {
       e.data.lockList = [] ;
     }
-    e.data.lockList.push ( { resourceId: kk, owner: this.broker._lockOwner[kk].client_info } ) ;
+    e.data.lockList.push ( { resourceId: key, owner: this.broker._lockOwner[key].client_info } ) ;
   }
   this.write ( e ) ;
 };
@@ -379,7 +378,7 @@ Broker.prototype.sendEventToClients = function ( socket, e )
   }
   if ( ! found )
   {
-    if ( e.isResultRequested() )
+    if ( e.isResultRequested() || e.isAckRequested() )
     {
       e.control.status = { code:1, name:"warning", reason:"No listener found for event: " + e.getName() } ;
       e.control.requestedName = e.getName() ;
