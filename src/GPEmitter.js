@@ -21,6 +21,11 @@ var e ;
 
 var c = new Client() ;
 
+for ( var i = 0 ; i < 1000 ; i++ )
+{
+  c.fire ( "dadada" + i ) ;
+}
+return ;
 // c.fire ( e
 //        , { 
 //          error: function(e)

@@ -45,7 +45,7 @@ XTail = (function(_super) {
   
         if (end < start) {
           // file was truncated
-          debug('file was truncated:', self.filename);
+          // debug('file was truncated:', self.filename);
           start = 0;
         };
 

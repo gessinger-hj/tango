@@ -272,7 +272,6 @@ var Broker = function ( port, ip )
       if ( ! this.partialMessage ) this.partialMessage = "" ;
       mm = this.partialMessage + mm ;
       this.partialMessage = "" ;
-
       var messageList = T.splitJSONObjects ( mm ) ;
       var j = 0 ;
       for ( j = 0 ; j < messageList.length ; j++ )
@@ -399,7 +398,7 @@ Broker.prototype.sendEventToClients = function ( socket, e )
     }
     if ( ! done )
     {
-      Log.info ( "No listener found for " + e.getName() ) ;
+      // Log.info ( "No listener found for " + e.getName() ) ;
     }
   }
 };

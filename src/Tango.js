@@ -408,7 +408,7 @@ TangoClass.prototype.splitJSONObjects = function ( str )
     if ( c === '"' || c === "'" )
     {
       q = c ;
-      for ( var j = i+1 ; i < str.length ; j++ )
+      for ( var j = i+1 ; j < str.length ; j++ )
       {
         c = str.charAt ( j ) ;
         if ( c === q )
