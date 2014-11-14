@@ -1,11 +1,12 @@
 if ( typeof tangojs === 'undefined' ) tangojs = {} ;
+if ( typeof tangojs.gp === 'undefined' ) tangojs.gp = {} ;
 
-tangojs.counter = 0 ;
+tangojs.gp.counter = 0 ;
 /**
  * Description
  * @param {} port
  */
-tangojs.GPWebClient = function ( port )
+tangojs.gp.WebClient = function ( port )
 {
   this.port = port ;
   this.socket = null ;
@@ -17,26 +18,38 @@ tangojs.GPWebClient = function ( port )
   this.pendingEventListenerList = [] ;
   this.url = "ws://" + document.domain + ":" + this.port ;
   this.proxyIdentifier = null ;
+  this.onCallbackFunctions = new tangojs.MultiHash() ;
 };
-tangojs.GPWebClient.prototype._initialize = function()
+tangojs.gp.WebClient.prototype._initialize = function()
 {
 };
 /**
  * Description
  * @return BinaryExpression
  */
-tangojs.GPWebClient.prototype.createUniqueEventId = function()
+tangojs.gp.WebClient.prototype.createUniqueEventId = function()
 {
-  return this.url + "_" + new Date().getTime() + "-" + this.proxyIdentifier + "-" + (tangojs.counter++) ;
+  return this.url + "_" + new Date().getTime() + "-" + this.proxyIdentifier + "-" + (tangojs.gp.counter++) ;
+};
+tangojs.gp.WebClient.prototype.emit = function ( p1, eventName )
+{
+  var list = this.onCallbackFunctions.get ( eventName ) ;
+  if ( list )
+  {
+    for ( i = 0 ; i < list.length ; i++ )
+    {
+      list[i].call ( this, p1, eventName ) ;
+    }
+  }
 };
 /**
  * Description
  */
-tangojs.GPWebClient.prototype.connect = function()
+tangojs.gp.WebClient.prototype.connect = function()
 {
   var thiz = this ;
   this.socket = new WebSocket ( this.url ) ;
-
+  var list, i ;
   /**
    * Description
    * @param {} err
@@ -46,6 +59,7 @@ tangojs.GPWebClient.prototype.connect = function()
     if ( ! thiz.socket ) return ;
     thiz.socket.close() ;
     thiz.socket = null ;
+    thiz.emit ( err, "error" ) ;
   } ;
   /**
    * Description
@@ -57,7 +71,8 @@ tangojs.GPWebClient.prototype.connect = function()
     if ( ! this.partialMessage ) this.partialMessage = "" ;
     mm = this.partialMessage + mm ;
     this.partialMessage = "" ;
-    var messageList = thiz.splitJSONObjects ( mm ) ;
+    var result = thiz.splitJSONObjects ( mm ) ;
+    var messageList = result.list
 
     var j = 0 ;
     for ( j = 0 ; j < messageList.length ; j++ )
@@ -69,7 +84,7 @@ tangojs.GPWebClient.prototype.connect = function()
       }
       if ( j === messageList.length - 1 )
       {
-        if ( m.charAt ( m.length - 1 ) !== '}' )
+        if ( result.lastLineIsPartial )
         {
           this.partialMessage = m ;
           break ;
@@ -77,7 +92,7 @@ tangojs.GPWebClient.prototype.connect = function()
       }
       if ( m.charAt ( 0 ) === '{' )
       {
-        var e = tangojs.deserialize ( m ) ;
+        var e = tangojs.gp.deserialize ( m ) ;
         var wid = e.getWebIdentifier() ;
         if ( e.isResult() )
         {
@@ -134,17 +149,20 @@ tangojs.GPWebClient.prototype.connect = function()
   {
     if ( ! thiz.socket ) return ;
     thiz.socket = null ;
+    thiz.emit ( null, "close" ) ;
   } ;
   /**
    * Description
    */
   this.socket.onopen = function()
   {
-    var einfo = new tangojs.Event ( "system", "client_info" ) ;
+    var einfo = new tangojs.gp.Event ( "system", "client_info" ) ;
     einfo.data.userAgent = navigator.userAgent ;
     einfo.data.connectionTime = new Date() ;
     einfo.data.domain = document.domain ;
     thiz.socket.send ( einfo.serialize() ) ;
+
+    thiz.emit ( null, "open" ) ;
 
     var i ;
     if ( thiz.pendingEventList.length )
@@ -180,7 +198,7 @@ tangojs.GPWebClient.prototype.connect = function()
  * Description
  * @return MemberExpression
  */
-tangojs.GPWebClient.prototype.getSocket = function()
+tangojs.gp.WebClient.prototype.getSocket = function()
 {
   if ( ! this.socket )
   {
@@ -193,16 +211,16 @@ tangojs.GPWebClient.prototype.getSocket = function()
  * @param {} params
  * @param {} callback
  */
-tangojs.GPWebClient.prototype.fireEvent = function ( params, callback )
+tangojs.gp.WebClient.prototype.fireEvent = function ( params, callback )
 {
   var e = null ;
-  if ( params instanceof tangojs.Event )
+  if ( params instanceof tangojs.gp.Event )
   {
     e = params ;
   }
   else
   {
-    e = new tangojs.Event ( params.name, params.type ) ;
+    e = new tangojs.gp.Event ( params.name, params.type ) ;
     e.setData ( params.data ) ;
     if ( params.user ) u = params.user ;
   }
@@ -246,7 +264,27 @@ tangojs.GPWebClient.prototype.fireEvent = function ( params, callback )
  * @param {} eventNameList
  * @param {} callback
  */
-tangojs.GPWebClient.prototype.addEventListener = function ( eventNameList, callback )
+tangojs.gp.WebClient.prototype.on = function ( eventNameList, callback )
+{
+  if ( typeof eventNameList === 'string' )
+  {
+    if (  eventNameList === "open"
+       || eventNameList === "close"
+       || eventNameList === "error"
+       )
+    {
+      this.onCallbackFunctions.put ( eventNameList, callback ) ;
+      return ;
+    }
+  }
+  this.addEventListener ( eventNameList, callback ) ;
+};
+/**
+ * Description
+ * @param {} eventNameList
+ * @param {} callback
+ */
+tangojs.gp.WebClient.prototype.addEventListener = function ( eventNameList, callback )
 {
   if ( ! eventNameList ) throw new Error ( "Client.addEventListener: Missing eventNameList." ) ;
   if ( typeof callback !== 'function' ) throw new Error ( "Client.addEventListener: callback must be a function." ) ;
@@ -259,7 +297,7 @@ tangojs.GPWebClient.prototype.addEventListener = function ( eventNameList, callb
   {
     throw new Error ( "Client.addEventListener: eventNameList must not be empty." ) ;
   }
-  var e = new tangojs.Event ( "system", "addEventListener" ) ;
+  var e = new tangojs.gp.Event ( "system", "addEventListener" ) ;
   if ( this.user )
   {
     e.setUser ( this.user ) ;
@@ -292,7 +330,7 @@ tangojs.GPWebClient.prototype.addEventListener = function ( eventNameList, callb
  * Description
  * @param {} eventNameOrFunction
  */
-tangojs.GPWebClient.prototype.removeEventListener = function ( eventNameOrFunction )
+tangojs.gp.WebClient.prototype.removeEventListener = function ( eventNameOrFunction )
 {
   var i ;
   if ( typeof eventNameOrFunction === 'string' )
@@ -333,7 +371,7 @@ tangojs.GPWebClient.prototype.removeEventListener = function ( eventNameOrFuncti
       this.eventListenerFunctions.remove ( item ) ;
     }
     if ( ! eventNameList.length ) return ;
-    var e = new tangojs.Event ( "system", "removeEventListener" ) ;
+    var e = new tangojs.gp.Event ( "system", "removeEventListener" ) ;
     e.setUser ( this.user ) ;
     e.data.eventNameList = eventNameList ;
     var s = this.getSocket() ;
@@ -344,7 +382,7 @@ tangojs.GPWebClient.prototype.removeEventListener = function ( eventNameOrFuncti
  * Description
  * @param {} message
  */
-tangojs.GPWebClient.prototype.sendResult = function ( message )
+tangojs.gp.WebClient.prototype.sendResult = function ( message )
 {
   if ( ! message.isResultRequested() )
   {
@@ -360,7 +398,7 @@ tangojs.GPWebClient.prototype.sendResult = function ( message )
  * @param {} str
  * @return list
  */
-tangojs.GPWebClient.prototype.splitJSONObjects = function ( str )
+tangojs.gp.WebClient.prototype.splitJSONObjects = function ( str )
 {
   var list = [] ;
   var pcounter = 1 ;
@@ -373,7 +411,7 @@ tangojs.GPWebClient.prototype.splitJSONObjects = function ( str )
     if ( c === '"' || c === "'" )
     {
       q = c ;
-      for ( var j = i+1 ; i < str.length ; j++ )
+      for ( var j = i+1 ; j < str.length ; j++ )
       {
         c = str.charAt ( j ) ;
         if ( c === q )
@@ -415,5 +453,5 @@ tangojs.GPWebClient.prototype.splitJSONObjects = function ( str )
   {
     list.push ( str.substring ( i0 ) ) ;
   }
-  return list ;
+	return { list: list, lastLineIsPartial: pcounter ? true : false } ;
 };

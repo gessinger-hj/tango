@@ -450,7 +450,7 @@ TangoClass.prototype.splitJSONObjects = function ( str )
   {
     list.push ( str.substring ( i0 ) ) ;
   }
-  return list ;
+  return { list: list, lastLineIsPartial: pcounter ? true : false } ;
 };
 /**
  * Description

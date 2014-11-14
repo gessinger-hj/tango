@@ -4,13 +4,13 @@
  * [net description]
  * @type {[type]}
  */
-var net = require ( 'net' ) ;
-var util = require ( 'util' ) ;
+var net          = require ( 'net' ) ;
+var util         = require ( 'util' ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
-var Event = require ( "./Event" ) ;
-var T = require ( "../Tango" ) ;
-var MultiHash = require ( "../MultiHash" ) ;
-var Log = require ( "../LogFile" ) ;
+var Event        = require ( "./Event" ) ;
+var T            = require ( "../Tango" ) ;
+var MultiHash    = require ( "../MultiHash" ) ;
+var Log          = require ( "../LogFile" ) ;
 
 
 /**
@@ -272,7 +272,8 @@ var Broker = function ( port, ip )
       if ( ! this.partialMessage ) this.partialMessage = "" ;
       mm = this.partialMessage + mm ;
       this.partialMessage = "" ;
-      var messageList = T.splitJSONObjects ( mm ) ;
+      var result = T.splitJSONObjects ( mm ) ;
+      var messageList = result.list ;
       var j = 0 ;
       for ( j = 0 ; j < messageList.length ; j++ )
       {
@@ -283,7 +284,7 @@ var Broker = function ( port, ip )
         }
         if ( j === messageList.length - 1 )
         {
-          if ( m.charAt ( m.length - 1 ) !== '}' )
+          if ( result.lastLineIsPartial )
           {
             this.partialMessage = m ;
             break ;

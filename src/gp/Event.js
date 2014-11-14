@@ -73,7 +73,16 @@ tangojs.gp.Event.prototype =
 	  if ( deepClassInspection !== false ) deepClassInspection = true ;
 	  if ( typeof serializedObject === 'string' )
 	  {
-	    obj = JSON.parse ( serializedObject ) ;
+			try
+			{
+		    obj = JSON.parse ( serializedObject ) ;
+			}
+			catch ( exc )
+			{
+				console.log ( serializedObject ) ;
+				console.log ( exc ) ;
+				throw exc ;
+			}
 	  }
 	  if ( deepClassInspection ) tangojs.gp.Event.prototype.deepDeserializeClass ( obj ) ;
 	  if ( ! classNameToConstructor )

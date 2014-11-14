@@ -1,6 +1,6 @@
-// var Tail = require('always-tail');
+var Tail = require('always-tail');
 var T = require ( 'Tango' ) ;
-var Tail = require ( './Tail' ) ;
+// var Tail = require ( './Tail' ) ;
 var Event = require ( 'gp/Event' ) ;
 var Client = require ( 'gp/Client' ) ;
 
@@ -9,7 +9,7 @@ var filename = "/home/gess/work/poi-3.8/ServiceContainer.ACS.log_1";
 
 filename = T.getProperty ( "file", filename ) ;
 console.log ( "filename=" + filename ) ;
-var tail = new Tail ( filename, null ) ;
+var tail = new Tail ( filename ) ;
 
 var gpc = new Client() ;
 
@@ -19,14 +19,14 @@ tail.on ( 'line', function ( data )
 	ne.setAckRequested() ;
 	ne.data.text = data.toString() ;
 	gpc.fire ( ne ) ;
-//  console.log("got line:", data);
+ // console.log("got line:", data);
 });
 
 
-tail.on('error', function(data) {
-  console.log("error:", data);
-	tail.unwatch();
-});
+// tail.on('error', function(data) {
+//   console.log("error:", data);
+// 	tail.unwatch();
+// });
 
 tail.watch();
 

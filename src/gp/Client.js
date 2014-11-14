@@ -120,7 +120,8 @@ Client.prototype.connect = function()
     if ( ! this.partialMessage ) this.partialMessage = "" ;
     mm = this.partialMessage + mm ;
     this.partialMessage = "" ;
-    var messageList = T.splitJSONObjects ( mm ) ;
+    var result = T.splitJSONObjects ( mm ) ;
+    var messageList = result.list ;
     var i, j, k ;
     for ( j = 0 ; j < messageList.length ; j++ )
     {
@@ -131,7 +132,7 @@ Client.prototype.connect = function()
       }
       if ( j === messageList.length - 1 )
       {
-        if ( m.charAt ( m.length - 1 ) !== '}' )
+        if ( result.lastLineIsPartial )
         {
           this.partialMessage = m ;
           break ;
