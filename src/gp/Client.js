@@ -168,6 +168,13 @@ Client.prototype.connect = function()
             var ctx = thiz.callbacks[uid] ;
             delete thiz.callbacks[uid] ;
             var rcb = ctx.error ;
+            if ( e.isFailureInfoRequested() )
+            {
+              if ( ctx.failure )
+              {
+                rcb = ctx.failure ;
+              }
+            }
             if ( rcb )
             {
               rcb.call ( thiz, e ) ;
@@ -203,6 +210,13 @@ Client.prototype.connect = function()
             }
             delete thiz.callbacks[uid] ;
             var rcb = ctx.error ;
+            if ( e.isFailureInfoRequested() )
+            {
+              if ( ctx.failure )
+              {
+                rcb = ctx.failure ;
+              }
+            }
             if ( rcb )
             {
               rcb.call ( thiz, e ) ;
@@ -349,6 +363,8 @@ Client.prototype._fireEvent = function ( params, callback, opts )
     {
       ctx.result = callback.result ;
       if ( ctx.result ) e.setResultRequested() ;
+      ctx.failure = callback.failure ;
+      if ( ctx.failure ) e.setFailureInfoRequested() ;
       ctx.error = callback.error ;
       ctx.write = callback.write ;
       if ( opts && opts.isBroadcast )
@@ -365,9 +381,21 @@ Client.prototype._fireEvent = function ( params, callback, opts )
         e.setIsBroadcast() ;
       }
       else
+      if ( e.isFailureInfoRequested() )
+      {
+        ctx.failure = callback ;
+      }
+      else
       {
         ctx.write = callback ;
       }
+    }
+  }
+  else
+  {
+    if ( e.isFailureInfoRequested() )
+    {
+      throw new Error ( "Missing callback for FailureInfo" ) ;
     }
   }
   var s = this.getSocket() ;

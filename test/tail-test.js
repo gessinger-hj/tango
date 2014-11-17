@@ -9,18 +9,31 @@ var filename = "/home/gess/work/poi-3.8/ServiceContainer.ACS.log_1";
 
 filename = T.getProperty ( "file", filename ) ;
 console.log ( "filename=" + filename ) ;
+
 var tail = new Tail ( filename ) ;
 
 var gpc = new Client() ;
 
 tail.on ( 'line', function ( data )
 {
+ 	// console.log("got line:", data);
+	// var ne = new Event ( "tail:" + this.filename, filename ) ;
 	var ne = new Event ( "tail.log", filename ) ;
-	ne.setAckRequested() ;
+	// ne.setFailureInfoRequested() ;
 	ne.data.text = data.toString() ;
-	gpc.fire ( ne ) ;
- // console.log("got line:", data);
+	gpc.fire ( ne, function failure(e)
+	{
+		// console.log ( e ) ;
+	} ) ;
 });
+// tail.on ( 'line', function ( data )
+// {
+//  	console.log("got line:", data);
+// 	var ne = new Event ( "tail.log", filename ) ;
+// 	ne.setFailureInfoRequested() ;
+// 	ne.data.text = data.toString() ;
+// 	gpc.fire ( ne ) ;
+// });
 
 
 // tail.on('error', function(data) {

@@ -248,9 +248,9 @@ var Broker = function ( port, ip )
     thiz._connections[conn.sid] = conn ;
     thiz._connectionList.push ( conn ) ;
     Log.info ( 'Socket connected' );
-    socket.on ( "error", thiz.ejectSocket.bind ( thiz, socket ) ) ;
-    socket.on ( 'close', thiz.ejectSocket.bind ( thiz, socket ) ) ;
-    socket.on ( 'end', thiz.ejectSocket.bind ( thiz, socket ) ) ;
+    socket.on ( "error", thiz._ejectSocket.bind ( thiz, socket ) ) ;
+    socket.on ( 'close', thiz._ejectSocket.bind ( thiz, socket ) ) ;
+    socket.on ( 'end', thiz._ejectSocket.bind ( thiz, socket ) ) ;
     socket.on ( "data", function socket_on_data ( chunk )
     {
       var mm = chunk.toString() ;
@@ -305,10 +305,10 @@ var Broker = function ( port, ip )
           }
           if ( e.getName() === 'system' )
           {
-            thiz.handleSystemMessages ( this, e ) ;
+            thiz._handleSystemMessages ( this, e ) ;
             continue ;
           }
-          thiz.sendEventToClients ( socket, e ) ;
+          thiz._sendEventToClients ( socket, e ) ;
         }
       }
     });
@@ -327,12 +327,12 @@ Broker.prototype.toString = function()
 };
 /**
  * Description
- * @method sendEventToClients
+ * @method _sendEventToClients
  * @param {} socket
  * @param {} e
  * @return 
  */
-Broker.prototype.sendEventToClients = function ( socket, e )
+Broker.prototype._sendEventToClients = function ( socket, e )
 {
   var i, found = false, done = false, str ;
   var name = e.getName() ;
@@ -378,7 +378,7 @@ Broker.prototype.sendEventToClients = function ( socket, e )
   }
   if ( ! found )
   {
-    if ( e.isResultRequested() || e.isAckRequested() )
+    if ( e.isResultRequested() || e.isFailureInfoRequested() )
     {
       e.control.status = { code:1, name:"warning", reason:"No listener found for event: " + e.getName() } ;
       e.control.requestedName = e.getName() ;
@@ -405,12 +405,12 @@ Broker.prototype.sendEventToClients = function ( socket, e )
 };
 /**
  * Description
- * @method handleSystemMessages
+ * @method _handleSystemMessages
  * @param {} socket
  * @param {} e
  * @return 
  */
-Broker.prototype.handleSystemMessages = function ( socket, e )
+Broker.prototype._handleSystemMessages = function ( socket, e )
 {
   var conn ;
   if ( e.getType() === "addMultiplexer" )
@@ -444,7 +444,7 @@ Broker.prototype.handleSystemMessages = function ( socket, e )
       Log.notice ( 'server shutting down' ) ;
       e.control.status = { code:0, name:"ack" } ;
       socket.write ( e.serialize() ) ;
-      this.closeAllSockets() ;
+      this._closeAllSockets() ;
       this.server.unref() ;
       Log.notice ( 'server shut down' ) ;
       this.emit ( "shutdown" ) ;
@@ -520,11 +520,11 @@ Broker.prototype.handleSystemMessages = function ( socket, e )
 };
 /**
  * Description
- * @method ejectSocket
+ * @method _ejectSocket
  * @param {} socket
  * @return 
  */
-Broker.prototype.ejectSocket = function ( socket )
+Broker.prototype._ejectSocket = function ( socket )
 {
   var i ;
   var sid = socket.sid ;
@@ -551,11 +551,11 @@ Broker.prototype.ejectSocket = function ( socket )
 };
 /**
  * Description
- * @method closeAllSockets
+ * @method _closeAllSockets
  * @param {} exceptSocket
  * @return 
  */
-Broker.prototype.closeAllSockets = function ( exceptSocket )
+Broker.prototype._closeAllSockets = function ( exceptSocket )
 {
   if ( this.closing )
   {

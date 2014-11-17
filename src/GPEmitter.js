@@ -21,11 +21,6 @@ var e ;
 
 var c = new Client() ;
 
-for ( var i = 0 ; i < 1000 ; i++ )
-{
-  c.fire ( "dadada" + i ) ;
-}
-return ;
 // c.fire ( e
 //        , { 
 //          error: function(e)
@@ -55,12 +50,24 @@ return ;
 //          }
 //          }
 //        ) ;
-c.request ( "getWatchResourceList"
-, function result(e)
-  {
-    T.log ( e ) ;
-    // this.end() ;
-  });
+var ee = new Event ( "tail" ) ;
+// ee.setFailureInfoRequested() ;
+c.fire ( ee
+, {
+    write: function()
+    {
+T.lwhere (  ) ;
+    },
+    failure: function(e)
+    {
+      T.log ( e ) ;
+      if ( e.isBad() )
+      {
+        this.end() ;
+      }
+    }
+  }
+);
 return ;
 var ee = new Event ( "alarm" ) ;
 // ee.setIsBroadcast() ;

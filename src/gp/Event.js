@@ -279,13 +279,13 @@ tangojs.gp.Event.prototype =
 	{
   	return this.control._isResultRequested ;
 	},
-	setAckRequested: function()
+	setFailureInfoRequested: function()
 	{
-  	this.control._isAckRequested = true ;
+  	this.control._isFailureInfoRequested = true ;
 	},
-	isAckRequested: function()
+	isFailureInfoRequested: function()
 	{
-  	return this.control._isAckRequested ;
+  	return this.control._isFailureInfoRequested ;
 	},
 	/**
 	 * Description
