@@ -39,7 +39,15 @@ GPAdmin.prototype.info = function ( what )
  */
 GPAdmin.prototype._execute = function ( action, what )
 {
-	this.socket = net.connect ( { port: this.port, host: this.host } ) ;
+	try
+	{
+		this.socket = net.connect ( { port: this.port, host: this.host } ) ;
+	}
+	catch ( exc )
+	{
+		console.log ( "Not running" ) ;
+		return ;
+	}
 	if ( action === "shutdown" )
 	{
 		this.socket.on ( "connect", function()
@@ -63,8 +71,9 @@ GPAdmin.prototype._execute = function ( action, what )
 	}
 	this.socket.on ( 'error', function socket_on_error( data )
 	{
-		T.lwhere (  ) ;
-		T.log ( data ) ;
+		console.log ( "Not running" ) ;
+		// T.lwhere (  ) ;
+		// T.log ( data ) ;
 	});
 	this.socket.on ( 'end', function socket_on_end( data )
 	{
