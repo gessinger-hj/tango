@@ -208,10 +208,48 @@ tangojs.gp.WebClient.prototype.getSocket = function()
 };
 /**
  * Description
+ * @method fire
  * @param {} params
  * @param {} callback
+ * @return 
+ */
+tangojs.gp.WebClient.prototype.fire = function ( params, callback )
+{
+  this._fireEvent ( params, callback, null ) ;
+};
+/**
+ * Description
+ * @method request
+ * @param {} params
+ * @param {} callback
+ * @return 
+ */
+tangojs.gp.WebClient.prototype.request = function ( params, callback )
+{
+  if ( typeof callback === 'function' )
+  {
+    callback = { result: callback } ;
+  }
+  if ( typeof callback.result !== 'function' )
+  {
+    throw new Error ( "Missing result function.")
+  }
+  this._fireEvent ( params, callback, { isBroadcast:false } ) ;
+};
+/**
+ * Description
+ * @method fireEvent
+ * @param {} params
+ * @param {} callback
+ * @return 
  */
 tangojs.gp.WebClient.prototype.fireEvent = function ( params, callback )
+{
+  return this._fireEvent ( params, callback, null ) ;
+};
+/**
+ */
+tangojs.gp.WebClient.prototype._fireEvent = function ( params, callback, opts )
 {
   var e = null ;
   if ( params instanceof tangojs.gp.Event )

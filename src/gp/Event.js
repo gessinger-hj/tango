@@ -398,7 +398,7 @@ tangojs.gp.Event.prototype =
 	 */
 	setType: function ( type )
 	{
-		if ( ! type ) type = "" ;
+		if ( typeof type === 'undefined' ) type = "" ;
   	this.type = type ;
 	},
 	/**

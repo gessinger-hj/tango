@@ -100,6 +100,10 @@ tangojs.MultiHash.prototype =
    */
   get: function ( key )
   {
+    if ( ! this._hash )
+    {
+      return null ;
+    }
     var l = this._hash[key] ;
     return l ;
   },

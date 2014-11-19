@@ -115,6 +115,10 @@ Client.prototype.connect = function()
   } ) ;
   this.socket.on ( 'data', function socket_on_data ( data )
   {
+    if ( !thiz.alive )
+    {
+      return ;
+    }
     var found ;
     var mm = data.toString() ;
     if ( ! this.partialMessage ) this.partialMessage = "" ;
