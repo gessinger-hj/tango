@@ -59,9 +59,7 @@ if ( what )
 	    var n = 0 ;
 	    client.on ( "tail:" + _fileList[index], function subscribed_callback(e)
 	    {
-T.lwhere (  ) ;
 				console.log ( e.data.text ) ;
-T.lwhere (  ) ;
 	    } )
 	  }
 	);
