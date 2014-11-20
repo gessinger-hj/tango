@@ -57,13 +57,13 @@ if ( what )
 	    }
 	    // console.log ( "tail of " + e.type + " accepted!" ) ;
 	    var n = 0 ;
-	    client.on ( "tail:" + _fileList[index], function subscribed_callback(e)
+	    var subscribed_callback = function(e)
 	    {
 				console.log ( e.data.text ) ;
-	    } )
+	    } ;
+	    client.on ( "tail:" + _fileList[index], subscribed_callback ) ;
 	  }
 	);
-T.lwhere (  ) ;
 	return ;
 }
 
@@ -98,18 +98,27 @@ client.on ( "tail:subscribe", function subscribe ( e )
 	_FileToTail[fn] = tail ;
 	tail.on ( "line", function online ( data )
 	{
+		if ( tail.ended )
+		{
+			return ;
+		}
 		var e = new Event ( "tail:" + tail.getFileName() ) ;
 		e.setFailureInfoRequested() ;
 		e.data.text = data.toString() ;
 		client.fire ( e, function failure(e)
 		{
+			if ( tail.ended )
+			{
+				return ;
+			}
 			console.log ( tail.getFileName() + " ended!" ) ;
+			tail.ended = true ;
 			tail.unwatch() ;
 			delete _FileToTail[tail.getFileName()] ;
-			_TailList.remove ( this ) ;
+			_TailList.remove ( tail ) ;
 		} ) ;
 	} );
-	tail.watch();
+	// tail.watch();
 } ) ;
 // tail.on('error', function(data) {
 //   console.log("error:", data);

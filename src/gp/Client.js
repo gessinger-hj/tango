@@ -35,6 +35,7 @@ var Client = function ( port, host )
   this.pendingLockList = [] ;
   this.lockedResources = {} ;
   this.alive = false ;
+  this.stopImediately = false ;
 } ;
 util.inherits ( Client, EventEmitter ) ;
 /**
@@ -129,6 +130,10 @@ Client.prototype.connect = function()
     var i, j, k ;
     for ( j = 0 ; j < messageList.length ; j++ )
     {
+      if ( this.stopImediately )
+      {
+        return ;
+      }
       var m = messageList[j] ;
       if ( m.length === 0 )
       {
@@ -456,6 +461,17 @@ Client.prototype.end = function()
   this.pendingEventListenerList = [] ;
   this.eventListenerFunctions.flush() ;
   this.listenerFunctionsList = [] ;
+};
+/**
+ * Description
+ * @method stop
+ * @return 
+ */
+Client.prototype.stop = function()
+{
+  this.alive = false ;
+  this.stopImediately = true ;
+  this.end() ;
 };
 /**
  * Description
