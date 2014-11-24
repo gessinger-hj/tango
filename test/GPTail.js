@@ -1,5 +1,6 @@
 var T = require ( 'Tango' ) ;
 var Tail = require ( './Tail' ) ;
+var File = require ( 'File' ) ;
 var Event = require ( 'gp/Event' ) ;
 var Client = require ( 'gp/Client' ) ;
 
@@ -7,12 +8,25 @@ var index = -1 ;
 
 fileName = T.getProperty ( "file" ) ;
 
-var _fileList = [ "/home/gess/work/poi-3.8/ServiceContainer.ACS.log_1"
-								, "/home/isdp/isdp-server/log/isdp-ciss.log_1"
-								, "/home/gess/NGMD/Test/Converter.log"
-								];
+// var _fileList = [ "/home/gess/work/poi-3.8/ServiceContainer.ACS.log_1"
+// 								, "/home/isdp/isdp-server/log/isdp-ciss.log_1"
+// 								, "/home/gess/NGMD/Test/Converter.log"
+// 								];
+var _List1 = [ "/home/gess/kepler/private/log/KaLog.log_1"
+						 , "/home/gess/kepler/private/log/Kaiso.log_1"
+						 ];
+var _List2 = [ "/home/gess/work/poi-3.8/ServiceContainer.ACS.log_1"
+						 , "/home/isdp/isdp-server/log/isdp-ciss.log_1"
+						 , "/home/gess/NGMD/Test/Converter.log"
+						 ];
+var listFile = new File ( __dirname, "GPTail.json" ) ;
+var _fileList = _List1 ;
+if ( listFile.exists() )
+{
+	_fileList = listFile.getJSON() ;
+}
 
-index = 2 ;
+index = 0 ;
 
 var client = new Client() ;
 

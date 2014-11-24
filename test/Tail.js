@@ -2,12 +2,17 @@ var ExtTail = require('always-tail');
 var EventEmitter = require ( "events" ).EventEmitter ;
 var util = require ( "util" ) ;
 var T = require ( "Tango" ) ;
+var File = require ( "File" ) ;
 
 var Tail = function ( fileName )
 {
   EventEmitter.call ( this ) ;
-	this.exttail = new ExtTail ( fileName ) ;
 	this.fileName = fileName ;
+  var f = new File ( this.fileName ) ;
+  var start = f.length() - 512 ;
+  if ( start < 0 ) start = 0 ;
+  var opts = { start: start } ;
+	this.exttail = new ExtTail ( fileName, null, opts ) ;
 };
 util.inherits ( Tail, EventEmitter ) ;
 Tail.prototype.toString = function()
