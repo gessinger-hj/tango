@@ -53,12 +53,17 @@ GPAdmin.prototype._execute = function ( action, what )
 		this.socket.on ( "connect", function()
 		{
 		  var e = new Event ( "system", "shutdown" ) ;
+		  if ( what )
+		  {
+		  	e.data.shutdown_sid = what ;
+		  }
 		  this.write ( e.serialize() ) ;
+		  if ( ! what )
+		  {
+		  	return ;
+		  }
 		});
-		if ( ! what )
-		{
-			return ;
-		}
+		// return ;
 	}
 	else
 	{

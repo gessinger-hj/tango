@@ -52,6 +52,17 @@ if ( what )
   });
 	return ;
 }
+what = T.getProperty ( "reloadFileList" ) ;
+if ( what )
+{
+	client.request ( "tail:reloadFileList"
+, function result(e)
+  {
+    T.log ( e.data.fileList ) ;
+    this.end() ;
+  });
+	return ;
+}
 what = T.getProperty ( "subscribe" ) ;
 if ( what )
 {
@@ -69,7 +80,6 @@ if ( what )
 	    	this.end() ;
 	    	return ;
 	    }
-	    // console.log ( "tail of " + e.type + " accepted!" ) ;
 	    var n = 0 ;
 	    var subscribed_callback = function(e)
 	    {
@@ -85,6 +95,20 @@ var _TailList = [] ;
 var _FileToTail = {} ;
 client.on ( "tail:getFileList", function getFileList ( e )
 {
+	e.data.fileList = _fileList ;
+  this.sendResult ( e ) ;
+} ) ;
+client.on ( "tail:reloadFileList", function reloadFileList ( e )
+{
+	var f = new File ( __dirname, "GPTail.json" ) ;
+	try
+	{
+		_fileList = f.getJSON() ;
+	}
+	catch ( exc )
+	{
+		console.log ( exc ) ;
+	}
 	e.data.fileList = _fileList ;
   this.sendResult ( e ) ;
 } ) ;
@@ -132,7 +156,6 @@ client.on ( "tail:subscribe", function subscribe ( e )
 			_TailList.remove ( tail ) ;
 		} ) ;
 	} );
-	// tail.watch();
 } ) ;
 // tail.on('error', function(data) {
 //   console.log("error:", data);
