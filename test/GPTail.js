@@ -63,6 +63,27 @@ if ( what )
   });
 	return ;
 }
+what = T.getProperty ( "info" ) ;
+if ( what )
+{
+	client.request ( "tail:info"
+, function result(e)
+  {
+    T.log ( e.data.tailList ) ;
+    this.end() ;
+  });
+	return ;
+}
+what = T.getProperty ( "closeAll" ) ;
+if ( what )
+{
+	client.fire ( "tail:closeAll"
+	, function write(e)
+	  {
+	    this.end() ;
+	  });
+	return ;
+}
 what = T.getProperty ( "subscribe" ) ;
 if ( what )
 {
@@ -72,27 +93,67 @@ if ( what )
 		console.error ( T.where() + " subscribe: invalid index=" + index ) ;
 		return ;
 	}
-	client.request ( { name: "tail:subscribe", type: index }
+  var subscribed_callback = function(e)
+  {
+		console.log ( e.data.text ) ;
+  } ;
+  client.on ( "tail:" + _fileList[index], subscribed_callback ) ;
+
+	client.request ( { name: "tail:subscribe", type: _fileList[index] }
 	, function result(e)
 	  {
 	    if ( e.isBad() )
 	    {
+				console.log ( e.control.status ) ;
+	    	client.removeEventListener ( subscribed_callback ) ;
 	    	this.end() ;
 	    	return ;
 	    }
-	    var n = 0 ;
-	    var subscribed_callback = function(e)
-	    {
-				console.log ( e.data.text ) ;
-	    } ;
-	    client.on ( "tail:" + _fileList[index], subscribed_callback ) ;
+	  }
+	);
+	return ;
+}
+what = T.getProperty ( "unsubscribe" ) ;
+if ( what )
+{
+	index = parseInt ( what ) ;
+	if ( isNaN ( index ) || index < 0 || index >= _fileList.length )
+	{
+		console.error ( T.where() + " unsubscribe: invalid index=" + index ) ;
+		return ;
+	}
+	client.request ( { name: "tail:unsubscribe", type: _fileList[index] }
+	, function result(e)
+	  {
+			console.log ( e.control.status ) ;
+    	this.end() ;
+    	return ;
 	  }
 	);
 	return ;
 }
 
-var _TailList = [] ;
-var _FileToTail = {} ;
+var _SubscriptionList = [] ;
+var _Subscriptions = {} ;
+client.on ( "tail:closeAll", function closeAll ( e )
+{
+	for ( var i = 0 ; i < _SubscriptionList.length ; i++ )
+	{
+		_SubscriptionList[i].tail.unwatch() ;
+	}
+	_SubscriptionList.length = 0 ;
+	_Subscriptions = {} ;
+} ) ;
+client.on ( "tail:info", function info ( e )
+{
+	var tailList = [] ;
+	for ( var i = 0 ; i < _SubscriptionList.length ; i++ )
+	{
+		tailList.push ( _SubscriptionList[i].tail.getFileName() ) ;
+	}
+	e.data.tailList = tailList ;
+  this.sendResult ( e ) ;
+} ) ;
 client.on ( "tail:getFileList", function getFileList ( e )
 {
 	e.data.fileList = _fileList ;
@@ -112,28 +173,52 @@ client.on ( "tail:reloadFileList", function reloadFileList ( e )
 	e.data.fileList = _fileList ;
   this.sendResult ( e ) ;
 } ) ;
+client.on ( "tail:unsubscribe", function unsubscribe ( e )
+{
+	var fn = e.type ;
+	var ctx = _Subscriptions[fn] ;
+	if ( ctx )
+	{
+		ctx.counter-- ;
+		if ( ctx.counter <= 0 )
+		{
+			ctx.tail.ended = true ;
+			ctx.tail.unwatch() ;
+			_SubscriptionList.remove ( ctx ) ;
+			delete _Subscriptions[fn] ;
+		}
+  	e.control.status = { code:0, name:"ack", reason: "unsubscribed: " + fn } ;
+	}
+	else
+	{
+  	e.control.status = { code:1, name:"warning", reason: "no subscription for: " + fn } ;
+	}
+  this.sendResult ( e ) ;
+}) ;
 client.on ( "tail:subscribe", function subscribe ( e )
 {
-	var index = e.type ;
-	if ( isNaN ( index ) || index < 0 || index >= _fileList.length )
+	var fn = e.type ;
+	var index = _fileList.indexOf ( fn ) ;
+	if ( index < 0 )
 	{
-		var s = "subscribe: invalid index=" + index ;
+		var s = "subscribe: invalid subscription target=" + fn ;
 		console.error ( s ) ;
     e.control.status = { code:1, name:"error", reason: s } ;
   	this.sendResult ( e ) ;
   	return ;
 	}
-	var fn = _fileList[index] ;
   e.control.status = { code:0, name:"ack", reason: fn } ;
   // e.setType ( fn ) ;
 	this.sendResult ( e ) ;
-	if ( _FileToTail[fn] )
+	if ( _Subscriptions[fn] )
 	{
+		_Subscriptions[fn].counter++ ;
 		return ;		
 	}
 	var tail = new Tail ( fn ) ;
-	_TailList.push ( tail ) ;
-	_FileToTail[fn] = tail ;
+	var ctx = { file: fn, tail: tail, counter: 1 } ;
+	_SubscriptionList.push ( ctx ) ;
+	_Subscriptions[fn] = ctx ;
 	tail.on ( "line", function online ( data )
 	{
 		if ( tail.ended )
@@ -150,13 +235,32 @@ client.on ( "tail:subscribe", function subscribe ( e )
 				return ;
 			}
 			console.log ( tail.getFileName() + " ended!" ) ;
-			tail.ended = true ;
-			tail.unwatch() ;
-			delete _FileToTail[tail.getFileName()] ;
-			_TailList.remove ( tail ) ;
+			var ctx = _Subscriptions[tail.getFileName()] ;
+			ctx.tail.ended = true ;
+			ctx.tail.unwatch() ;
+			_SubscriptionList.remove ( ctx ) ;
+			delete _Subscriptions[tail.getFileName()] ;
 		} ) ;
 	} );
 } ) ;
+client.on ( "end", function onend()
+{
+	for ( var i = 0 ; i < _SubscriptionList.length ; i++ )
+	{
+		_SubscriptionList[i].tail.unwatch() ;
+	}
+	_SubscriptionList.length = 0 ;
+	_Subscriptions = {} ;
+});
+client.on ( "error", function onend()
+{
+	for ( var i = 0 ; i < _SubscriptionList.length ; i++ )
+	{
+		_SubscriptionList[i].tail.unwatch() ;
+	}
+	_SubscriptionList.length = 0 ;
+	_Subscriptions = {} ;
+});
 // tail.on('error', function(data) {
 //   console.log("error:", data);
 // 	tail.unwatch();

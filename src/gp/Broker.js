@@ -45,7 +45,7 @@ var Connection = function ( broker, socket )
  */
 Connection.prototype.toString = function()
 {
-  return "(Connection)[]" ;
+  return "(Connection)[client_info=" + util.inspect ( this.client_info, { showHidden: false, depth: null } ) + "]" ;
 };
 /**
  * Description
@@ -412,7 +412,7 @@ Broker.prototype._sendEventToClients = function ( socket, e )
  */
 Broker.prototype._handleSystemMessages = function ( socket, e )
 {
-  var conn ;
+  var conn, i, found ;
   if ( e.getType() === "addMultiplexer" )
   {
     this._multiplexerList.push ( socket ) ;
@@ -427,14 +427,32 @@ Broker.prototype._handleSystemMessages = function ( socket, e )
     {
       conn = this._connections[socket.sid] ;
       var target_conn = this._connections[shutdown_sid] ;
-      if ( ! target_conn )
+      found = false ;
+      if ( target_conn )
+      {
+        found = true ;
+        target_conn.write ( new Event ( "system", "shutdown" ) ) ;
+        target_conn.socket.end() ;
+      }
+      else
+      {
+        for ( i = 0 ; i < this._connectionList.length ; i++ )
+        {
+          if ( ! this._connectionList[i].client_info ) continue ;
+          if ( this._connectionList[i].client_info.applicationName === shutdown_sid )
+          {
+            found = true ;
+            this._connectionList[i].write ( new Event ( "system", "shutdown" ) ) ;
+            this._connectionList[i].socket.end() ;
+          }
+        }
+      }
+      if ( ! found )
       {
         e.control.status = { code:1, name:"error", reason:"no connection for sid=" + shutdown_sid } ;
         socket.write ( e.serialize() ) ;
         return ;
       }
-      target_conn.write ( new Event ( "system", "shutdown" ) ) ;
-      target_conn.socket.end() ;
       e.control.status = { code:0, name:"ack" } ;
       socket.write ( e.serialize() ) ;
       return ;
@@ -456,6 +474,28 @@ Broker.prototype._handleSystemMessages = function ( socket, e )
     conn = this._connections[socket.sid] ;
     conn.client_info = e.data ; e.data = {} ;
     conn.client_info.sid = socket.sid ;
+    var app = conn.client_info.application ;
+    if ( app )
+    {
+      app = app.replace ( /\\/, "/" ) ;
+      if ( app.indexOf ( '/' ) < 0 )
+      {
+        if ( app.lastIndexOf ( ".js" ) == app.length - 3 )
+        {
+          app = app.substring ( 0, app.length - 3 ) ;
+        }
+        conn.client_info.applicationName = app ;
+
+      }
+      else
+      {
+        if ( app.lastIndexOf ( ".js" ) == app.length - 3 )
+        {
+          app = app.substring ( 0, app.length - 3 ) ;
+        }
+        conn.client_info.applicationName = app.substring ( app.lastIndexOf ( '/' ) + 1 ) ;
+      }
+    }
   }
   else
   if ( e.getType() === "getInfoRequest" )

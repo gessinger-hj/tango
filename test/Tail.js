@@ -40,22 +40,22 @@ module.exports = Tail ;
 if ( require.main === module )
 {
 	var i = 0 ;
-  var t = new Tail ( "Tail.log" ) ;
+  var t = new Tail ( "/home/gess/NGMD/Test/Converter.monitoring.log" ) ;
   t.on ( "line", function online(data)
   {
   	console.log ( data ) ;
-  	i++ ;
-  	console.log ( "i=" + i ) ;
-  	if ( i === 11 )
-  	{
-  		t.unwatch() ;
-		  t = new Tail ( "Tail.log" ) ;
-		  t.on ( "line", function online(data)
-		  {
-		  	console.log ( data ) ;
-		  	i++ ;
-		  	console.log ( "--i=" + i ) ;
-		  });
-		}
+  // 	i++ ;
+  // 	console.log ( "i=" + i ) ;
+  // 	if ( i === 11 )
+  // 	{
+  // 		t.unwatch() ;
+		//   t = new Tail ( "Tail.log" ) ;
+		//   t.on ( "line", function online(data)
+		//   {
+		//   	console.log ( data ) ;
+		//   	i++ ;
+		//   	console.log ( "--i=" + i ) ;
+		//   });
+		// }
 	});
 }
