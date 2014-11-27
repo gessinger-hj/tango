@@ -17,7 +17,7 @@ if ( require.main === module )
 	// {
 	//   T.log ( e ) ;
 	//   gpc.removeEventListener ( "tail.*" ) ;
-	// });
+	// });h
 	gpc.on ( "tail.log", function(e)
 	{
 	  T.log ( e.data.text ) ;

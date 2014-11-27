@@ -6,6 +6,10 @@ var Client = require ( 'gp/Client' ) ;
 
 var index = -1 ;
 
+if ( T.getProperty ( "help" ) )
+{
+	usage() ;
+}
 fileName = T.getProperty ( "file" ) ;
 
 // var _fileList = [ "/home/gess/work/poi-3.8/ServiceContainer.ACS.log_1"
@@ -27,9 +31,6 @@ if ( listFile.exists() )
 }
 
 index = 0 ;
-
-var client = new Client() ;
-
 var fileName = T.getProperty ( "file" ) ;
 if ( fileName )
 {
@@ -40,6 +41,7 @@ if ( fileName )
 		index = _fileList.length - 1 ;
 	}
 }
+var client = new Client() ;
 
 var what = T.getProperty ( "getFileList" ) ;
 if ( what )
@@ -47,7 +49,14 @@ if ( what )
 	client.request ( "tail:getFileList"
 , function result(e)
   {
-    T.log ( e.data.fileList ) ;
+  	if ( e.isBad() )
+  	{
+  		console.log ( e.control.status ) ;
+  	}
+  	else
+  	{
+	    T.log ( e.data.fileList ) ;
+  	}
     this.end() ;
   });
 	return ;
@@ -58,7 +67,14 @@ if ( what )
 	client.request ( "tail:reloadFileList"
 , function result(e)
   {
-    T.log ( e.data.fileList ) ;
+  	if ( e.isBad() )
+  	{
+  		console.log ( e.control.status ) ;
+  	}
+  	else
+  	{
+	    T.log ( e.data.fileList ) ;
+  	}
     this.end() ;
   });
 	return ;
@@ -69,7 +85,14 @@ if ( what )
 	client.request ( "tail:info"
 , function result(e)
   {
-    T.log ( e.data.tailList ) ;
+  	if ( e.isBad() )
+  	{
+  		console.log ( e.control.status ) ;
+  	}
+  	else
+  	{
+	    T.log ( e.data.info ) ;
+  	}
     this.end() ;
   });
 	return ;
@@ -132,136 +155,167 @@ if ( what )
 	);
 	return ;
 }
-
-var _SubscriptionList = [] ;
-var _Subscriptions = {} ;
-client.on ( "tail:closeAll", function closeAll ( e )
+function usage ( t )
 {
-	for ( var i = 0 ; i < _SubscriptionList.length ; i++ )
+	if ( t )
 	{
-		_SubscriptionList[i].tail.unwatch() ;
+		console.log ( t ) ;
+		console.log () ;
 	}
-	_SubscriptionList.length = 0 ;
-	_Subscriptions = {} ;
-} ) ;
-client.on ( "tail:info", function info ( e )
+	var s = "GPTail: publish tail services for various files."
+				+ "\nUsage: node GPTail -DoptionName[=value]"
+				+	"\nOptions are:"
+				+	"\n  publish:        connect and publish"
+				+	"\n  closeAll:       close all currently active tail activities."
+				+	"\n  info:           list all active watches."
+				+	"\n  getFileList:    list the configured list of files."
+				+	"\n  reloadFileList: reload the file GPTail.json."
+				;
+	console.log ( s ) ;
+	process.exit ( 0 ) ;
+}
+what = T.getProperty ( "publish" ) ;
+if ( what )
 {
-	var tailList = [] ;
-	for ( var i = 0 ; i < _SubscriptionList.length ; i++ )
+	var _SubscriptionList = [] ;
+	var _Subscriptions = {} ;
+	client.on ( "tail:closeAll", function closeAll ( e )
 	{
-		tailList.push ( _SubscriptionList[i].tail.getFileName() ) ;
-	}
-	e.data.tailList = tailList ;
-  this.sendResult ( e ) ;
-} ) ;
-client.on ( "tail:getFileList", function getFileList ( e )
-{
-	e.data.fileList = _fileList ;
-  this.sendResult ( e ) ;
-} ) ;
-client.on ( "tail:reloadFileList", function reloadFileList ( e )
-{
-	var f = new File ( __dirname, "GPTail.json" ) ;
-	try
-	{
-		_fileList = f.getJSON() ;
-	}
-	catch ( exc )
-	{
-		console.log ( exc ) ;
-	}
-	e.data.fileList = _fileList ;
-  this.sendResult ( e ) ;
-} ) ;
-client.on ( "tail:unsubscribe", function unsubscribe ( e )
-{
-	var fn = e.type ;
-	var ctx = _Subscriptions[fn] ;
-	if ( ctx )
-	{
-		ctx.counter-- ;
-		if ( ctx.counter <= 0 )
+		for ( var i = 0 ; i < _SubscriptionList.length ; i++ )
 		{
-			ctx.tail.ended = true ;
-			ctx.tail.unwatch() ;
-			_SubscriptionList.remove ( ctx ) ;
-			delete _Subscriptions[fn] ;
+			_SubscriptionList[i].tail.unwatch() ;
 		}
-  	e.control.status = { code:0, name:"ack", reason: "unsubscribed: " + fn } ;
-	}
-	else
+		_SubscriptionList.length = 0 ;
+		_Subscriptions = {} ;
+	} ) ;
+	client.on ( "tail:info", function info ( e )
 	{
-  	e.control.status = { code:1, name:"warning", reason: "no subscription for: " + fn } ;
-	}
-  this.sendResult ( e ) ;
-}) ;
-client.on ( "tail:subscribe", function subscribe ( e )
-{
-	var fn = e.type ;
-	var index = _fileList.indexOf ( fn ) ;
-	if ( index < 0 )
-	{
-		var s = "subscribe: invalid subscription target=" + fn ;
-		console.error ( s ) ;
-    e.control.status = { code:1, name:"error", reason: s } ;
-  	this.sendResult ( e ) ;
-  	return ;
-	}
-  e.control.status = { code:0, name:"ack", reason: fn } ;
-  // e.setType ( fn ) ;
-	this.sendResult ( e ) ;
-	if ( _Subscriptions[fn] )
-	{
-		_Subscriptions[fn].counter++ ;
-		return ;		
-	}
-	var tail = new Tail ( fn ) ;
-	var ctx = { file: fn, tail: tail, counter: 1 } ;
-	_SubscriptionList.push ( ctx ) ;
-	_Subscriptions[fn] = ctx ;
-	tail.on ( "line", function online ( data )
-	{
-		if ( tail.ended )
+		var tailList = [] ;
+		for ( var i = 0 ; i < _SubscriptionList.length ; i++ )
 		{
-			return ;
+			tailList.push ( _SubscriptionList[i].tail.getFileName() ) ;
 		}
-		var e = new Event ( "tail:" + tail.getFileName() ) ;
-		e.setFailureInfoRequested() ;
-		e.data.text = data.toString() ;
-		client.fire ( e, function failure(e)
+		e.data.info = {} ;
+		e.data.info.tailList = tailList ;
+		e.data.info.fileList = _fileList ;
+	  this.sendResult ( e ) ;
+	} ) ;
+	client.on ( "tail:getFileList", function getFileList ( e )
+	{
+		e.data.fileList = _fileList ;
+	  this.sendResult ( e ) ;
+	} ) ;
+	client.on ( "tail:reloadFileList", function reloadFileList ( e )
+	{
+		var f = new File ( __dirname, "GPTail.json" ) ;
+		try
 		{
-			if ( tail.ended )
+			_fileList = f.getJSON() ;
+		}
+		catch ( exc )
+		{
+			console.log ( exc ) ;
+		}
+		e.data.fileList = _fileList ;
+	  this.sendResult ( e ) ;
+	} ) ;
+	client.on ( "tail:unsubscribe", function unsubscribe ( e )
+	{
+		var fn = e.type ;
+		var ctx = _Subscriptions[fn] ;
+		if ( ctx )
+		{
+			ctx.counter-- ;
+			if ( ctx.counter <= 0 )
 			{
-				return ;
+				ctx.tail.ended = true ;
+				ctx.tail.unwatch() ;
+				_SubscriptionList.remove ( ctx ) ;
+				delete _Subscriptions[fn] ;
 			}
-			console.log ( tail.getFileName() + " ended!" ) ;
+	  	e.control.status = { code:0, name:"ack", reason: "unsubscribed: " + fn } ;
+		}
+		else
+		{
+	  	e.control.status = { code:1, name:"warning", reason: "no subscription for: " + fn } ;
+		}
+	  this.sendResult ( e ) ;
+	}) ;
+	client.on ( "tail:subscribe", function subscribe ( e )
+	{
+		var fn = e.type ;
+		var index = _fileList.indexOf ( fn ) ;
+		if ( index < 0 )
+		{
+			var s = "subscribe: invalid subscription target=" + fn ;
+			console.error ( s ) ;
+	    e.control.status = { code:1, name:"error", reason: s } ;
+	  	this.sendResult ( e ) ;
+	  	return ;
+		}
+	  e.control.status = { code:0, name:"ack", reason: fn } ;
+	  // e.setType ( fn ) ;
+		this.sendResult ( e ) ;
+		if ( _Subscriptions[fn] )
+		{
+			_Subscriptions[fn].counter++ ;
+			return ;		
+		}
+		var tail = new Tail ( fn ) ;
+		tail.on ( 'error', function ( data )
+		{
+		  console.log("error:", data);
 			var ctx = _Subscriptions[tail.getFileName()] ;
 			ctx.tail.ended = true ;
 			ctx.tail.unwatch() ;
 			_SubscriptionList.remove ( ctx ) ;
 			delete _Subscriptions[tail.getFileName()] ;
-		} ) ;
-	} );
-} ) ;
-client.on ( "end", function onend()
-{
-	for ( var i = 0 ; i < _SubscriptionList.length ; i++ )
+		});
+		var ctx = { file: fn, tail: tail, counter: 1 } ;
+		_SubscriptionList.push ( ctx ) ;
+		_Subscriptions[fn] = ctx ;
+		tail.on ( "line", function online ( data )
+		{
+			if ( tail.ended )
+			{
+				return ;
+			}
+			var e = new Event ( "tail:" + tail.getFileName() ) ;
+			e.setFailureInfoRequested() ;
+			e.data.text = data.toString() ;
+			client.fire ( e, function failure(e)
+			{
+				if ( tail.ended )
+				{
+					return ;
+				}
+				console.log ( tail.getFileName() + " ended!" ) ;
+				var ctx = _Subscriptions[tail.getFileName()] ;
+				ctx.tail.ended = true ;
+				ctx.tail.unwatch() ;
+				_SubscriptionList.remove ( ctx ) ;
+				delete _Subscriptions[tail.getFileName()] ;
+			} ) ;
+		} );
+	} ) ;
+	client.on ( "end", function onend()
 	{
-		_SubscriptionList[i].tail.unwatch() ;
-	}
-	_SubscriptionList.length = 0 ;
-	_Subscriptions = {} ;
-});
-client.on ( "error", function onend()
-{
-	for ( var i = 0 ; i < _SubscriptionList.length ; i++ )
+		for ( var i = 0 ; i < _SubscriptionList.length ; i++ )
+		{
+			_SubscriptionList[i].tail.unwatch() ;
+		}
+		_SubscriptionList.length = 0 ;
+		_Subscriptions = {} ;
+	});
+	client.on ( "error", function onend()
 	{
-		_SubscriptionList[i].tail.unwatch() ;
-	}
-	_SubscriptionList.length = 0 ;
-	_Subscriptions = {} ;
-});
-// tail.on('error', function(data) {
-//   console.log("error:", data);
-// 	tail.unwatch();
-// });
+		for ( var i = 0 ; i < _SubscriptionList.length ; i++ )
+		{
+			_SubscriptionList[i].tail.unwatch() ;
+		}
+		_SubscriptionList.length = 0 ;
+		_Subscriptions = {} ;
+	});
+	return ;
+}
+usage ( "Missing or invalid option" ) ;

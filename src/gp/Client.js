@@ -147,7 +147,6 @@ Client.prototype.connect = function()
           break ;
         }
       }
-
       if ( m.charAt ( 0 ) === '{' )
       {
         var e = Event.prototype.deserialize ( m ) ;

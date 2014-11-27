@@ -226,6 +226,10 @@ tangojs.gp.WebClient.prototype.fire = function ( params, callback )
  */
 tangojs.gp.WebClient.prototype.request = function ( params, callback )
 {
+  if ( typeof params === 'string' )
+  {
+    params = { name: params } ;
+  }
   if ( typeof callback === 'function' )
   {
     callback = { result: callback } ;

@@ -380,6 +380,7 @@ Broker.prototype._sendEventToClients = function ( socket, e )
   {
     if ( e.isResultRequested() || e.isFailureInfoRequested() )
     {
+      e.setIsResult() ;
       e.control.status = { code:1, name:"warning", reason:"No listener found for event: " + e.getName() } ;
       e.control.requestedName = e.getName() ;
       socket.write ( e.serialize() ) ;

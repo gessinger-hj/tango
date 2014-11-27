@@ -5,12 +5,12 @@ var T = require ( "../Tango" ) ;
 /**
  * @constructor
  * @class Admin tool for Gepard
- * @method GPAdmin
+ * @method Admin
  * @param {} port
  * @param {} host
  * @return 
  */
-var GPAdmin = function ( port, host )
+var Admin = function ( port, host )
 {
 	this.port = T.getProperty ( "gepard.port", port ) ;
 	this.host = T.getProperty ( "gepard.host", host ) ;
@@ -21,7 +21,7 @@ var GPAdmin = function ( port, host )
  * @param {} what
  * @return 
  */
-GPAdmin.prototype.shutdown = function ( what )
+Admin.prototype.shutdown = function ( what )
 {
 	this._execute ( "shutdown", what ) ;
 };
@@ -31,13 +31,13 @@ GPAdmin.prototype.shutdown = function ( what )
  * @param {} what
  * @return 
  */
-GPAdmin.prototype.info = function ( what )
+Admin.prototype.info = function ( what )
 {
 	this._execute ( "info", what ) ;
 };
 /*
  */
-GPAdmin.prototype._execute = function ( action, what )
+Admin.prototype._execute = function ( action, what )
 {
 	try
 	{
@@ -143,10 +143,10 @@ GPAdmin.prototype._execute = function ( action, what )
 	  this.end();
 	});
 };
-module.exports = GPAdmin ;
+module.exports = Admin ;
 if ( require.main === module )
 {
-	var ad = new GPAdmin() ;
+	var ad = new Admin() ;
 	var what = T.getProperty ( "shutdown" ) ;
 	if ( what )
 	{
@@ -154,12 +154,26 @@ if ( require.main === module )
 		ad.shutdown ( what ) ;
 		return ;
 	}
-	what = T.getProperty ( "info" ) ;
-	if ( what && what !== "true" )
+	what = T.getProperty ( "info", "true" ) ;
+	T.lwhere ( "what=" + what ) ;
+	if ( what )
 	{
-		ad.info ( what ) ;
+		if ( what !== "true" )
+		{
+			ad.info ( what ) ;
+		}
+		else
+		{
+			ad.info() ;
+		}
 		return ;
 	}
-	ad.info() ;
+	// what = T.getProperty ( "run" ) ;
+	// if ( what && what === "true" )
+	// {
+	// 	console.log ( "Missing application name for -Drun=" ) ;
+	// 	return ;
+	// }
+	// ad.getNumberOfInstances ( what ) ;
 	return ;
 }

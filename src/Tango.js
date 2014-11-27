@@ -347,6 +347,28 @@ TangoClass.prototype.getProperty = function ( name, defaultValue )
                            , p.substring ( pos + 1 )
                             ) ;
         }
+        continue ;
+      }
+      if ( p.indexOf ( "--" ) === 0 )
+      {
+        if (  p.length < 3
+           || p.charAt ( 2 ) == '='
+           )
+        {
+          console.log ( "Missing option name: " + p ) ;
+          return ;
+        }
+        var pos = p.indexOf ( '=' ) ;
+        if ( pos < 0 )
+        {
+          this.setProperty ( p.substring ( 2 ), "true" ) ;
+        }
+        else
+        {
+          this.setProperty ( p.substring ( 2, pos )
+                           , p.substring ( pos + 1 )
+                            ) ;
+        }
       }
     }
   }
@@ -571,6 +593,11 @@ TangoClass.prototype.deserialize = function ( serializedObject, classNameToConst
   }
   return that ;
 };
-
+// if ( ! util.Tango )
+// {
+//   util.Tango = new TangoClass() ;
+// }
+// var Tango = new TangoClass() ;
+// module.exports = util.Tango ;
 var Tango = new TangoClass() ;
 module.exports = Tango ;
