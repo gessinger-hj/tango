@@ -24,12 +24,13 @@ var GPResourceSentinel = function ( port, host )
   this.client = null ;
   this.hostname = os.hostname() ;
   this.resourceList = [] ;
+  this.mainEventName = "notify" ;
+  this.ignoreHidden = true ;
   var thiz = this ;
   this.timer = new Timer ( 5000, function(e)
   {
     thiz.removeOutdated() ;
   });
-  this.mainEventName = "notify" ;
 };
 /**
  * Description
@@ -86,6 +87,13 @@ GPResourceSentinel.prototype.addChange = function ( resource )
   var e ;
   resource.on ( "change", function onchange ( name, resourceId, displayName, params )
   {
+    if ( thiz.ignoreHidden )
+    {
+      if ( name.charAt ( 0 ) === '.' )
+      {
+        return ;
+      }
+    }
     e = new Event ( thiz.mainEventName ) ;
     e.data = thiz.make_data ( name, "show", resourceId ) ;
     e.data.type = this.getNotificationType() ;
@@ -358,6 +366,11 @@ DirectoryResource.prototype.on = function ( eventName, callback )
   if ( eventName === "change" )
   {
     this.watcher.on ( "change", this._onchange.bind ( this ) ) ;
+    this.watcher.on ( "rename", this._onchange.bind ( this ) ) ;
+  }
+  else
+  if ( eventName === "rename" )
+  {
   }
   else
   {
@@ -462,7 +475,7 @@ if ( require.main === module )
     xConfig = new XmlTree() ;
     var xItemList = xConfig.add ( "ItemList" ) ;
     var xItem = xItemList.add ( "Item" ) ;
-    xItem.addAttribute ( "dir", "../../../dev" ) ;
+    xItem.addAttribute ( "dir", "../src" ) ;
     xItem.addAttribute ( "pattern", ".*" ) ;
     xItem.addAttribute ( "namePattern", "(.*)" ) ;
   }
@@ -473,8 +486,8 @@ RS.mainEventName = "notification" ;
   xConfig.elem ( "ItemList" ).elements ( function(x)
   {
     var r = new DirectoryResource ( x.getAttribute ( "dir" )
-                                  , new RegExp ( x.getAttribute ( "pattern" ) )
-                                  , new RegExp ( x.getAttribute ( "namePattern" ) )
+                                  // , new RegExp ( x.getAttribute ( "pattern" ) )
+                                  // , new RegExp ( x.getAttribute ( "namePattern" ) )
                                   ) ;
     dlist.push ( r ) ;
   });

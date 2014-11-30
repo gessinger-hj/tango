@@ -37,13 +37,10 @@ Substitutor.prototype.substitute = function ( src, map, useEnv, delimiter, escap
 
   if ( map && typeof map.getText !== 'function'  )
   {
-    var m = { map:map, 
-/**
-  * Description
-  * @param {} key
-  * @return MemberExpression
-  */
- getText: function ( key ) { return this.map[key] ; } } ;
+    var m = {
+      map:map, 
+      getText: function ( key ) { return this.map[key] ; }
+    } ;
     map = m ;
   }
   if ( useEnv !== true ) useEnv = false ;
@@ -341,7 +338,7 @@ Substitutor.prototype._substitute = function ( r, w, map, useEnv, delimiter, dep
         {
           w += "${" ;
           var sr = new StringReadable ( sb3 ) ;
-	        count += _substitute ( sr, w, map, useEnv, delimiter, depth++ ) ;
+	        count += this._substitute ( sr, w, map, useEnv, delimiter, depth++ ) ;
           continue ;
         }
 
@@ -442,7 +439,7 @@ Substitutor.prototype._substitute = function ( r, w, map, useEnv, delimiter, dep
 			{
         w.write ( delimiter ) ;
         var sr = new StringReadable ( sb3 ) ;
-	      count += _substitute ( sr, w, map, delimiter, useEnv, depth++ ) ;
+	      count += this._substitute ( sr, w, map, delimiter, useEnv, depth++ ) ;
 				continue ;
 			}
       n = sb2 ;

@@ -557,7 +557,14 @@ File.prototype.getJSON = function()
   var o = JSON.parse ( str ) ;
   return o ;
 };
-
+File.prototype.mkdir = function ( mode )
+{
+	this.mkdirs ( mode ) ;
+};
+File.prototype.mkdirs = function ( mode )
+{
+	fs.mkdirSync ( this.path, mode ) ;
+};
 module.exports = File ;
 if ( require.main === module )
 {

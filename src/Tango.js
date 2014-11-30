@@ -593,6 +593,156 @@ TangoClass.prototype.deserialize = function ( serializedObject, classNameToConst
   }
   return that ;
 };
+/**
+ * @param {string} src string to be resolved
+ * @return {string} src with environment-variables rsolved
+ */
+TangoClass.prototype.resolve = function ( src, map, delimiter )
+{
+  if ( ! src ) return src ;
+  if ( src.length == 0 ) return src ;
+  if ( ! delimiter )
+  {
+    if ( src.indexOf ( "${" ) >= 0 )
+    {
+      delimiter = "{" ;
+    }
+    else
+    {
+      delimiter = '%' ;
+    }
+  }
+  var v ;
+
+  var pos = src.indexOf ( delimiter ) ;
+  if ( pos < 0 ) return src ;
+
+  var tgt = "" ;
+
+  var i, j, sb2, cc, c, name, n, v ;
+
+  if ( delimiter === '{' )
+  {
+    for ( i = 0 ; i < src.length ; i++ )
+    {
+      c = src.charAt ( i ) ;
+      if ( c === '$' && src.length > i && src.charAt ( i+1 ) === '{' )
+      {
+        sb2 = "" ;
+        var pCount = 1 ;
+        var found = false ;
+        var lastWasBackSlash = false ;
+        for ( j = i + 2 ; j < src.length ; j++ )
+        {
+          cc = src.charAt ( j ) ;
+          if ( cc === '{' )
+          {
+            if ( ! lastWasBackSlash ) pCount++ ;
+            lastWasBackSlash = false ;
+          }
+          else
+          if ( cc === '}' )
+          {
+            if ( ! lastWasBackSlash ) pCount-- ;
+            lastWasBackSlash = false ;
+          }
+          else
+          {
+            if ( lastWasBackSlash ) sb2 += "\\" ;
+            lastWasBackSlash = false ;
+          }
+          if ( pCount === 0 )
+          {
+            found = true ;
+            i = j ;
+            break ;
+          }
+          sb2 += cc ;
+          if ( cc === '\\' ) lastWasBackSlash = true ;
+        }
+        if ( ! found )
+        {
+          tgt += c ;
+          continue ;
+        }
+
+        name = sb2 ;
+        v = null ;
+        if ( map ) v = map[name] ;
+  
+        if ( typeof v !== 'string' )
+        {
+          v = this.getProperty ( name ) ;
+        }
+        if ( v && v.indexOf ( "${" ) >= 0  )
+        {
+          v = this.resolve ( v, map, delimiter ) ;
+        }
+        if ( typeof v === 'string' )
+        {
+          tgt += v ;
+        }
+        else
+        {
+          tgt += "${" ;
+          tgt += name ;
+          tgt += "}" ;
+        }
+      }
+      else
+      {
+        tgt += c ;
+      }
+    }
+  }
+  else
+  {
+    for ( i = 0 ; i < src.length ; i++ )
+    {
+      c = src.charAt ( i ) ;
+      if ( c === delimiter )
+      {
+        j = src.indexOf ( delimiter, i+1 ) ;
+        if ( j > 0 )
+        {
+          name = "" ;
+          for ( i++ ; i < j ; i++ )
+          {
+            name += src.charAt ( i ) ;
+          }
+          n = name ;
+          v = null ;
+          if ( map ) v = map[n] ;
+          if ( typeof v !== 'string' )
+          {
+            v = this.getProperty ( n ) ;
+          }
+          if ( v && v.indexOf ( delimiter ) >= 0  )
+          {
+            v = this.resolve ( v, map, delimiter ) ;
+          }
+          if ( typeof v === 'string' )
+          {
+            tgt += v ;
+          }
+          else
+          {
+            tgt += delimiter ;
+            tgt += name ;
+            i-- ;
+          }
+        }
+        else tgt += c ;
+      }
+      else
+      {
+        tgt += c ;
+      }
+    }
+  }
+  return tgt ;
+}
+
 // if ( ! util.Tango )
 // {
 //   util.Tango = new TangoClass() ;

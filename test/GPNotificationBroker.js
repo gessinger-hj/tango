@@ -1,6 +1,6 @@
-var T = require ( "./Tango" ) ;
-var Event = require ( "./gp/Event" ) ;
-var Client = require ( "./gp/Client" ) ;
+var T = require ( "Tango" ) ;
+var Event = require ( "gp/Event" ) ;
+var Client = require ( "gp/Client" ) ;
 
 /**
  * Description

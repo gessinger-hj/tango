@@ -3,6 +3,7 @@ var Tail = require ( './Tail' ) ;
 var File = require ( 'File' ) ;
 var Event = require ( 'gp/Event' ) ;
 var Client = require ( 'gp/Client' ) ;
+var Admin = require ( 'gp/Admin' ) ;
 
 var index = -1 ;
 
@@ -174,8 +175,7 @@ function usage ( t )
 	console.log ( s ) ;
 	process.exit ( 0 ) ;
 }
-what = T.getProperty ( "publish" ) ;
-if ( what )
+function publish()
 {
 	var _SubscriptionList = [] ;
 	var _Subscriptions = {} ;
@@ -316,6 +316,20 @@ if ( what )
 		_SubscriptionList.length = 0 ;
 		_Subscriptions = {} ;
 	});
+}
+what = T.getProperty ( "publish" ) ;
+if ( what )
+{
+	new Admin().getNumberOfApplications ( "GPTail", function getNumberOfApplications ( n )
+	{
+		if ( n >= 1 )
+		{
+			console.log ( "GPTail is already running" ) ;
+			return ;
+		}
+		publish() ;
+	} ) ;
 	return ;
 }
+
 usage ( "Missing or invalid option" ) ;

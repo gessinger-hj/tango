@@ -159,6 +159,10 @@ LogFile.prototype.init = function ( s )
         {
           val = val.replace ( "%APPNAME%", appName ) ;
         }
+        if ( val.indexOf ( "%" ) >= 0 )
+        {
+          val = T.resolve ( val ) ;
+        }
         var posMaxSize    = val.indexOf ( ":max" ) ;
         var posMaxVersion = val.indexOf ( ":v" ) ;
 

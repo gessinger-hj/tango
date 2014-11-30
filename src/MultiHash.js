@@ -57,7 +57,7 @@ tangojs.MultiHash.prototype =
   {
     var l ;
     var index ;
-    if ( key && typeof key === 'object' )
+    if ( key && ( typeof key === 'object' || typeof key === 'function' ) )
     {
       obj = key ;
       var keys = this.getKeys() ;
@@ -100,10 +100,6 @@ tangojs.MultiHash.prototype =
    */
   get: function ( key )
   {
-    if ( ! this._hash )
-    {
-      return null ;
-    }
     var l = this._hash[key] ;
     return l ;
   },

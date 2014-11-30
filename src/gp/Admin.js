@@ -31,13 +31,34 @@ Admin.prototype.shutdown = function ( what )
  * @param {} what
  * @return 
  */
-Admin.prototype.info = function ( what )
+Admin.prototype.info = function ( what, callback )
 {
-	this._execute ( "info", what ) ;
+	this._execute ( "info", what, callback ) ;
 };
 /*
  */
-Admin.prototype._execute = function ( action, what )
+Admin.prototype.isRunning = function ( callback )
+{
+	var thiz = this ;
+	try
+	{
+		this.socket = net.connect ( { port: this.port, host: this.host } ) ;
+		this.socket.on ( 'error', function socket_on_error( data )
+		{
+			callback.call ( null, false ) ;
+		});
+		this.socket.on ( "connect", function()
+		{
+			callback.call ( null, true ) ;
+			thiz.socket.end() ;
+		});
+	}
+	catch ( exc )
+	{
+	}
+};
+
+Admin.prototype._execute = function ( action, what, callback )
 {
 	try
 	{
@@ -86,7 +107,7 @@ Admin.prototype._execute = function ( action, what )
 	});
 	this.socket.on ( 'data', function ondata ( data )
 	{
-		var list, i, desc, str, app ;
+		var list, i, desc, str, app, l ;
 	  var m = data.toString() ;
 	  if ( m.charAt ( 0 ) === '{' )
 	  {
@@ -96,9 +117,15 @@ Admin.prototype._execute = function ( action, what )
 	    	if ( what === "lsconn" )
 	    	{
 	    		list = e.data.connectionList ;
+    			if ( callback )
+    			{
+    				callback.call ( null, list ) ;
+    				this.end() ;
+    				return ;
+    			}
 	    		if ( ! list || ! list.length )
 	    		{
-	    			console.log ( "No Connections" ) ;
+		    		console.log ( "No Connections" ) ;
 	    		}
 	    		else
 	    		{
@@ -106,15 +133,20 @@ Admin.prototype._execute = function ( action, what )
 		    		{
 		    			desc = list[i] ;
 		    			str = desc.application ;
-		    			app = str.substring ( str.lastIndexOf ( '/' ) + 1, str.lastIndexOf ( '.' ) ) ;
-		    			console.log ( "%s\t%s:%s", desc.sid, desc.hostname, app ) ;
-		    		}
+		    			console.log ( "%s\t%s:%s", desc.sid, desc.hostname, desc.applicationName ) ;
+	    			}
 		    	}
 	    	}
 	    	else
 	    	if ( what === "lslock" )
 	    	{
 	    		list = e.data.lockList ;
+    			if ( callback )
+    			{
+    				callback.call ( null, list ) ;
+    				this.end() ;
+    				return ;
+    			}
 	    		if ( ! list || ! list.length )
 	    		{
 	    			console.log ( "No locks" ) ;
@@ -125,8 +157,7 @@ Admin.prototype._execute = function ( action, what )
 		    		{
 		    			desc = list[i] ;
 		    			str = desc.owner.application ;
-		    			app = str.substring ( str.lastIndexOf ( '/' ) + 1, str.lastIndexOf ( '.' ) ) ;
-		    			console.log ( "%s\t%s\t%s:%s", desc.resourceId, desc.owner.sid, desc.owner.hostname, app ) ;
+		    			console.log ( "%s\t%s\t%s:%s", desc.resourceId, desc.owner.sid, desc.owner.hostname, desc.applicationName ) ;
 		    		}
 	    		}
 	    	}
@@ -143,6 +174,38 @@ Admin.prototype._execute = function ( action, what )
 	  this.end();
 	});
 };
+Admin.prototype.getInfoForApplication = function ( applicationName, callback )
+{
+	this.info ( "lsconn", function lsconn ( list )
+	{
+		var al = [] ;
+		if ( ! list || ! list.length ) return al ;
+		for ( var i = 0 ; i < list.length ; i++ )
+		{
+			if ( list[i].applicationName === applicationName )
+			{
+				al.push ( list[i] ) ;
+			}
+		}
+		callback.call ( null, al ) ;
+	});
+};
+Admin.prototype.getNumberOfApplications = function ( applicationName, callback )
+{
+	this.info ( "lsconn", function lsconn ( list )
+	{
+		var n = 0 ;
+		if ( ! list || ! list.length ) return n ;
+		for ( var i = 0 ; i < list.length ; i++ )
+		{
+			if ( list[i].applicationName === applicationName )
+			{
+				n++ ;
+			}
+		}
+		callback.call ( null, n ) ;
+	});
+};
 module.exports = Admin ;
 if ( require.main === module )
 {
@@ -154,8 +217,25 @@ if ( require.main === module )
 		ad.shutdown ( what ) ;
 		return ;
 	}
+	what = T.getProperty ( "run" ) ;
+	if ( what  )
+	{
+		if ( what === "true" )
+		{
+			console.log ( "Missing application name for -Drun=" ) ;
+			return ;
+		}
+		ad.getNumberOfApplications ( what, function getNumberOfApplications ( n )
+		{
+console.log ( "n=" + n ) ;
+		} ) ;
+// 		ad.getInfoForApplication ( what, function getInfoForApplication ( list )
+// 		{
+// console.log ( list ) ;
+// 		} ) ;
+		return ;
+	}
 	what = T.getProperty ( "info", "true" ) ;
-	T.lwhere ( "what=" + what ) ;
 	if ( what )
 	{
 		if ( what !== "true" )
@@ -168,12 +248,5 @@ if ( require.main === module )
 		}
 		return ;
 	}
-	// what = T.getProperty ( "run" ) ;
-	// if ( what && what === "true" )
-	// {
-	// 	console.log ( "Missing application name for -Drun=" ) ;
-	// 	return ;
-	// }
-	// ad.getNumberOfInstances ( what ) ;
 	return ;
 }
