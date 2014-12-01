@@ -1,0 +1,112 @@
+var T = require ( "../Tango" ) ;
+var Event = require ( "./Event" ) ;
+var Client = require ( "./Client" ) ;
+
+/**
+ * Description
+ * @constructor
+ * @param {int} [port]
+ * @param {string} [host]
+ * @return 
+ */
+Lock = function ( port, host )
+{
+  this.className = "Lock" ;
+  if ( port instanceof Client )
+  {
+    this._isClientOwner = false ;
+    this._client = port ;
+  }
+  else
+  {
+    this._port = port ;
+    this._host = host ;
+    this._isClientOwner = true ;
+    this._client = new Client ( this._port, this._host ) ;
+  }
+  this._isLockOwner = false ;
+};
+/**
+ * Description
+ * @method toString
+ * @return BinaryExpression
+ */
+Lock.prototype.toString = function()
+{
+  return "(" + this.className + ")[resourceId=" + this._resourceId + ",isOwner=" + this._isLockOwner + "]" ;
+};
+/**
+ * Description
+ * @method aquire
+ * @param {} resourceId
+ * @param {} callback
+ * @return 
+ */
+Lock.prototype.aquire = function ( resourceId, callback )
+{
+  if ( ! this._client )
+  {
+    this._client = new Client ( this._port, this._host ) ;
+  }
+  this._resourceId = resourceId ;
+  this._callback = callback ;
+  this._client.lockResource ( resourceId, this._lockResourceCallback.bind ( this ) ) ;
+};
+Lock.prototype._lockResourceCallback = function ( err, e )
+{
+  this._lockResourceResult = e ;
+  this._isLockOwner = e.data.isLockOwner ;
+  this._callback.call ( null, err, this ) ;
+  if ( ! this._isLockOwner )
+  {
+    if ( this._isClientOwner && this._client )
+    {
+      this._client.end() ;
+      this._client = null ;
+    }
+  }
+};
+/**
+ * Description
+ * @method isOwner
+ * @return MemberExpression
+ */
+Lock.prototype.isOwner = function()
+{
+  return this._isLockOwner ;
+};
+/**
+ * Description
+ * @method release
+ * @return 
+ */
+Lock.prototype.release = function()
+{
+  if ( ! this._isLockOwner )
+  {
+    return ;
+  }
+  this._isLockOwner = false ;
+  this._client.freeResource ( this._resourceId ) ;
+  if ( this._isClientOwner && this._client )
+  {
+    this._client.end() ;
+    this._client = null ;
+  }
+};
+module.exports = Lock ;
+if ( require.main === module )
+{
+  var key = T.getProperty ( "key", "user:4711" ) ;
+  var auto = T.getProperty ( "auto" ) ;
+  var lock = new Lock () ;
+  lock.aquire ( key, function ( err, l )
+  {
+    console.log ( "err=" + err ) ;
+    console.log ( "l=" + l ) ;
+    if ( auto )
+    {
+      l.release() ;
+    }
+  } ) ;
+}

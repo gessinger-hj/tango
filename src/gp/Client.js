@@ -159,7 +159,10 @@ Client.prototype.connect = function()
             delete thiz.callbacks[uid] ;
           }
           var rcb = ctx.result ;
-          rcb.call ( thiz, e ) ;
+          if ( rcb )
+          {
+            rcb.call ( thiz, e ) ;
+          }
           continue ;
         }
         if ( e.getName() === "system" )

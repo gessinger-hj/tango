@@ -89,7 +89,7 @@ GPResourceSentinel.prototype.addChange = function ( resource )
   {
     if ( thiz.ignoreHidden )
     {
-      if ( name.charAt ( 0 ) === '.' )
+      if ( name.charAt ( 0 ) === '.' || name.indexOf ( '~' ) >= 0 )
       {
         return ;
       }

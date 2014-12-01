@@ -32,16 +32,23 @@ function execute()
 	var WebSocketEventProxy = require ( "gp/WebSocketEventProxy" ) ;
 	var Broker = require ( "gp/Broker" ) ;
 
-	if ( ! T.getProperty ( "GEPARD_LOG" ) )
+	var s = T.getProperty ( "GEPARD_LOG" ) ;
+	var GEPARD_LOG ;
+	if ( s )
+	{
+		GEPARD_LOG = new File ( s ) ;
+	}
+	else
 	{
 		var fs = require ( "fs" ) ;
 		var GEPARD_LOG = new File ( T.resolve ( "%HOME%/log" ) ) ;
-		if ( ! GEPARD_LOG.isDirectory() )
-		{
-			GEPARD_LOG.mkdir() ;
-		}
 		T.setProperty ( "GEPARD_LOG", GEPARD_LOG.toString() ) ;
 	}
+	if ( ! GEPARD_LOG.isDirectory() )
+	{
+		GEPARD_LOG.mkdir() ;
+	}
+
 	Log.init ( "level=info,Xedirect=3,file=%GEPARD_LOG%/%APPNAME%.log:max=1m:v=4") ;
 
 	var b = new Broker() ;
