@@ -44,9 +44,9 @@ socket1.on ( "connect", function socket1_on_connect()
 	});
 	socket1_connected = true ;
   var einfo = new Event ( "system", "client_info" ) ;
-  einfo.data.hostname = os.hostname() ;
-  einfo.data.connectionTime = new Date() ;
-  einfo.data.application = process.argv[1] ;
+  einfo.body.hostname = os.hostname() ;
+  einfo.body.connectionTime = new Date() ;
+  einfo.body.application = process.argv[1] ;
   this.write ( einfo.serialize() ) ;
 
   var e = new Event ( "system", "addMultiplexer" ) ;
@@ -71,9 +71,9 @@ socket2.on ( "connect", function socket2_on_connect()
 	{
 	});
   var einfo = new Event ( "system", "client_info" ) ;
-  einfo.data.hostname = os.hostname() ;
-  einfo.data.connectionTime = new Date() ;
-  einfo.data.application = process.argv[1] ;
+  einfo.body.hostname = os.hostname() ;
+  einfo.body.connectionTime = new Date() ;
+  einfo.body.application = process.argv[1] ;
   this.write ( einfo.serialize() ) ;
 	socket2_connected = true ;
   var e = new Event ( "system", "addMultiplexer" ) ;

@@ -233,7 +233,7 @@ WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 	}
 	if ( ne.getType() === 'addEventListener' )
 	{
-	  eventNameList = ne.data.eventNameList ;
+	  eventNameList = ne.body.eventNameList ;
 	  var errText = "" ;
 	  if ( ! eventNameList ) { Log.error ( "Missing eventNameList." ) ; return ; }
 	  if ( typeof eventNameList === 'string' ) eventNameList = [ eventNameList ] ;
@@ -279,7 +279,7 @@ WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 	else
 	if ( ne.getType() === 'removeEventListener' )
 	{
-	  eventNameList = ne.data.eventNameList ;
+	  eventNameList = ne.body.eventNameList ;
 	  var errText = "" ;
 	  if ( ! eventNameList ) { Log.error ( "Missing eventNameList." ) ; return ; }
 	  if ( typeof eventNameList === 'string' ) eventNameList = [ eventNameList ] ;

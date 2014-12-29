@@ -31,7 +31,7 @@ client.addEventListener ( "DB:REQUEST", function(e)
 	// var str = "select * from cds where titel='Glee'";	
 	var str = "select * from cds where titel=?";	
 	var tree = new XmlTree() ;
-	e.data.RESULT = tree ;
+	e.body.RESULT = tree ;
 	var tab = tree.add ( "cds" ) ;
   
 	connection.execute ( str, [ "Glee" ], function ( err, rows )

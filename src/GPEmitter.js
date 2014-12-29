@@ -16,7 +16,7 @@ var e ;
 // var e = new Event ( event, type ) ;
 // if ( json )
 // {
-//   e.data = json ;
+//   e.body = json ;
 // }
 
 var c = new Client() ;

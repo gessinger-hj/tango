@@ -56,7 +56,7 @@ if ( what )
   	}
   	else
   	{
-	    T.log ( e.data.fileList ) ;
+	    T.log ( e.body.fileList ) ;
   	}
     this.end() ;
   });
@@ -74,7 +74,7 @@ if ( what )
   	}
   	else
   	{
-	    T.log ( e.data.fileList ) ;
+	    T.log ( e.body.fileList ) ;
   	}
     this.end() ;
   });
@@ -92,7 +92,7 @@ if ( what )
   	}
   	else
   	{
-	    T.log ( e.data.info ) ;
+	    T.log ( e.body.info ) ;
   	}
     this.end() ;
   });
@@ -119,7 +119,7 @@ if ( what )
 	}
   var subscribed_callback = function(e)
   {
-		console.log ( e.data.text ) ;
+		console.log ( e.body.text ) ;
   } ;
   client.on ( "tail:" + _fileList[index], subscribed_callback ) ;
 
@@ -195,14 +195,14 @@ function publish()
 		{
 			tailList.push ( _SubscriptionList[i].tail.getFileName() ) ;
 		}
-		e.data.info = {} ;
-		e.data.info.tailList = tailList ;
-		e.data.info.fileList = _fileList ;
+		e.body.info = {} ;
+		e.body.info.tailList = tailList ;
+		e.body.info.fileList = _fileList ;
 	  this.sendResult ( e ) ;
 	} ) ;
 	client.on ( "tail:getFileList", function getFileList ( e )
 	{
-		e.data.fileList = _fileList ;
+		e.body.fileList = _fileList ;
 	  this.sendResult ( e ) ;
 	} ) ;
 	client.on ( "tail:reloadFileList", function reloadFileList ( e )
@@ -216,7 +216,7 @@ function publish()
 		{
 			console.log ( exc ) ;
 		}
-		e.data.fileList = _fileList ;
+		e.body.fileList = _fileList ;
 	  this.sendResult ( e ) ;
 	} ) ;
 	client.on ( "tail:unsubscribe", function unsubscribe ( e )
@@ -282,7 +282,7 @@ function publish()
 			}
 			var e = new Event ( "tail:" + tail.getFileName() ) ;
 			e.setFailureInfoRequested() ;
-			e.data.text = data.toString() ;
+			e.body.text = data.toString() ;
 			client.fire ( e, function failure(e)
 			{
 				if ( tail.ended )

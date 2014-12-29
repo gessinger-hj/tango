@@ -63,9 +63,9 @@ Client.prototype.connect = function()
   {
     thiz.alive = true ;
     var einfo = new Event ( "system", "client_info" ) ;
-    einfo.data.hostname = os.hostname() ;
-    einfo.data.connectionTime = new Date() ;
-    einfo.data.application = process.argv[1] ;
+    einfo.body.hostname = os.hostname() ;
+    einfo.body.connectionTime = new Date() ;
+    einfo.body.application = process.argv[1] ;
     this.write ( einfo.serialize() ) ;
 
     var i ;
@@ -109,7 +109,7 @@ Client.prototype.connect = function()
         var ctx = thiz.pendingLockList[i] ;
         ctx.e.setUniqueId ( uid ) ;
         this.write ( ctx.e.serialize() ) ;
-        thiz.lockedResources[e.data.resourceId] = ctx;
+        thiz.lockedResources[e.body.resourceId] = ctx;
       }
       thiz.pendingLockList.length = 0 ;
     }
@@ -194,17 +194,17 @@ Client.prototype.connect = function()
           }
           if ( e.getType() === "lockResourceResult" )
           {
-            var ctx = thiz.lockedResources[e.data.resourceId] ;
-            if ( ! e.data.isLockOwner )
+            var ctx = thiz.lockedResources[e.body.resourceId] ;
+            if ( ! e.body.isLockOwner )
             {
-              delete thiz.lockedResources[e.data.resourceId] ;
+              delete thiz.lockedResources[e.body.resourceId] ;
             }
             ctx.callback.call ( thiz, null, e ) ;
             continue ;
           }
           if ( e.getType() === "freeResourceResult" )
           {
-            delete thiz.lockedResources[e.data.resourceId] ;
+            delete thiz.lockedResources[e.body.resourceId] ;
             continue ;
           }
         }
@@ -360,7 +360,7 @@ Client.prototype._fireEvent = function ( params, callback, opts )
   if ( params && typeof params === 'object' )
   {
     e = new Event ( params.name, params.type ) ;
-    e.setData ( params.data ) ;
+    e.setData ( params.body ) ;
     if ( params.user ) u = params.user ;
   }
   if ( this.user )
@@ -500,7 +500,7 @@ Client.prototype.addEventListener = function ( eventNameList, callback )
   {
     e.setUser ( this.user ) ;
   }
-  e.data.eventNameList = eventNameList ;
+  e.body.eventNameList = eventNameList ;
   var i ;
   for ( i = 0 ; i < eventNameList.length ; i++ )
   {
@@ -624,7 +624,7 @@ Client.prototype.removeEventListener = function ( eventNameOrFunction )
     if ( ! eventNameList.length ) return ;
     var e = new Event ( "system", "removeEventListener" ) ;
     e.setUser ( this.user ) ;
-    e.data.eventNameList = eventNameList ;
+    e.body.eventNameList = eventNameList ;
     var s = this.getSocket() ;
     s.write ( e.serialize() ) ;
   }
@@ -642,7 +642,7 @@ Client.prototype.lockResource = function ( resourceId, callback )
   if ( typeof callback !== 'function' ) throw new Error ( "Client.lockResource: callback must be a function." ) ;
 
   var e = new Event ( "system", "lockResourceRequest" ) ;
-  e.data.resourceId = resourceId ;
+  e.body.resourceId = resourceId ;
   var s = this.getSocket() ;
   var ctx = {} ;
   ctx.resourceId = resourceId ;
@@ -674,7 +674,7 @@ Client.prototype.freeResource = function ( resourceId )
   if ( ! this.lockedResources[resourceId] ) throw new Error ( "Client.freeResource: not owner of resourceId=" + resourceId ) ;
 
   var e = new Event ( "system", "freeResourceRequest" ) ;
-  e.data.resourceId = resourceId ;
+  e.body.resourceId = resourceId ;
   var s = this.getSocket() ;
   counter++ ;
   var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;

@@ -30,7 +30,7 @@ client.addEventListener ( "DB:REQUEST", function(e)
 		
 		connection = new pg.Client ( dburl ) ;
 		var tree = new XmlTree() ;
-		e.data.RESULT = tree ;
+		e.body.RESULT = tree ;
 		var tab = tree.add ( "cds" ) ;
 		connection.connect ( function ( err )
 		{
@@ -98,7 +98,7 @@ client.addEventListener ( "DB:REQUEST", function(e)
 		connection.execute ( str, [ "Glee" ], function ( err, rows )
 		{
 			var tree = new XmlTree() ;
-			e.data.RESULT = tree ;
+			e.body.RESULT = tree ;
 			var tab = tree.add ( "cds" ) ;
 			if ( err )
 			{

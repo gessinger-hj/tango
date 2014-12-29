@@ -76,7 +76,7 @@ Admin.prototype._execute = function ( action, what, callback )
 		  var e = new Event ( "system", "shutdown" ) ;
 		  if ( what )
 		  {
-		  	e.data.shutdown_sid = what ;
+		  	e.body.shutdown_sid = what ;
 		  }
 		  this.write ( e.serialize() ) ;
 		  if ( ! what )
@@ -91,7 +91,7 @@ Admin.prototype._execute = function ( action, what, callback )
 		this.socket.on ( "connect", function()
 		{
 		  var e = new Event ( "system", "getInfoRequest" ) ;
-		  e.data.info_type = what ;
+		  e.body.info_type = what ;
 		  this.write ( e.serialize() ) ;
 		});
 	}
@@ -116,7 +116,7 @@ Admin.prototype._execute = function ( action, what, callback )
 	    {
 	    	if ( what === "lsconn" )
 	    	{
-	    		list = e.data.connectionList ;
+	    		list = e.body.connectionList ;
     			if ( callback )
     			{
     				callback.call ( null, list ) ;
@@ -140,7 +140,7 @@ Admin.prototype._execute = function ( action, what, callback )
 	    	else
 	    	if ( what === "lslock" )
 	    	{
-	    		list = e.data.lockList ;
+	    		list = e.body.lockList ;
     			if ( callback )
     			{
     				callback.call ( null, list ) ;

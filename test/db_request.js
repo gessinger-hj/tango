@@ -18,7 +18,7 @@ console.log ( " ----------result: function()----------------" ) ;
             }
             else
             {
-console.log ( e.data.RESULT.toString() ) ;
+console.log ( e.body.RESULT.toString() ) ;
             }
              this.end() ;
            }

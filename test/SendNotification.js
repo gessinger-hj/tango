@@ -12,9 +12,5 @@ gpclient.on ( 'error', function gpclient_on_error ( e )
 
 var text = T.getProperty ( "text", "" + new Date() ) ;
 var e = new NEvent ( "notify" ) ;
-e.data = { text: text } ;
+e.body = { text: text } ;
 gpclient.fire ( e, { error: function(e) {console.log ( e ) ; this.end() ; } , write: function() {this.end() ; } } ) ;
-
-
-
-

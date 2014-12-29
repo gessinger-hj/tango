@@ -6,7 +6,7 @@ if ( require.main === module )
 	var gpc = new Client() ;
 // gpc.addEventListener ( "notification", function(e)
 // {
-//   T.log ( e.data.id ) ;
+//   T.log ( e.body.id ) ;
 // });
 	// gpc.on ( "message-test", function(e)
 	// {
@@ -20,7 +20,7 @@ if ( require.main === module )
 	// });h
 	gpc.on ( "tail.log", function(e)
 	{
-	  T.log ( e.data.text ) ;
+	  T.log ( e.body.text ) ;
 	});
 	gpc.on('end', function()
 	{

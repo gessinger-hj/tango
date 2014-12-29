@@ -55,7 +55,7 @@ Lock.prototype.aquire = function ( resourceId, callback )
 Lock.prototype._lockResourceCallback = function ( err, e )
 {
   this._lockResourceResult = e ;
-  this._isLockOwner = e.data.isLockOwner ;
+  this._isLockOwner = e.body.isLockOwner ;
   this._callback.call ( null, err, this ) ;
   if ( ! this._isLockOwner )
   {

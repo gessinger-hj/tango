@@ -95,18 +95,18 @@ GPResourceSentinel.prototype.addChange = function ( resource )
       }
     }
     e = new Event ( thiz.mainEventName ) ;
-    e.data = thiz.make_data ( name, "show", resourceId ) ;
-    e.data.type = this.getNotificationType() ;
-    e.data.text = displayName ? displayName : name ;
-    e.data.millis = 5000 ;
+    e.body = thiz.make_data ( name, "show", resourceId ) ;
+    e.body.type = this.getNotificationType() ;
+    e.body.text = displayName ? displayName : name ;
+    e.body.millis = 5000 ;
     if ( params )
     {
       for ( var k in params )
       {
-        e.data[k] = params[k] ;
+        e.body[k] = params[k] ;
       }
     }
-    Log.debug ( e.data.id ) ;
+    Log.debug ( e.body.id ) ;
     thiz.client.fire ( e ) ;
   }) ;
 };
@@ -130,11 +130,11 @@ GPResourceSentinel.prototype.removeOutdated = function()
       {
         var p = resourceIdList[j] ;
         e = new Event ( thiz.mainEventName ) ;
-        e.data = this.make_data ( p.name, "stop", p.resourceId ) ;
-        e.data.type = "notify" ;
-        e.data.text = p.displayName ? p.displayName : p.name ;
-        e.data.millis = 5000 ;
-        Log.debug ( e.data.id ) ;
+        e.body = this.make_data ( p.name, "stop", p.resourceId ) ;
+        e.body.type = "notify" ;
+        e.body.text = p.displayName ? p.displayName : p.name ;
+        e.body.millis = 5000 ;
+        Log.debug ( e.body.id ) ;
         this.client.fire ( e ) ;
       }
     }
@@ -249,16 +249,16 @@ MRTResource.prototype.setParent = function ( sentinel )
   this.watcher.on ( "create", function oncreate ( name )
   {
     e = new Event ( thiz.parent.mainEventName ) ;
-    e.data = thiz.parent.make_data ( name, "start", "MRTExport", { path:thiz.MRT_dir } ) ;
-    Log.debug ( e.data ) ;
+    e.body = thiz.parent.make_data ( name, "start", "MRTExport", { path:thiz.MRT_dir } ) ;
+    Log.debug ( e.body ) ;
     thiz.parent.client.fire ( e ) ;
   });
   this.watcher.on ( "delete", function ondelete ( name )
   {
     previous_file_name = "" ;
     e = new Event ( thiz.parent.mainEventName ) ;
-    e.data = thiz.parent.make_data ( name, "stop", "MRTExport", { path:thiz.MRT_dir } ) ;
-    Log.debug ( e.data ) ;
+    e.body = thiz.parent.make_data ( name, "stop", "MRTExport", { path:thiz.MRT_dir } ) ;
+    Log.debug ( e.body ) ;
     thiz.parent.client.fire ( e ) ;
   });
   this.watcher.watch() ;
@@ -274,8 +274,8 @@ MRTResource.prototype.setParent = function ( sentinel )
       }
       previous_file_name = name ;
       e = new Event ( thiz.parent.mainEventName ) ;
-      e.data = thiz.parent.make_data ( name, "start", "MRTExport", { path:thiz.log_dir } ) ;
-      Log.debug ( e.data ) ;
+      e.body = thiz.parent.make_data ( name, "start", "MRTExport", { path:thiz.log_dir } ) ;
+      Log.debug ( e.body ) ;
       thiz.parent.client.fire ( e ) ;
     }
   })

@@ -22,7 +22,7 @@ GPNotificationBroker.prototype.init = function()
 	var thiz = this ;
 	thiz.client.addEventListener ( "getPendingNotifications", function(e)
 	{
-		e.data = thiz.pendingProgressNotificationList ;
+		e.body = thiz.pendingProgressNotificationList ;
 		thiz.client.sendResult ( e ) ;
 	});
 	thiz.client.addEventListener ( "cleanupPendingNotifications", function(e)
@@ -30,7 +30,7 @@ GPNotificationBroker.prototype.init = function()
 		for ( var i = 0 ; i < thiz.pendingProgressNotificationEventList.length ; i++ )
 		{
 			var ee = new Event ( "notification" ) ;
-			ee.data.state = "stop" ;
+			ee.body.state = "stop" ;
 			thiz.client.fireEvent ( ee ) ;
 		}
 		thiz.pendingProgressNotifications.length = 0 ;
@@ -39,27 +39,27 @@ GPNotificationBroker.prototype.init = function()
 	{
 		var i ;
 		var ee = new Event ( "notification" ) ;
-		ee.data = e.data ;
-		if ( e.data.state === "start" && e.data.id )
+		ee.body = e.body ;
+		if ( e.body.state === "start" && e.body.id )
 		{
-			if ( thiz.pendingProgressNotifications[e.data.id] )
+			if ( thiz.pendingProgressNotifications[e.body.id] )
 			{
 				return ;
 			}
-			thiz.pendingProgressNotificationList.push ( e.data ) ;
-			thiz.pendingProgressNotifications[e.data.id] = e.data ;
+			thiz.pendingProgressNotificationList.push ( e.body ) ;
+			thiz.pendingProgressNotifications[e.body.id] = e.body ;
 		}
 		else
-		if ( e.data.state === "stop" && e.data.id )
+		if ( e.body.state === "stop" && e.body.id )
 		{
 		  for ( i = 0 ; i < thiz.pendingProgressNotificationList.length ; i++ )
 		  {
-		   	if ( thiz.pendingProgressNotificationList[i].id === e.data.id )
+		   	if ( thiz.pendingProgressNotificationList[i].id === e.body.id )
 		   	{
 		      thiz.pendingProgressNotificationList.splice ( i, 1 ) ;
 		   	}
 	    }
-			delete thiz.pendingProgressNotifications[e.data.id] ;
+			delete thiz.pendingProgressNotifications[e.body.id] ;
 		}
 		thiz.client.fireEvent ( ee ) ;
 	});

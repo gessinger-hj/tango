@@ -193,8 +193,8 @@ tangojs.gp.Event.prototype =
 		this.setType ( type ) ;
 		this.user = null ;
 		this.control = { createdAt: new Date() } ;
-		if ( data && typeof data === 'object' ) this.data = data ;
-		else this.data = {} ;
+		if ( data && typeof data === 'object' ) this.body = data ;
+		else this.body = {} ;
 	},
 	/**
 	 * Description
@@ -221,7 +221,7 @@ tangojs.gp.Event.prototype =
 			+ "]\n"
 			+ ( this.user ? "[user=" + this.user + "]" : "" )
 			+ "[control=" + util.inspect ( this.control ) + "]\n"
-			+ "[data=" + util.inspect ( this.data ) + "]" ;
+			+ "[data=" + util.inspect ( this.body ) + "]" ;
 		}
 		else
 		{
@@ -231,7 +231,7 @@ tangojs.gp.Event.prototype =
 			+ "]\n"
 			+ ( this.user ? "[user=" + this.user + "]" : "" )
 			+ "[control=" + ACSys.toFullString ( this.control ) + "]\n"
-			+ "[data=" + ACSys.toFullString ( this.data ) + "]" ;
+			+ "[data=" + ACSys.toFullString ( this.body ) + "]" ;
 		}
 	},
 	/**
@@ -408,7 +408,7 @@ tangojs.gp.Event.prototype =
 	 */
 	getData: function()
 	{
-		return this.data ;
+		return this.body ;
 	},
 	/**
 	 * Description
@@ -418,7 +418,7 @@ tangojs.gp.Event.prototype =
 	 */
 	setData: function ( data )
 	{
-		if ( data ) this.data = data ;
+		if ( data ) this.body = data ;
 	},
 	/**
 	 * Description
@@ -515,7 +515,7 @@ else
 		// var buf = f.toBuffer() ;
 		var ne = new tangojs.gp.Event ( 'BC', "T" ) ;
 		// ne.setUser ( new User ( "admin", 17 ) ) ;
-		// ne.data.fileContent = buf ;
+		// ne.body.fileContent = buf ;
 		// var tree = new tangojs.XmlTree() ;
 		// var xfile = tree.add ( "file" ) ;
 		// xfile.add ( "name", "r.txt" ) ;

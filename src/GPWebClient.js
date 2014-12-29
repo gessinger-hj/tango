@@ -67,7 +67,7 @@ tangojs.gp.WebClient.prototype.connect = function()
    */
   this.socket.onmessage = function onmessage ( messageEvent )
   {
-    var mm = messageEvent.data ;
+    var mm = messageEvent.body ;
     if ( ! this.partialMessage ) this.partialMessage = "" ;
     mm = this.partialMessage + mm ;
     this.partialMessage = "" ;
@@ -157,9 +157,9 @@ tangojs.gp.WebClient.prototype.connect = function()
   this.socket.onopen = function()
   {
     var einfo = new tangojs.gp.Event ( "system", "client_info" ) ;
-    einfo.data.userAgent = navigator.userAgent ;
-    einfo.data.connectionTime = new Date() ;
-    einfo.data.domain = document.domain ;
+    einfo.body.userAgent = navigator.userAgent ;
+    einfo.body.connectionTime = new Date() ;
+    einfo.body.domain = document.domain ;
     thiz.socket.send ( einfo.serialize() ) ;
 
     thiz.emit ( null, "open" ) ;
@@ -263,7 +263,7 @@ tangojs.gp.WebClient.prototype._fireEvent = function ( params, callback, opts )
   else
   {
     e = new tangojs.gp.Event ( params.name, params.type ) ;
-    e.setData ( params.data ) ;
+    e.setData ( params.body ) ;
     if ( params.user ) u = params.user ;
   }
   if ( this.user )
@@ -344,7 +344,7 @@ tangojs.gp.WebClient.prototype.addEventListener = function ( eventNameList, call
   {
     e.setUser ( this.user ) ;
   }
-  e.data.eventNameList = eventNameList ;
+  e.body.eventNameList = eventNameList ;
   var i ;
   for ( i = 0 ; i < eventNameList.length ; i++ )
   {
@@ -415,7 +415,7 @@ tangojs.gp.WebClient.prototype.removeEventListener = function ( eventNameOrFunct
     if ( ! eventNameList.length ) return ;
     var e = new tangojs.gp.Event ( "system", "removeEventListener" ) ;
     e.setUser ( this.user ) ;
-    e.data.eventNameList = eventNameList ;
+    e.body.eventNameList = eventNameList ;
     var s = this.getSocket() ;
     s.send ( e.serialize() ) ;
   }

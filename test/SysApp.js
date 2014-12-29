@@ -77,7 +77,7 @@ function execute()
 	}
 	RS.client.on ( "getWatchResourceList", function ( e )
 	{
-		e.data.watchList = watchList ;
+		e.body.watchList = watchList ;
 	  this.sendResult ( e ) ;
 	});
 }

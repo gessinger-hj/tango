@@ -56,7 +56,7 @@ Connection.prototype.toString = function()
 Connection.prototype.removeEventListener = function ( e )
 {
   var i, index ;
-  var eventNameList = e.data.eventNameList ;
+  var eventNameList = e.body.eventNameList ;
   if ( ! eventNameList || ! eventNameList.length )
   {
     eventNameList = this.eventNameList ;
@@ -117,17 +117,17 @@ Connection.prototype.sendInfoRequest = function ( e )
   var i, first, str, key ;
   e.setType ( "getInfoResult" ) ;
   e.control.status = { code:0, name:"ack" } ;
-  e.data.log = { levelName: Log.getLevelName(), level:Log.getLevel() } ;
-  e.data.currentEventNames = this.broker._eventNameToSockets.getKeys() ;
+  e.body.log = { levelName: Log.getLevelName(), level:Log.getLevel() } ;
+  e.body.currentEventNames = this.broker._eventNameToSockets.getKeys() ;
   for ( i = 0 ; i < this.broker._connectionList.length ; i++ )
   {
     list = this.broker._connectionList[i]._regexpList ;
     if ( list )
     {
-      if ( ! e.data.currentEventPattern ) e.data.currentEventPattern = [] ;
+      if ( ! e.body.currentEventPattern ) e.body.currentEventPattern = [] ;
       for ( j = 0 ; j < list.length ; j++ )
       {
-        e.data.currentEventPattern.push ( list[j].toString() ) ;
+        e.body.currentEventPattern.push ( list[j].toString() ) ;
       }
     }
   }     
@@ -141,22 +141,22 @@ Connection.prototype.sendInfoRequest = function ( e )
       mhclone.put ( key, afrom[ii].sid ) ;
     }
   }
-  e.data.mapping = mhclone._hash ;
-  e.data.connectionList = [] ;
+  e.body.mapping = mhclone._hash ;
+  e.body.connectionList = [] ;
   for ( key in this.broker._connections )
   {
     var client_info = this.broker._connections[key].client_info ;
     if ( ! client_info ) continue ;
-    e.data.connectionList.push ( client_info ) ;
+    e.body.connectionList.push ( client_info ) ;
   }
   str = "" ;
   for ( key in this.broker._lockOwner )
   {
     if ( ! str )
     {
-      e.data.lockList = [] ;
+      e.body.lockList = [] ;
     }
-    e.data.lockList.push ( { resourceId: key, owner: this.broker._lockOwner[key].client_info } ) ;
+    e.body.lockList.push ( { resourceId: key, owner: this.broker._lockOwner[key].client_info } ) ;
   }
   this.write ( e ) ;
 };
@@ -168,7 +168,7 @@ Connection.prototype.sendInfoRequest = function ( e )
  */
 Connection.prototype.addEventListener = function ( e )
 {
-  var eventNameList = e.data.eventNameList ;
+  var eventNameList = e.body.eventNameList ;
   if ( ! eventNameList || ! eventNameList.length )
   {
     e.control.status = { code:1, name:"error", reason:"Missing eventNameList" } ;
@@ -423,7 +423,7 @@ Broker.prototype._handleSystemMessages = function ( socket, e )
   else
   if ( e.getType() === "shutdown" )
   {
-    var shutdown_sid = e.data.shutdown_sid ;
+    var shutdown_sid = e.body.shutdown_sid ;
     if ( shutdown_sid )
     {
       conn = this._connections[socket.sid] ;
@@ -473,7 +473,7 @@ Broker.prototype._handleSystemMessages = function ( socket, e )
   if ( e.getType() === "client_info" )
   {
     conn = this._connections[socket.sid] ;
-    conn.client_info = e.data ; e.data = {} ;
+    conn.client_info = e.body ; e.body = {} ;
     conn.client_info.sid = socket.sid ;
     var app = conn.client_info.application ;
     if ( app )
@@ -520,17 +520,17 @@ Broker.prototype._handleSystemMessages = function ( socket, e )
   if ( e.getType() === "lockResourceRequest" )
   {
     conn = this._connections[socket.sid] ;
-    var resourceId = e.data.resourceId ;
+    var resourceId = e.body.resourceId ;
     e.setType ( "lockResourceResult" ) ;
     if ( this._lockOwner[resourceId] )
     {
-      e.data.isLockOwner = false ;
+      e.body.isLockOwner = false ;
     }
     else
     {
       this._lockOwner[resourceId] = conn ;
       conn._lockedResourcesIdList.push ( resourceId ) ;
-      e.data.isLockOwner = true ;
+      e.body.isLockOwner = true ;
     }
     conn.write ( e ) ;
   }
@@ -538,9 +538,9 @@ Broker.prototype._handleSystemMessages = function ( socket, e )
   if ( e.getType() === "freeResourceRequest" )
   {
     conn = this._connections[socket.sid] ;
-    var resourceId = e.data.resourceId ;
+    var resourceId = e.body.resourceId ;
     e.setType ( "freeResourceResult" ) ;
-    e.data.isLockOwner = false ;
+    e.body.isLockOwner = false ;
     if ( ! this._lockOwner[resourceId] )
     {
       e.control.status = { code:1, name:"error", reason:"not owner of resourceId=" + resourceId } ;
