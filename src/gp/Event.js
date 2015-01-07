@@ -412,7 +412,7 @@ tangojs.gp.Event.prototype =
 	},
 	/**
 	 * Description
-	 * @method setBody
+	 * @method setBody 
 	 * @param {} data
 	 * @return 
 	 */
@@ -422,7 +422,7 @@ tangojs.gp.Event.prototype =
 	},
 	/**
 	 * Description
-	 * @method getBody
+	 * @method getBody 
 	 * @return MemberExpression
 	 */
 	getUser: function()
