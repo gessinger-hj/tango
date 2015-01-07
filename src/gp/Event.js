@@ -406,7 +406,7 @@ tangojs.gp.Event.prototype =
 	 * @method getData
 	 * @return MemberExpression
 	 */
-	getData: function()
+	getBody: function()
 	{
 		return this.body ;
 	},
@@ -416,7 +416,7 @@ tangojs.gp.Event.prototype =
 	 * @param {} data
 	 * @return 
 	 */
-	setData: function ( data )
+	setBody: function ( body )
 	{
 		if ( data ) this.body = data ;
 	},
