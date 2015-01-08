@@ -535,11 +535,11 @@ Broker.prototype._handleSystemMessages = function ( socket, e )
     conn.write ( e ) ;
   }
   else
-  if ( e.getType() === "freeResourceRequest" )
+  if ( e.getType() === "unlockResourceRequest" )
   {
     conn = this._connections[socket.sid] ;
     var resourceId = e.body.resourceId ;
-    e.setType ( "freeResourceResult" ) ;
+    e.setType ( "unlockResourceResult" ) ;
     e.body.isLockOwner = false ;
     if ( ! this._lockOwner[resourceId] )
     {
@@ -649,6 +649,40 @@ module.exports = Broker ;
 
 if ( require.main === module )
 {
-  var b = new Broker() ;
-  b.listen() ;
+  var Admin = require ( "./Admin" ) ;
+  var File  = require ( "../File" ) ;
+  new Admin().isRunning ( function admin_is_running ( state )
+  {
+    if ( state )
+    {
+      console.log ( "Already running" ) ;
+      return ;
+    }
+    execute() ;
+  });
+  function execute()
+  {
+    var s = T.getProperty ( "GEPARD_LOG" ) ;
+    var GEPARD_LOG ;
+    if ( s )
+    {
+      GEPARD_LOG = new File ( s ) ;
+    }
+    
+    else
+    {
+      var fs = require ( "fs" ) ;
+      var GEPARD_LOG = new File ( T.resolve ( "%HOME%/log" ) ) ;
+      T.setProperty ( "GEPARD_LOG", GEPARD_LOG.toString() ) ;
+    }
+    if ( ! GEPARD_LOG.isDirectory() )
+    {
+      GEPARD_LOG.mkdir() ;
+    }
+
+    Log.init ( "level=info,Xedirect=3,file=%GEPARD_LOG%/%APPNAME%.log:max=1m:v=4") ;
+
+    var b = new Broker() ;
+    b.listen() ;
+  }
 }

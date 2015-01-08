@@ -170,8 +170,8 @@ tangojs.gp.WebClient.prototype.connect = function()
       var uid = thiz.createUniqueEventId() ;
       for ( i = 0 ; i < thiz.pendingEventList.length ; i++ )
       {
-        var ctx = thiz.pendingEventList[i] ;
-        var e = ctx.e ;
+        var ctx            = thiz.pendingEventList[i] ;
+        var e              = ctx.e ;
         var resultCallback = ctx.resultCallback ;
         e.setWebIdentifier ( uid ) ;
         thiz.callbacks[uid] = ctx ;
@@ -263,7 +263,7 @@ tangojs.gp.WebClient.prototype._fireEvent = function ( params, callback, opts )
   else
   {
     e = new tangojs.gp.Event ( params.name, params.type ) ;
-    e.setData ( params.body ) ;
+    e.setBody ( params.body ) ;
     if ( params.user ) u = params.user ;
   }
   if ( this.user )

@@ -202,7 +202,7 @@ Client.prototype.connect = function()
             ctx.callback.call ( thiz, null, e ) ;
             continue ;
           }
-          if ( e.getType() === "freeResourceResult" )
+          if ( e.getType() === "unlockResourceResult" )
           {
             delete thiz.lockedResources[e.body.resourceId] ;
             continue ;
@@ -360,7 +360,7 @@ Client.prototype._fireEvent = function ( params, callback, opts )
   if ( params && typeof params === 'object' )
   {
     e = new Event ( params.name, params.type ) ;
-    e.setData ( params.body ) ;
+    e.setBody ( params.body ) ;
     if ( params.user ) u = params.user ;
   }
   if ( this.user )
@@ -664,16 +664,16 @@ Client.prototype.lockResource = function ( resourceId, callback )
 };
 /**
  * Description
- * @method freeResource
+ * @method unlockResource
  * @param {} resourceId
  * @return 
  */
-Client.prototype.freeResource = function ( resourceId )
+Client.prototype.unlockResource = function ( resourceId )
 {
   if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.lockResource: resourceId must be a string." ) ;
-  if ( ! this.lockedResources[resourceId] ) throw new Error ( "Client.freeResource: not owner of resourceId=" + resourceId ) ;
+  if ( ! this.lockedResources[resourceId] ) throw new Error ( "Client.unlockResource: not owner of resourceId=" + resourceId ) ;
 
-  var e = new Event ( "system", "freeResourceRequest" ) ;
+  var e = new Event ( "system", "unlockResourceRequest" ) ;
   e.body.resourceId = resourceId ;
   var s = this.getSocket() ;
   counter++ ;

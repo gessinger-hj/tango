@@ -1,5 +1,5 @@
-var T = require ( "../Tango" ) ;
-var Event = require ( "./Event" ) ;
+var T      = require ( "../Tango" ) ;
+var Event  = require ( "./Event" ) ;
 var Client = require ( "./Client" ) ;
 
 /**
@@ -87,7 +87,7 @@ Lock.prototype.release = function()
     return ;
   }
   this._isLockOwner = false ;
-  this._client.freeResource ( this._resourceId ) ;
+  this._client.unlockResource ( this._resourceId ) ;
   if ( this._isClientOwner && this._client )
   {
     this._client.end() ;

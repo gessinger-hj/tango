@@ -1,9 +1,10 @@
-var T = require ( "Tango" ) ;
-var Log = require ( "LogFile" ) ;
-var File = require ( "File" ) ;
-var Admin = require ( "gp/Admin" ) ;
-var what = T.getProperty ( "getWatchResourceList" ) ;
+var T                    = require ( "Tango" ) ;
+var Log                  = require ( "LogFile" ) ;
+var File                 = require ( "File" ) ;
+var Admin                = require ( "gp/Admin" ) ;
 var GPNotificationBroker = require ( "./GPNotificationBroker" ) ;
+
+var what                 = T.getProperty ( "getWatchResourceList" ) ;
 
 if ( what )
 {

@@ -1,6 +1,6 @@
-var net = require('net');
+var net   = require('net');
 var Event = require ( "./Event" ) ;
-var T = require ( "../Tango" ) ;
+var T     = require ( "../Tango" ) ;
 
 /**
  * @constructor
@@ -234,6 +234,20 @@ console.log ( "n=" + n ) ;
 // console.log ( list ) ;
 // 		} ) ;
 		return ;
+	}
+	what = T.getProperty ( "isRunning" ) ;
+	if ( what  )
+	{
+		ad.isRunning ( function admin_is_running ( state )
+		{
+			if ( state )
+			{
+				process.exit  ( 0 ) ;
+				return ;
+			}
+			process.exit  ( 1 ) ;
+			return ;
+		});
 	}
 	what = T.getProperty ( "info", "true" ) ;
 	if ( what )
