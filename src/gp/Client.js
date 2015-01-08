@@ -20,22 +20,24 @@ var counter = 0 ;
 var Client = function ( port, host )
 {
   EventEmitter.call ( this ) ;
-  this.port = port ;
-  if ( ! this.port ) this.port = T.getProperty ( "gepard.port", "17501" ) ;
-  this.host = host ;
-  if ( ! this.host ) this.host = T.getProperty ( "gepard.host" ) ;
-  this.socket = null ;
-  this.user = null ;
-  this.pendingEventList = [] ;
-  this.pendingResultList = {} ;
-  this.callbacks = {} ;
+  this.port                     = port ;
+  if ( ! this.port ) this.port  = T.getProperty ( "gepard.port", "17501" ) ;
+  this.host                     = host ;
+  if ( ! this.host ) this.host  = T.getProperty ( "gepard.host" ) ;
+  this.socket                   = null ;
+  this.user                     = null ;
+  this.pendingEventList         = [] ;
+  this.pendingResultList        = {} ;
+  this.callbacks                = {} ;
   this.pendingEventListenerList = [] ;
-  this.eventListenerFunctions = new MultiHash() ;
-  this.listenerFunctionsList = [] ;
-  this.pendingLockList = [] ;
-  this.lockedResources = {} ;
-  this.alive = false ;
-  this.stopImediately = false ;
+  this.eventListenerFunctions   = new MultiHash() ;
+  this.listenerFunctionsList    = [] ;
+  this.pendingLockList          = [] ;
+  this._ownedResources          = {} ;
+  this.alive                    = false ;
+  this.stopImediately           = false ;
+  this._aquiredSemaphores       = {} ;
+  this._ownedSemaphores         = {} ;
 } ;
 util.inherits ( Client, EventEmitter ) ;
 /**
@@ -109,7 +111,7 @@ Client.prototype.connect = function()
         var ctx = thiz.pendingLockList[i] ;
         ctx.e.setUniqueId ( uid ) ;
         this.write ( ctx.e.serialize() ) ;
-        thiz.lockedResources[e.body.resourceId] = ctx;
+        thiz._ownedResources[e.body.resourceId] = ctx;
       }
       thiz.pendingLockList.length = 0 ;
     }
@@ -192,19 +194,40 @@ Client.prototype.connect = function()
             }
             continue ;
           }
+          ////////////////////////////
+          // lock resource handling //
+          ////////////////////////////
           if ( e.getType() === "lockResourceResult" )
           {
-            var ctx = thiz.lockedResources[e.body.resourceId] ;
+            var ctx = thiz._ownedResources[e.body.resourceId] ;
             if ( ! e.body.isLockOwner )
             {
-              delete thiz.lockedResources[e.body.resourceId] ;
+              delete thiz._ownedResources[e.body.resourceId] ;
             }
             ctx.callback.call ( thiz, null, e ) ;
             continue ;
           }
           if ( e.getType() === "unlockResourceResult" )
           {
-            delete thiz.lockedResources[e.body.resourceId] ;
+            delete thiz._ownedResources[e.body.resourceId] ;
+            continue ;
+          }
+          ////////////////////////
+          // semaphore handling //
+          ////////////////////////
+          if ( e.getType() === "aquireSemaphoreResult" ) // TODO semaphore
+          {
+            var ctx = thiz._ownedResources[e.body.resourceId] ;
+            if ( ! e.body.isSemaphoreOwner )
+            {
+              delete thiz._ownedResources[e.body.resourceId] ;
+            }
+            ctx.callback.call ( thiz, null, e ) ;
+            continue ;
+          }
+          if ( e.getType() === "releaseSemaphoreResult" )
+          {
+            delete thiz._ownedResources[e.body.resourceId] ;
             continue ;
           }
         }
@@ -658,7 +681,7 @@ Client.prototype.lockResource = function ( resourceId, callback )
     counter++ ;
     var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
     e.setUniqueId ( uid ) ;
-    this.lockedResources[resourceId] = ctx;
+    this._ownedResources[resourceId] = ctx;
     s.write ( e.serialize() ) ;
   }
 };
@@ -671,7 +694,7 @@ Client.prototype.lockResource = function ( resourceId, callback )
 Client.prototype.unlockResource = function ( resourceId )
 {
   if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.lockResource: resourceId must be a string." ) ;
-  if ( ! this.lockedResources[resourceId] ) throw new Error ( "Client.unlockResource: not owner of resourceId=" + resourceId ) ;
+  if ( ! this._ownedResources[resourceId] ) throw new Error ( "Client.unlockResource: not owner of resourceId=" + resourceId ) ;
 
   var e = new Event ( "system", "unlockResourceRequest" ) ;
   e.body.resourceId = resourceId ;
@@ -679,7 +702,60 @@ Client.prototype.unlockResource = function ( resourceId )
   counter++ ;
   var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
   e.setUniqueId ( uid ) ;
-  delete this.lockedResources[resourceId] ;
+  delete this._ownedResources[resourceId] ;
+  s.write ( e.serialize() ) ;
+};
+/**
+ * Description
+ * @method aquireSemaphore
+ * @param {} resourceId
+ * @param {} callback
+ * @return 
+ */
+Client.prototype.aquireSemaphore = function ( resourceId, callback )
+{
+  if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.aquireSemaphore: resourceId must be a string." ) ;
+  if ( typeof callback !== 'function' ) throw new Error ( "Client.aquireSemaphore: callback must be a function." ) ;
+
+  var e = new Event ( "system", "aquireSemaphoreRequest" ) ;
+  e.body.resourceId = resourceId ;
+  var s = this.getSocket() ;
+  var ctx = {} ;
+  ctx.resourceId = resourceId ;
+  ctx.callback = callback ;
+  ctx.e = e ;
+
+  if ( this.pendingLockList.length )
+  {
+    this.pendingLockList.push ( ctx ) ;
+  }
+  if ( ! this.pendingLockList.length )
+  {
+    counter++ ;
+    var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
+    e.setUniqueId ( uid ) ;
+    this._ownedResources[resourceId] = ctx;
+    s.write ( e.serialize() ) ;
+  }
+};
+/**
+ * Description
+ * @method releaseSemaphore
+ * @param {} resourceId
+ * @return 
+ */
+Client.prototype.releaseSemaphore = function ( resourceId )
+{
+  if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.releaseSemaphore: resourceId must be a string." ) ;
+  if ( ! this._ownedResources[resourceId] ) throw new Error ( "Client.releaseSemaphore: not owner of resourceId=" + resourceId ) ;
+
+  var e = new Event ( "system", "releaseSemaphoreRequest" ) ;
+  e.body.resourceId = resourceId ;
+  var s = this.getSocket() ;
+  counter++ ;
+  var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
+  e.setUniqueId ( uid ) ;
+  delete this._ownedResources[resourceId] ;
   s.write ( e.serialize() ) ;
 };
 module.exports = Client ;
