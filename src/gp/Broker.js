@@ -34,9 +34,11 @@ var Connection = function ( broker, socket )
   {
     this.sid = socket.sid ;
   }
-  this._lockedResourcesIdList = [] ;
-  this._patternList = [] ;
-  this._regexpList = [] ;
+  this._lockedResourcesIdList                = [] ;
+  this._patternList                          = [] ;
+  this._regexpList                           = [] ;
+  this._ownedSemaphoresRecourceIdList        = [] ;
+  this._pendingAquireSemaphoreRecourceIdList = [] ;
 };
 /**
  * Description
@@ -108,13 +110,13 @@ Connection.prototype.write = function ( data )
 };
 /**
  * Description
- * @method sendInfoRequest
+ * @method sendInfoResult
  * @param {} e
  * @return 
  */
-Connection.prototype.sendInfoRequest = function ( e )
+Connection.prototype.sendInfoResult = function ( e )
 {
-  var i, first, str, key ;
+  var i, first, str, key, conn, key2 ;
   e.setType ( "getInfoResult" ) ;
   e.control.status = { code:0, name:"ack" } ;
   e.body.log = { levelName: Log.getLevelName(), level:Log.getLevel() } ;
@@ -136,27 +138,48 @@ Connection.prototype.sendInfoRequest = function ( e )
   {
     var afrom = this.broker._eventNameToSockets.get ( key ) ;
     if ( typeof ( afrom ) === 'function' ) continue ;
-    for ( var ii = 0 ; ii < afrom.length ; ii++ )
+    for ( i = 0 ; i < afrom.length ; i++ )
     {
-      mhclone.put ( key, afrom[ii].sid ) ;
+      mhclone.put ( key, afrom[i].sid ) ;
     }
   }
   e.body.mapping = mhclone._hash ;
   e.body.connectionList = [] ;
   for ( key in this.broker._connections )
   {
-    var client_info = this.broker._connections[key].client_info ;
+    conn = this.broker._connections[key] ;
+    var client_info = conn.client_info ;
     if ( ! client_info ) continue ;
-    e.body.connectionList.push ( client_info ) ;
+    var client_info2 = {} ;
+    for ( key2 in client_info )
+    {
+      client_info2[key2] = client_info[key2] ;
+    }
+    e.body.connectionList.push ( client_info2 ) ;
+    if ( conn._ownedSemaphoresRecourceIdList.length )
+    {
+      client_info2.ownedSemaphores = conn._ownedSemaphoresRecourceIdList ;
+    }
+    if ( conn._pendingAquireSemaphoreRecourceIdList.length )
+    {
+      client_info2.pendingSemaphores = conn._pendingAquireSemaphoreRecourceIdList ;
+    }
   }
-  str = "" ;
   for ( key in this.broker._lockOwner )
   {
-    if ( ! str )
+    if ( ! e.body.lockList )
     {
       e.body.lockList = [] ;
     }
     e.body.lockList.push ( { resourceId: key, owner: this.broker._lockOwner[key].client_info } ) ;
+  }
+  for ( key in this.broker._semaphoreOwner )
+  {
+    if ( ! e.body.semaphoreList )
+    {
+      e.body.semaphoreList = [] ;
+    }
+    e.body.semaphoreList.push ( { resourceId: key, owner: this.broker._semaphoreOwner[key].client_info } ) ;
   }
   this.write ( e ) ;
 };
@@ -226,6 +249,9 @@ var Broker = function ( port, ip )
   var conn ;
   this._multiplexerList = [] ;
   this._lockOwner = {} ;
+  this._semaphoreOwner = {} ;
+  this._pendingAquireSemaphoreConnections = new MultiHash() ;
+
   this.server = net.createServer() ;
   this.server.on ( "error", function onerror ( p )
   {
@@ -293,6 +319,11 @@ var Broker = function ( port, ip )
         if ( m.charAt ( 0 ) === '{' )
         {
           var e = Event.prototype.deserialize ( m ) ;
+          if ( ! e.body )
+          {
+            this._ejectSocket ( this ) ;
+            continue ;
+          }
           if ( e.isResult() )
           {
             sid = e.getSourceIdentifier() ;
@@ -502,7 +533,7 @@ Broker.prototype._handleSystemMessages = function ( socket, e )
   if ( e.getType() === "getInfoRequest" )
   {
     conn = new Connection ( this, socket )
-    conn.sendInfoRequest ( e ) ;
+    conn.sendInfoResult ( e ) ;
   }
   else
   if ( e.getType() === "addEventListener" )
@@ -521,6 +552,11 @@ Broker.prototype._handleSystemMessages = function ( socket, e )
   {
     conn = this._connections[socket.sid] ;
     var resourceId = e.body.resourceId ;
+    if ( ! resourceId )
+    {
+      this._ejectSocket ( socket ) ;
+      return ;
+    }
     e.setType ( "lockResourceResult" ) ;
     if ( this._lockOwner[resourceId] )
     {
@@ -539,6 +575,11 @@ Broker.prototype._handleSystemMessages = function ( socket, e )
   {
     conn = this._connections[socket.sid] ;
     var resourceId = e.body.resourceId ;
+    if ( ! resourceId )
+    {
+      this._ejectSocket ( socket ) ;
+      return ;
+    }
     e.setType ( "unlockResourceResult" ) ;
     e.body.isLockOwner = false ;
     if ( ! this._lockOwner[resourceId] )
@@ -554,10 +595,86 @@ Broker.prototype._handleSystemMessages = function ( socket, e )
     conn.write ( e ) ;
   }
   else
+  if ( e.getType() === "aquireSemaphoreRequest" )
+  {
+    this._aquireSemaphoreRequest ( socket, e ) ;
+  }
+  else
+  if ( e.getType() === "releaseSemaphoreRequest" )
+  {
+    this._releaseSemaphoreRequest ( socket, e ) ;
+  }
+  else
   {
     Log.error ( "Invalid type: '" + e.getType() + "' for " + e.getName() ) ;
     Log.error ( e.toString() ) ;
   }
+};
+Broker.prototype._aquireSemaphoreRequest = function ( socket, e )
+{
+  var conn = this._connections[socket.sid] ;
+  var resourceId = e.body.resourceId ;
+  if ( ! resourceId )
+  {
+    this._ejectSocket ( socket ) ;
+    return ;
+  }
+  var currentSemaphoreOwner = this._semaphoreOwner[resourceId] ;
+  if ( currentSemaphoreOwner )
+  {
+    if ( currentSemaphoreOwner === conn )
+    {
+      Log.error ( conn.toString() + "\n is already owner of semaphore=" + resourceId ) ;
+      e.control.status = { code:1, name:"error", reason:"already owner of semaphore=" + resourceId } ;
+      conn.write ( e ) ;
+      return ;
+    }
+    e.body.isSemaphoreOwner = false ;
+    this._pendingAquireSemaphoreConnections.put ( resourceId, conn ) ;
+    conn._pendingAquireSemaphoreRecourceIdList.push ( resourceId ) ;
+    return ;
+  }
+  this._setIsSemaphoreOwner ( conn, resourceId ) ;
+};
+Broker.prototype._setIsSemaphoreOwner = function ( conn, resourceId )
+{
+  this._semaphoreOwner[resourceId] = conn ;
+  conn._ownedSemaphoresRecourceIdList.push ( resourceId ) ;
+  conn._pendingAquireSemaphoreRecourceIdList.remove ( resourceId ) ;
+  this._pendingAquireSemaphoreConnections.remove ( resourceId, conn ) ;
+  var e                   = new Event ( "system", "aquireSemaphoreResult" ) ;
+  e.body.resourceId       = resourceId ;
+  e.body.isSemaphoreOwner = true ;
+  conn.write ( e ) ;
+};
+Broker.prototype._releaseSemaphoreRequest = function ( socket, e )
+{
+  var conn = this._connections[socket.sid] ;
+  var resourceId = e.body.resourceId ;
+  if ( ! resourceId )
+  {
+    this._ejectSocket ( socket ) ;
+    return ;
+  }
+  var currentSemaphoreOwner = this._semaphoreOwner[resourceId] ;
+  if ( currentSemaphoreOwner )
+  {
+    if ( currentSemaphoreOwner !== conn )
+    {
+      Log.error ( conn.toString() + "\n is not owner of semaphore=" + resourceId ) ;
+      this._ejectSocket ( socket ) ;
+      return ;
+    }
+  }
+  Log.info ( conn.toString() + "\n released semaphore=" + resourceId ) ;
+  delete this._semaphoreOwner[resourceId] ;
+  conn._ownedSemaphoresRecourceIdList.remove ( resourceId ) ;
+  var nextSemaphoreOwner = this._pendingAquireSemaphoreConnections.removeFirst ( resourceId ) ;
+  if ( ! nextSemaphoreOwner )
+  {
+    return ;
+  }
+  this._setIsSemaphoreOwner ( nextSemaphoreOwner, resourceId ) ;
 };
 /**
  * Description
@@ -565,9 +682,9 @@ Broker.prototype._handleSystemMessages = function ( socket, e )
  * @param {} socket
  * @return 
  */
-Broker.prototype._ejectSocket = function ( socket )
+Broker.prototype._ejectSocket = function ( socket ) // TODO semaphore
 {
-  var i ;
+  var i, rid ;
   var sid = socket.sid ;
   if ( ! sid ) return ;
   var conn = this._connections[sid] ;
@@ -581,12 +698,27 @@ Broker.prototype._ejectSocket = function ( socket )
     {
       this._eventNameToSockets.remove ( conn.eventNameList[i], socket ) ;
     }
+    conn.eventNameList.length = 0 ;
   }
   this._connectionList.remove ( conn ) ;
   for ( i = 0 ; i < conn._lockedResourcesIdList.length ; i++ )
   {
     delete this._lockOwner [ conn._lockedResourcesIdList ] ;
   }
+  conn._lockedResourcesIdList.length = 0 ;
+  for ( var i = 0 ; i < conn._ownedSemaphoresRecourceIdList.length ; i++ )
+  {
+    rid = conn._ownedSemaphoresRecourceIdList[i] ;
+    delete this._semaphoreOwner[rid] ;
+    var nextSemaphoreOwner = this._pendingAquireSemaphoreConnections.removeFirst ( rid ) ;
+    if ( ! nextSemaphoreOwner )
+    {
+      continue ;
+    }
+    this._setIsSemaphoreOwner ( nextSemaphoreOwner, rid ) ;
+  }
+  conn._pendingAquireSemaphoreRecourceIdList.length = 0 ;
+  conn._ownedSemaphoresRecourceIdList.length = 0 ;
   delete this._connections[sid] ;
   Log.info ( 'Socket disconnected, sid=' + sid ) ;
 };

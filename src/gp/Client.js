@@ -20,24 +20,25 @@ var counter = 0 ;
 var Client = function ( port, host )
 {
   EventEmitter.call ( this ) ;
-  this.port                     = port ;
-  if ( ! this.port ) this.port  = T.getProperty ( "gepard.port", "17501" ) ;
-  this.host                     = host ;
-  if ( ! this.host ) this.host  = T.getProperty ( "gepard.host" ) ;
-  this.socket                   = null ;
-  this.user                     = null ;
-  this.pendingEventList         = [] ;
-  this.pendingResultList        = {} ;
-  this.callbacks                = {} ;
-  this.pendingEventListenerList = [] ;
-  this.eventListenerFunctions   = new MultiHash() ;
-  this.listenerFunctionsList    = [] ;
-  this.pendingLockList          = [] ;
-  this._ownedResources          = {} ;
-  this.alive                    = false ;
-  this.stopImediately           = false ;
-  this._aquiredSemaphores       = {} ;
-  this._ownedSemaphores         = {} ;
+  this.port                        = port ;
+  if ( ! this.port ) this.port     = T.getProperty ( "gepard.port", "17501" ) ;
+  this.host                        = host ;
+  if ( ! this.host ) this.host     = T.getProperty ( "gepard.host" ) ;
+  this.socket                      = null ;
+  this.user                        = null ;
+  this.pendingEventList            = [] ;
+  this.pendingResultList           = {} ;
+  this.callbacks                   = {} ;
+  this.pendingEventListenerList    = [] ;
+  this.eventListenerFunctions      = new MultiHash() ;
+  this.listenerFunctionsList       = [] ;
+  this._pendingLockList            = [] ;
+  this._ownedResources             = {} ;
+  this.alive                       = false ;
+  this.stopImediately              = false ;
+  this._aquiredSemaphores          = {} ;
+  this._ownedSemaphores            = {} ;
+  this._pendingAquireSemaphoreList = [] ;
 } ;
 util.inherits ( Client, EventEmitter ) ;
 /**
@@ -102,18 +103,31 @@ Client.prototype.connect = function()
       }
       thiz.pendingEventListenerList.length = 0 ;
     }
-    if ( thiz.pendingLockList.length )
+    if ( thiz._pendingLockList.length )
     {
-      for ( i = 0 ; i < thiz.pendingLockList.length ; i++ )
+      for ( i = 0 ; i < thiz._pendingLockList.length ; i++ )
       {
         counter++ ;
         var uid = os.hostname() + "_" + this.localPort + "-" + counter ;
-        var ctx = thiz.pendingLockList[i] ;
+        var ctx = thiz._pendingLockList[i] ;
         ctx.e.setUniqueId ( uid ) ;
         this.write ( ctx.e.serialize() ) ;
         thiz._ownedResources[e.body.resourceId] = ctx;
       }
-      thiz.pendingLockList.length = 0 ;
+      thiz._pendingLockList.length = 0 ;
+    }
+    if ( thiz._pendingAquireSemaphoreList.length )
+    {
+      for ( i = 0 ; i < thiz._pendingAquireSemaphoreList.length ; i++ )
+      {
+        counter++ ;
+        var uid = os.hostname() + "_" + this.localPort + "-" + counter ;
+        var ctx = thiz._pendingAquireSemaphoreList[i] ;
+        ctx.e.setUniqueId ( uid ) ;
+        this.write ( ctx.e.serialize() ) ;
+        thiz._aquiredSemaphores[e.body.resourceId] = ctx;
+      }
+      thiz._pendingAquireSemaphoreList.length = 0 ;
     }
   } ) ;
   this.socket.on ( 'data', function socket_on_data ( data )
@@ -130,6 +144,7 @@ Client.prototype.connect = function()
     var result = T.splitJSONObjects ( mm ) ;
     var messageList = result.list ;
     var i, j, k ;
+    var ctx, uid, rcb, e, callbackList ;
     for ( j = 0 ; j < messageList.length ; j++ )
     {
       if ( this.stopImediately )
@@ -151,11 +166,11 @@ Client.prototype.connect = function()
       }
       if ( m.charAt ( 0 ) === '{' )
       {
-        var e = Event.prototype.deserialize ( m ) ;
+        e = Event.prototype.deserialize ( m ) ;
         if ( e.isResult() )
         {
-          var uid = e.getUniqueId() ;
-          var ctx = thiz.callbacks[uid] ;
+          uid = e.getUniqueId() ;
+          ctx = thiz.callbacks[uid] ;
           if ( ! e.isBroadcast() )
           {
             delete thiz.callbacks[uid] ;
@@ -177,10 +192,10 @@ Client.prototype.connect = function()
           }
           if ( e.isBad() )
           {
-            var uid = e.getUniqueId() ;
-            var ctx = thiz.callbacks[uid] ;
+            uid = e.getUniqueId() ;
+            ctx = thiz.callbacks[uid] ;
             delete thiz.callbacks[uid] ;
-            var rcb = ctx.error ;
+            rcb = ctx.error ;
             if ( e.isFailureInfoRequested() )
             {
               if ( ctx.failure )
@@ -199,7 +214,7 @@ Client.prototype.connect = function()
           ////////////////////////////
           if ( e.getType() === "lockResourceResult" )
           {
-            var ctx = thiz._ownedResources[e.body.resourceId] ;
+            ctx = thiz._ownedResources[e.body.resourceId] ;
             if ( ! e.body.isLockOwner )
             {
               delete thiz._ownedResources[e.body.resourceId] ;
@@ -215,19 +230,19 @@ Client.prototype.connect = function()
           ////////////////////////
           // semaphore handling //
           ////////////////////////
-          if ( e.getType() === "aquireSemaphoreResult" ) // TODO semaphore
+          if ( e.getType() === "aquireSemaphoreResult" )
           {
-            var ctx = thiz._ownedResources[e.body.resourceId] ;
-            if ( ! e.body.isSemaphoreOwner )
+            if ( e.body.isSemaphoreOwner )
             {
-              delete thiz._ownedResources[e.body.resourceId] ;
+              thiz._ownedSemaphores[e.body.resourceId] = thiz._aquiredSemaphores[e.body.resourceId] ;
+              delete thiz._aquiredSemaphores[e.body.resourceId] ;
+              ctx = thiz._ownedSemaphores[e.body.resourceId] ;
+              ctx.callback.call ( thiz, null, e ) ;
             }
-            ctx.callback.call ( thiz, null, e ) ;
             continue ;
           }
           if ( e.getType() === "releaseSemaphoreResult" )
           {
-            delete thiz._ownedResources[e.body.resourceId] ;
             continue ;
           }
         }
@@ -235,15 +250,15 @@ Client.prototype.connect = function()
         {
           if ( e.isBad() )
           {
-            var uid = e.getUniqueId() ;
-            var ctx = thiz.callbacks[uid] ;
+            uid = e.getUniqueId() ;
+            ctx = thiz.callbacks[uid] ;
             if ( ! ctx )
             {
               Log.warning ( e ) ;
               continue ;
             }
             delete thiz.callbacks[uid] ;
-            var rcb = ctx.error ;
+            rcb = ctx.error ;
             if ( e.isFailureInfoRequested() )
             {
               if ( ctx.failure )
@@ -258,7 +273,7 @@ Client.prototype.connect = function()
             continue ;
           }
           found = false ;
-          var callbackList = thiz.eventListenerFunctions.get ( e.getName() ) ;
+          callbackList = thiz.eventListenerFunctions.get ( e.getName() ) ;
           if ( callbackList )
           {
             found = true ;
@@ -663,6 +678,7 @@ Client.prototype.lockResource = function ( resourceId, callback )
 {
   if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.lockResource: resourceId must be a string." ) ;
   if ( typeof callback !== 'function' ) throw new Error ( "Client.lockResource: callback must be a function." ) ;
+  if ( this._ownedResources[resourceId] ) throw new Error ( "Client.unlockResource: already owner of resourceId=" + resourceId ) ;
 
   var e = new Event ( "system", "lockResourceRequest" ) ;
   e.body.resourceId = resourceId ;
@@ -672,11 +688,11 @@ Client.prototype.lockResource = function ( resourceId, callback )
   ctx.callback = callback ;
   ctx.e = e ;
 
-  if ( this.pendingLockList.length )
+  if ( this._pendingLockList.length )
   {
-    this.pendingLockList.push ( ctx ) ;
+    this._pendingLockList.push ( ctx ) ;
   }
-  if ( ! this.pendingLockList.length )
+  if ( ! this._pendingLockList.length )
   {
     counter++ ;
     var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
@@ -716,6 +732,7 @@ Client.prototype.aquireSemaphore = function ( resourceId, callback )
 {
   if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.aquireSemaphore: resourceId must be a string." ) ;
   if ( typeof callback !== 'function' ) throw new Error ( "Client.aquireSemaphore: callback must be a function." ) ;
+  if ( this._ownedSemaphores[resourceId] ) throw new Error ( "Client.aquireSemaphore: already owner of resourceId=" + resourceId ) ;
 
   var e = new Event ( "system", "aquireSemaphoreRequest" ) ;
   e.body.resourceId = resourceId ;
@@ -725,16 +742,16 @@ Client.prototype.aquireSemaphore = function ( resourceId, callback )
   ctx.callback = callback ;
   ctx.e = e ;
 
-  if ( this.pendingLockList.length )
+  if ( this._pendingAquireSemaphoreList.length )
   {
-    this.pendingLockList.push ( ctx ) ;
+    this._pendingAquireSemaphoreList.push ( ctx ) ;
   }
-  if ( ! this.pendingLockList.length )
+  if ( ! this._pendingAquireSemaphoreList.length )
   {
     counter++ ;
     var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
     e.setUniqueId ( uid ) ;
-    this._ownedResources[resourceId] = ctx;
+    this._aquiredSemaphores[resourceId] = ctx;
     s.write ( e.serialize() ) ;
   }
 };
@@ -747,7 +764,8 @@ Client.prototype.aquireSemaphore = function ( resourceId, callback )
 Client.prototype.releaseSemaphore = function ( resourceId )
 {
   if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.releaseSemaphore: resourceId must be a string." ) ;
-  if ( ! this._ownedResources[resourceId] ) throw new Error ( "Client.releaseSemaphore: not owner of resourceId=" + resourceId ) ;
+  delete this._aquiredSemaphores[resourceId] ;
+  if ( ! this._ownedSemaphores[resourceId] ) throw new Error ( "Client.releaseSemaphore: not owner of resourceId=" + resourceId ) ;
 
   var e = new Event ( "system", "releaseSemaphoreRequest" ) ;
   e.body.resourceId = resourceId ;
@@ -755,7 +773,7 @@ Client.prototype.releaseSemaphore = function ( resourceId )
   counter++ ;
   var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
   e.setUniqueId ( uid ) ;
-  delete this._ownedResources[resourceId] ;
+  delete this._ownedSemaphores[resourceId] ;
   s.write ( e.serialize() ) ;
 };
 module.exports = Client ;

@@ -47,6 +47,14 @@ tangojs.MultiHash.prototype =
     }
     return list ;
   },
+  removeFirst: function ( key )
+  {
+    var l = this._hash[key] ;
+    if ( ! l ) return ;
+    if ( ! l.length ) return ;
+    var obj = l[0] ;
+    return this.remove ( key, obj ) ;
+  },
   /**
    * Description
    * @param {} key
