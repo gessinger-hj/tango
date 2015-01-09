@@ -27,6 +27,5 @@ r.setAcceptCallback ( function ( name )
   return true ;
 })
 RS.addChange ( r ) ;
-
 var rr = new MRTResource ( log_dir, MRT_dir ) ;
 RS.add ( rr ) ;
