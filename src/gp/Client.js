@@ -384,7 +384,7 @@ Client.prototype.fireEvent = function ( params, callback )
 };
 Client.prototype._fireEvent = function ( params, callback, opts )
 {
-  var e = null ;
+  var e = null, user ;
   if ( params instanceof Event )
   {
     e = params ;
@@ -399,12 +399,10 @@ Client.prototype._fireEvent = function ( params, callback, opts )
   {
     e = new Event ( params.name, params.type ) ;
     e.setBody ( params.body ) ;
-    if ( params.user ) u = params.user ;
+    e.setUser ( params.user ) ;
   }
-  if ( this.user )
-  {
-    e.setUser ( this.user ) ;
-  }
+  if ( ! e.getUser() ) e.setUser ( this.user )
+
   var ctx = {} ;
   if ( callback )
   {
@@ -467,23 +465,6 @@ Client.prototype._fireEvent = function ( params, callback, opts )
       if ( ctx.write ) ctx.write.apply ( thiz, arguments ) ;
     } ) ;
   }
-};
-/**
- * Description
- * @method sendResult
- * @param {} message
- * @return 
- */
-Client.prototype.sendResult = function ( message )
-{
-  if ( ! message.isResultRequested() )
-  {
-    Log.error ( "No result requested" ) ;
-    Log.error ( message ) ;
-    return ;
-  }
-  message.setIsResult() ;
-  this.socket.write ( message.serialize() ) ;
 };
 /**
  * Description
@@ -576,7 +557,7 @@ Client.prototype.addEventListener = function ( eventNameList, callback )
     var uid = os.hostname() + "_" + this.localPort + "-" + counter ;
     e.setUniqueId ( uid ) ;
     var thiz = this ;
-    s.write ( e.serialize() ) ;
+    this.send ( e ) ;
   }
 };
 /**
@@ -698,7 +679,7 @@ Client.prototype.lockResource = function ( resourceId, callback )
     var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
     e.setUniqueId ( uid ) ;
     this._ownedResources[resourceId] = ctx;
-    s.write ( e.serialize() ) ;
+    this.send ( e ) ;
   }
 };
 /**
@@ -719,7 +700,7 @@ Client.prototype.unlockResource = function ( resourceId )
   var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
   e.setUniqueId ( uid ) ;
   delete this._ownedResources[resourceId] ;
-  s.write ( e.serialize() ) ;
+  this.send ( e ) ;
 };
 /**
  * Description
@@ -752,7 +733,7 @@ Client.prototype.aquireSemaphore = function ( resourceId, callback )
     var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
     e.setUniqueId ( uid ) ;
     this._aquiredSemaphores[resourceId] = ctx;
-    s.write ( e.serialize() ) ;
+    this.send ( e ) ;
   }
 };
 /**
@@ -774,6 +755,51 @@ Client.prototype.releaseSemaphore = function ( resourceId )
   var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
   e.setUniqueId ( uid ) ;
   delete this._ownedSemaphores[resourceId] ;
-  s.write ( e.serialize() ) ;
+  this.send ( e ) ;
 };
+Client.prototype._releaseAllSemaphores = function()
+{
+  for ( var key in this._ownedSemaphores )
+  {
+    this.releaseSemaphore ( this._ownedSemaphores[key] ) ;
+  }
+  this.releaseSemaphore = {} ;
+};
+////////////////////////////////////////////////////////////////////////////////
+/// Unification                                                               //
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * Description
+ * @method sendResult
+ * @param {} message
+ * @return 
+ */
+Client.prototype.sendResult = function ( message )
+{
+  if ( ! message.isResultRequested() )
+  {
+    this.error ( "No result requested" ) ;
+    this.error ( message ) ;
+    return ;
+  }
+  message.setIsResult() ;
+  this.send ( message ) ;
+};
+/**
+ * Description
+ * @param {} event
+ */
+Client.prototype.send = function ( event )
+{
+  this.getSocket().write ( event.serialize() ) ;
+};
+/**
+ * Description
+ * @param {} what
+ */
+Client.prototype.error = function ( what )
+{
+  Log.error ( what ) ;
+};
+
 module.exports = Client ;

@@ -223,17 +223,17 @@ WebSocketEventProxy.prototype._create = function()
  * @param {} ne
  * @return 
  */
-WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
+WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, e )
 {
-	if ( ne.getType() === "client_info" )
+	if ( e.getType() === "client_info" )
 	{
-		ne.setType ( "client_info_response" ) ;
-		ctx.socket.sendText ( ne.serialize() ) ;
+		e.setType ( "client_info_response" ) ;
+		ctx.socket.sendText ( e.serialize() ) ;
 		return ;
 	}
-	if ( ne.getType() === 'addEventListener' )
+	if ( e.getType() === 'addEventListener' )
 	{
-	  eventNameList = ne.body.eventNameList ;
+	  eventNameList = e.body.eventNameList ;
 	  var errText = "" ;
 	  if ( ! eventNameList ) { Log.error ( "Missing eventNameList." ) ; return ; }
 	  if ( typeof eventNameList === 'string' ) eventNameList = [ eventNameList ] ;
@@ -277,9 +277,9 @@ WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 	  }
 	}
 	else
-	if ( ne.getType() === 'removeEventListener' )
+	if ( e.getType() === 'removeEventListener' )
 	{
-	  eventNameList = ne.body.eventNameList ;
+	  eventNameList = e.body.eventNameList ;
 	  var errText = "" ;
 	  if ( ! eventNameList ) { Log.error ( "Missing eventNameList." ) ; return ; }
 	  if ( typeof eventNameList === 'string' ) eventNameList = [ eventNameList ] ;
@@ -314,6 +314,10 @@ WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, ne )
 			this.client.removeEventListener ( eventNamesToBeRemoved ) ;
 		}
 	}
+  else
+  {
+    Log.error ( "Invalid event received:\n" + e ) ; return ;
+  }
 };
 /**
  * Description

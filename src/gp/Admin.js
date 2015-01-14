@@ -108,69 +108,96 @@ Admin.prototype._execute = function ( action, what, callback )
 	this.socket.on ( 'data', function ondata ( data )
 	{
 		var list, i, desc, str, app, l ;
-	  var m = data.toString() ;
-	  if ( m.charAt ( 0 ) === '{' )
-	  {
-	    var e = Event.prototype.deserialize ( m ) ;
-	    if ( e.getType() === "getInfoResult" )
-	    {
-	    	if ( what === "lsconn" )
-	    	{
-	    		list = e.body.connectionList ;
-    			if ( callback )
-    			{
-    				callback.call ( null, list ) ;
-    				this.end() ;
-    				return ;
-    			}
-	    		if ( ! list || ! list.length )
-	    		{
-		    		console.log ( "No Connections" ) ;
-	    		}
-	    		else
-	    		{
-		    		for ( i = 0 ; i < list.length ; i++ )
-		    		{
-		    			desc = list[i] ;
-		    			str = desc.application ;
-		    			console.log ( "%s\t%s:%s", desc.sid, desc.hostname, desc.applicationName ) ;
+    var mm = data.toString() ;
+    if ( ! this.partialMessage ) this.partialMessage = "" ;
+    mm = this.partialMessage + mm ;
+    this.partialMessage = "" ;
+    var result = T.splitJSONObjects ( mm ) ;
+    var messageList = result.list ;
+    var i, j, k ;
+    var ctx, uid, rcb, e, callbackList ;
+    for ( j = 0 ; j < messageList.length ; j++ )
+    {
+      if ( this.stopImediately )
+      {
+        return ;
+      }
+      var m = messageList[j] ;
+      if ( m.length === 0 )
+      {
+        continue ;
+      }
+      if ( j === messageList.length - 1 )
+      {
+        if ( result.lastLineIsPartial )
+        {
+          this.partialMessage = m ;
+          break ;
+        }
+      }
+      if ( m.charAt ( 0 ) === '{' )
+		  {
+		    var e = Event.prototype.deserialize ( m ) ;
+		    if ( e.getType() === "getInfoResult" )
+		    {
+		    	if ( what === "lsconn" )
+		    	{
+		    		list = e.body.connectionList ;
+	    			if ( callback )
+	    			{
+	    				callback.call ( null, list ) ;
+	    				this.end() ;
+	    				return ;
 	    			}
-		    	}
-	    	}
-	    	else
-	    	if ( what === "lslock" )
-	    	{
-	    		list = e.body.lockList ;
-    			if ( callback )
-    			{
-    				callback.call ( null, list ) ;
-    				this.end() ;
-    				return ;
-    			}
-	    		if ( ! list || ! list.length )
-	    		{
-	    			console.log ( "No locks" ) ;
-	    		}
-	    		else
-	    		{
-		    		for ( i = 0 ; i < list.length ; i++ )
+		    		if ( ! list || ! list.length )
 		    		{
-		    			desc = list[i] ;
-		    			str = desc.owner.application ;
-		    			console.log ( "%s\t%s\t%s:%s", desc.resourceId, desc.owner.sid, desc.owner.hostname, desc.applicationName ) ;
+			    		console.log ( "No Connections" ) ;
 		    		}
-	    		}
-	    	}
-	    	else
-	    	{
-	    		T.log ( e ) ;
-	    	}
-	    }
-	    else
-	    {
-		    T.log ( e ) ;
-	    }
-	  }
+		    		else
+		    		{
+			    		for ( i = 0 ; i < list.length ; i++ )
+			    		{
+			    			desc = list[i] ;
+			    			str = desc.application ;
+			    			console.log ( "%s\t%s:%s", desc.sid, desc.hostname, desc.applicationName ) ;
+		    			}
+			    	}
+		    	}
+		    	else
+		    	if ( what === "lslock" )
+		    	{
+		    		list = e.body.lockList ;
+	    			if ( callback )
+	    			{
+	    				callback.call ( null, list ) ;
+	    				this.end() ;
+	    				return ;
+	    			}
+		    		if ( ! list || ! list.length )
+		    		{
+		    			console.log ( "No locks" ) ;
+		    		}
+		    		else
+		    		{
+			    		for ( i = 0 ; i < list.length ; i++ )
+			    		{
+			    			desc = list[i] ;
+			    			str = desc.owner.application ;
+			    			console.log ( "%s\t%s\t%s:%s", desc.resourceId, desc.owner.sid, desc.owner.hostname, desc.applicationName ) ;
+			    		}
+		    		}
+		    	}
+		    	else
+		    	{
+		    		T.log ( e ) ;
+		    	}
+		    }
+		    else
+		    {
+			    T.log ( e ) ;
+		    }
+		  }
+		}
 	  this.end();
 	});
 };
@@ -248,6 +275,7 @@ console.log ( "n=" + n ) ;
 			process.exit  ( 1 ) ;
 			return ;
 		});
+		return ;
 	}
 	what = T.getProperty ( "info", "true" ) ;
 	if ( what )

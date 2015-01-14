@@ -193,7 +193,15 @@ tangojs.gp.Event.prototype =
 		this.setType ( type ) ;
 		this.user = null ;
 		this.control = { createdAt: new Date() } ;
-		if ( data && typeof data === 'object' ) this.body = data ;
+		if ( data )
+		{
+			if ( typeof data === 'object' ) this.body = data ;
+			else
+			{
+				this.body = {} ;
+				this.body.data = data ;
+			}
+		}
 		else this.body = {} ;
 	},
 	/**
@@ -412,17 +420,17 @@ tangojs.gp.Event.prototype =
 	},
 	/**
 	 * Description
-	 * @method setBody 
+	 * @method setBody
 	 * @param {} data
-	 * @return
+	 * @return 
 	 */
-	setBody: function ( body )
+	setBody: function ( data )
 	{
 		if ( data ) this.body = data ;
 	},
 	/**
 	 * Description
-	 * @method getBody 
+	 * @method getUser
 	 * @return MemberExpression
 	 */
 	getUser: function()
@@ -506,7 +514,7 @@ else
 	if ( require.main === module )
 	{
 		var util = require ( "util" ) ;
-		var T = require ( "Tango" ) ;
+		var T = require ( "Acronyl" ) ;
 
 		var User = require ( "User" ) ;
 		var File = require ( "File" ) ;
