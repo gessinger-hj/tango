@@ -1,12 +1,14 @@
-var Event = require ( "./Event" ) ;
-var Log = require ( "../LogFile" ) ;
-var Client = require ( "./Client" ) ;
+var Event        = require ( "./Event" ) ;
+var Client       = require ( "./Client" ) ;
+var Lock         = require ( "./Lock" ) ;
+var Semaphore    = require ( "./Semaphore" ) ;
 
-var MultiHash = require ( "../MultiHash" ) ;
-var T = require ( "../Tango" ) ;
-var ws = require ( "nodejs-websocket" ) ;
+var Log          = require ( "../LogFile" ) ;
+var MultiHash    = require ( "../MultiHash" ) ;
+var T            = require ( "../Tango" ) ;
+var ws           = require ( "nodejs-websocket" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
-var util = require ( 'util' ) ;
+var util         = require ( 'util' ) ;
 
 /**
  * Description
@@ -59,10 +61,10 @@ WebSocketEventProxy.prototype.closeAllWebsockets = function()
 WebSocketEventProxy.prototype.sendToWebSocket = function ( e )
 {
 	var pid = e.getProxyIdentifier() ;
-	var ctx = this._sockets[pid]
-	if ( ctx )
+	var conn = this._sockets[pid]
+	if ( conn )
 	{
-		ctx.socket.sendText ( e.serialize() ) ;
+		conn.send ( e ) ;
 	}
 };
 /**
@@ -74,16 +76,16 @@ WebSocketEventProxy.prototype.sendToWebSocket = function ( e )
 WebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
 {
 	var se = e.serialize() ;
-	var i, ctx ;
+	var i, conn ;
 	var name = e.getName() ;
 	var list = this._eventNameToSocketContext.get ( name ) ;
 	if ( list )
 	{
 		for ( i = 0 ; i < list.length ; i++ )
 		{
-			ctx = list[i] ;
-			ctx.socket.sendText ( se ) ;
-	    // if ( e.isResultRequested() )
+			conn = list[i] ;
+			conn.socket.sendText ( se ) ;
+	    // if ( e.isResultRequested() ) TODO for request / result
 	    // {
 	    //   break ;
 	    // }
@@ -98,51 +100,32 @@ WebSocketEventProxy.prototype.generalEventListenerFunction = function ( e )
  */
 WebSocketEventProxy.prototype.removeWebsocket = function ( socket )
 {
-	var ctx = this._sockets[socket.key] ;
-	var eventNamesToBeRemoved = [] ;
-	if ( ctx )
+	var conn = this._sockets[socket.key] ;
+	if ( ! conn )
 	{
-		socket.removeAllListeners ( "text" ) ;
-		socket.removeAllListeners ( "error" ) ;
-		socket.removeAllListeners ( "close" ) ;
-
-		var currentKeys = this._eventNameToSocketContext.getKeys() ;
-		this._eventNameToSocketContext.remove ( ctx ) ;
-		for ( i = 0 ; i < currentKeys.length ; i++ )
-		{
-			if ( ! this._eventNameToSocketContext.get ( currentKeys[i] ) )
-			{
-				eventNamesToBeRemoved.push ( currentKeys[i] ) ;
-			}
-		}
-		delete this._sockets[ctx.sid] ;
+		return ;
 	}
-	if ( eventNamesToBeRemoved.length && this.client )
-	{
-		this.client.removeEventListener ( eventNamesToBeRemoved ) ;
-	}
+	conn.remove() ;
 };
-
 WebSocketEventProxy.prototype._create = function()
 {
 	var wssOptions = {} ;
 	var thiz = this ;
-	this.server = ws.createServer ( wssOptions, function ( conn )
+	this.server = ws.createServer ( wssOptions, function ( socket )
 	{
 		var eventNameList ;
 		var i = 0 ;
 		var index = 0 ;
 
 		Log.info ( 'web connects' ) ;
-		conn.on ( "text", function ( message )
+		socket.on ( "text", function ( message )
 		{
 			var ne = Event.prototype.deserialize ( message ) ;
-			ne.setProxyIdentifier ( conn.key ) ;
-			var ctx = thiz._sockets[this.key] ;
-			if ( ! ctx )
+			ne.setProxyIdentifier ( socket.key ) ;
+			var conn = thiz._sockets[this.key] ;
+			if ( ! conn )
 			{
-				ctx = { socket:conn, sid: conn.key } ;
-				thiz._sockets[ctx.sid] = ctx ;
+				conn = new Conn  ( thiz, socket ) ;
 			}
 			if ( ! thiz.client )
 			{
@@ -162,7 +145,7 @@ WebSocketEventProxy.prototype._create = function()
 			}
 			if ( ne.getName() === 'system' )
 			{
-				thiz.handleSystemMessages ( ctx, ne ) ;
+				thiz.handleSystemMessages ( conn, ne ) ;
 			}
 			else
 			{
@@ -204,12 +187,12 @@ WebSocketEventProxy.prototype._create = function()
 	        	}) ;
 				}
 		}) ;
-		conn.on ( "error", function ( e )
+		socket.on ( "error", function ( e )
 		{
 			Log.info ( "web-socket closed with error" ) ;
 			thiz.removeWebsocket ( this ) ;
 		}) ;
-		conn.on ( "close", function ( message )
+		socket.on ( "close", function ( message )
 		{
 			Log.info ( "web-socket closed" ) ;
 			thiz.removeWebsocket ( this ) ;
@@ -219,16 +202,16 @@ WebSocketEventProxy.prototype._create = function()
 /**
  * Description
  * @method handleSystemMessages
- * @param {} ctx
+ * @param {} conn
  * @param {} ne
  * @return 
  */
-WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, e )
+WebSocketEventProxy.prototype.handleSystemMessages = function ( conn, e )
 {
 	if ( e.getType() === "client_info" )
 	{
 		e.setType ( "client_info_response" ) ;
-		ctx.socket.sendText ( e.serialize() ) ;
+		conn.send ( e ) ;
 		return ;
 	}
 	if ( e.getType() === 'addEventListener' )
@@ -245,10 +228,10 @@ WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, e )
 	  {
 	    Log.error ( "eventNameList must not be empty." ) ; return ;
 	  }
-	  if ( ! ctx.eventNameList ) ctx.eventNameList = [] ;
-	  for ( i = 0 ; i < ctx.eventNameList.lenth ; i++ )
+	  if ( ! conn.eventNameList ) conn.eventNameList = [] ;
+	  for ( i = 0 ; i < conn.eventNameList.lenth ; i++ )
 	  {
-	  	index = eventNameList.indexOf ( ctx.eventNameList[i] ) ;
+	  	index = eventNameList.indexOf ( conn.eventNameList[i] ) ;
 	  	if ( index >= 0 )
 	  	{
         eventNameList.splice ( index, 1 ) ;
@@ -260,7 +243,7 @@ WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, e )
 	  }
 	  for ( i = 0 ; i < eventNameList.length ; i++ )
 	  {
-	  	ctx.eventNameList.push ( eventNameList[i] ) ;
+	  	conn.eventNameList.push ( eventNameList[i] ) ;
 	  }
 	  var eventNameListToBePropagated = [] ;
 	  for ( i = 0 ; i < eventNameList.length ; i++ )
@@ -269,7 +252,7 @@ WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, e )
 	  	{
 	  		eventNameListToBePropagated.push ( eventNameList[i] ) ;
 	  	}
-			this._eventNameToSocketContext.put ( eventNameList[i], ctx ) ;
+			this._eventNameToSocketContext.put ( eventNameList[i], conn ) ;
 	  }
 	  if ( eventNameListToBePropagated.length )
 	  {
@@ -294,11 +277,11 @@ WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, e )
 		var currentKeys = this._eventNameToSocketContext.getKeys() ;
 		for ( i = 0 ; i < eventNameList.length ; i++ )
 		{
-	  	index = ctx.eventNameList.indexOf ( eventNameList[i] ) ;
+	  	index = conn.eventNameList.indexOf ( eventNameList[i] ) ;
 	  	if ( index >= 0 )
 	  	{
-        ctx.eventNameList.splice ( index, 1 ) ;
-				this._eventNameToSocketContext.remove ( eventNameList[i], ctx ) ;
+        conn.eventNameList.splice ( index, 1 ) ;
+				this._eventNameToSocketContext.remove ( eventNameList[i], conn ) ;
 	  	}
 		}
 	  var eventNamesToBeRemoved = [] ;
@@ -313,6 +296,16 @@ WebSocketEventProxy.prototype.handleSystemMessages = function ( ctx, e )
 		{
 			this.client.removeEventListener ( eventNamesToBeRemoved ) ;
 		}
+	}
+	else
+	if ( e.getType() === 'lockResourceRequest' )
+	{
+		conn._lockResourceRequest  ( e ) ;
+	}
+	else
+	if ( e.getType() === 'unlockResourceRequest' )
+	{
+		conn._unlockResourceRequest  ( e ) ;
 	}
   else
   {
@@ -352,6 +345,126 @@ WebSocketEventProxy.prototype.shutdown = function()
 	this.server.socket.close() ;
 	this.server = null ;
 };
+/**
+ * Internal class
+ * @constructor
+ */
+var Conn = function ( proxy, socket )
+{
+	this.socket                   = socket ;
+	this.sid                      = socket.key ;
+	this.proxy                    = proxy ;
+	this.proxy._sockets[this.sid] = this ;
+	this.client                   = null ;
+	this._locks                   = {} ;
+	this._semaphores              = {} ;
+};
+Conn.prototype.getClient = function()
+{
+	if ( this.client )
+	{
+		return this.client ;
+	}
+	this.client = new Client() ;
+	return this.client ;
+};
+Conn.prototype.send = function ( what )
+{
+	if ( what instanceof Event )
+	{
+		this.socket.sendText ( what.serialize() ) ;
+		return ;
+	}
+	if ( typeof what === 'string' )
+	{
+		this.socket.sendText ( what ) ;
+	}
+};
+Conn.prototype.remove = function()
+{
+	var eventNamesToBeRemoved = [] ;
+	this.socket.removeAllListeners ( "text" ) ;
+	this.socket.removeAllListeners ( "error" ) ;
+	this.socket.removeAllListeners ( "close" ) ;
+
+	var currentKeys = this.proxy._eventNameToSocketContext.getKeys() ;
+	this.proxy._eventNameToSocketContext.remove ( this ) ;
+	for ( i = 0 ; i < currentKeys.length ; i++ )
+	{
+		if ( ! this.proxy._eventNameToSocketContext.get ( currentKeys[i] ) )
+		{
+			eventNamesToBeRemoved.push ( currentKeys[i] ) ;
+		}
+	}
+	delete this.proxy._sockets[this.sid] ;
+
+	if ( eventNamesToBeRemoved.length && this.proxy.client )
+	{
+		this.proxy.client.removeEventListener ( eventNamesToBeRemoved ) ;
+	}
+	this.flush() ;
+};
+Conn.prototype.flush = function ()
+{
+	this.socket = null ;
+	this.sid    = null ;
+	this.proxy  = null ;
+	if ( this.client )
+	{
+		try
+		{
+			this.client.end() ;
+		}
+		catch ( exc )
+		{
+		}
+		this.client = null ;
+	}
+	this._locks      = {} ;
+	this._semaphores = {} ;
+};
+Conn.prototype._lockResourceRequest = function ( e )
+{
+console.log ( e ) ;
+	var thiz = this ;
+	var resourceId = e.body.resourceId  ;
+	if ( ! resourceId ) return ;
+	if ( this._locks[resourceId] )
+	{
+		return
+	}
+	var lock = new Lock () ;
+	this._locks[resourceId] = lock ;
+  lock.aquire ( resourceId, function ( err, l )
+  {
+console.log ( l ) ;
+    e.setType ( "lockResourceResult" ) ;
+  	if ( err )
+  	{
+  		e.body.isLockOwner = false ;
+  	}
+  	else
+  	{
+	  	e.body.isLockOwner = l.isOwner() ;
+  	}
+  	thiz.send ( e ) ;
+  } ) ;
+};
+Conn.prototype._unlockResourceRequest = function ( e )
+{
+console.log ( e ) ;
+	var thiz = this ;
+	var resourceId = e.body.resourceId  ;
+	if ( ! resourceId ) return ;
+	var lock = this._locks[resourceId] ;
+	if ( ! lock )
+	{
+		return
+	}
+	delete this._locks[resourceId] ;
+  lock.release() ;
+};
+
 module.exports = WebSocketEventProxy ;
 
 if ( require.main === module )
