@@ -229,7 +229,7 @@ tangojs.gp.Event.prototype =
 			+ "]\n"
 			+ ( this.user ? "[user=" + this.user + "]" : "" )
 			+ "[control=" + util.inspect ( this.control ) + "]\n"
-			+ "[data=" + util.inspect ( this.body ) + "]" ;
+			+ "[body=" + util.inspect ( this.body ) + "]" ;
 		}
 		else
 		{
@@ -238,8 +238,8 @@ tangojs.gp.Event.prototype =
 			+ ",type=" + this.type
 			+ "]\n"
 			+ ( this.user ? "[user=" + this.user + "]" : "" )
-			+ "[control=" + ACSys.toFullString ( this.control ) + "]\n"
-			+ "[data=" + ACSys.toFullString ( this.body ) + "]" ;
+			+ "[control=" + TSys.toFullString ( this.control ) + "]\n"
+			+ "[body=" + TSys.toFullString ( this.body ) + "]" ;
 		}
 	},
 	/**
@@ -514,7 +514,7 @@ else
 	if ( require.main === module )
 	{
 		var util = require ( "util" ) ;
-		var T = require ( "Acronyl" ) ;
+		var T = require ( "Tango" ) ;
 
 		var User = require ( "User" ) ;
 		var File = require ( "File" ) ;
