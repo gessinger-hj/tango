@@ -41,6 +41,27 @@ var Client = function ( port, host )
   this._pendingAquireSemaphoreList = [] ;
 } ;
 util.inherits ( Client, EventEmitter ) ;
+Client.prototype.holdsLocksOrSemaphores = function()
+{
+  var k ;
+  for ( k in this._ownedResources )
+  {
+    return true ;
+  }
+  for ( k in this._aquiredSemaphores )
+  {
+    return true ;
+  }
+  for ( k in this._ownedSemaphores )
+  {
+    return true ;
+  }
+  if ( this._pendingAquireSemaphoreList.length )
+  {
+    return true ;
+  }
+  return false  ;
+};
 /**
  * Description
  * @method setUser
@@ -736,6 +757,7 @@ Client.prototype.aquireSemaphore = function ( resourceId, callback )
     this.send ( e ) ;
   }
 };
+
 /**
  * Description
  * @method releaseSemaphore

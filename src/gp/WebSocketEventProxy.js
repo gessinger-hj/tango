@@ -359,6 +359,10 @@ var Conn = function ( proxy, socket )
 	this._locks                   = {} ;
 	this._semaphores              = {} ;
 };
+Conn.prototype.toString = function()
+{
+  return "(Conn)[sid=" + this.sid +  "\n" + util.inspect ( this._locks  ) + "]" ;
+};
 Conn.prototype.getClient = function()
 {
 	if ( this.client )
@@ -425,7 +429,6 @@ Conn.prototype.flush = function ()
 };
 Conn.prototype._lockResourceRequest = function ( e )
 {
-console.log ( e ) ;
 	var thiz = this ;
 	var resourceId = e.body.resourceId  ;
 	if ( ! resourceId ) return ;
@@ -433,11 +436,10 @@ console.log ( e ) ;
 	{
 		return
 	}
-	var lock = new Lock () ;
+	var lock = new Lock ( resourceId, this.getClient() ) ;
 	this._locks[resourceId] = lock ;
-  lock.aquire ( resourceId, function ( err, l )
+  lock.aquire ( function ( err, l )
   {
-console.log ( l ) ;
     e.setType ( "lockResourceResult" ) ;
   	if ( err )
   	{
@@ -450,6 +452,7 @@ console.log ( l ) ;
   	thiz.send ( e ) ;
   } ) ;
 };
+
 Conn.prototype._unlockResourceRequest = function ( e )
 {
 console.log ( e ) ;
@@ -463,6 +466,17 @@ console.log ( e ) ;
 	}
 	delete this._locks[resourceId] ;
   lock.release() ;
+  if ( ! this.client.holdsLocksOrSemaphores() )
+  {
+		try
+		{
+			this.client.end() ;
+		}
+		catch ( exc )
+		{
+		}
+		this.client = null ;
+  }
 };
 
 module.exports = WebSocketEventProxy ;

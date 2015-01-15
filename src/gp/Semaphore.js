@@ -9,9 +9,10 @@ var Client = require ( "./Client" ) ;
  * @param {string} [host]
  * @return 
  */
-Semaphore = function ( port, host )
+Semaphore = function ( resourceId, port, host )
 {
   this.className = "Semaphore" ;
+  this._resourceId = resourceId ;
   if ( port instanceof Client )
   {
     this._isClientOwner = false ;
@@ -26,6 +27,7 @@ Semaphore = function ( port, host )
   }
   this._isSemaphoreOwner = false ;
 };
+
 /**
  * Description
  * @method toString
@@ -42,15 +44,14 @@ Semaphore.prototype.toString = function()
  * @param {} callback
  * @return 
  */
-Semaphore.prototype.aquire = function ( resourceId, callback )
+Semaphore.prototype.aquire = function ( callback )
 {
   if ( ! this._client )
   {
     this._client = new Client ( this._port, this._host ) ;
   }
-  this._resourceId = resourceId ;
   this._callback = callback ;
-  this._client.aquireSemaphore ( resourceId, this._aquireSemaphoreCallback.bind ( this ) ) ;
+  this._client.aquireSemaphore ( this._resourceId, this._aquireSemaphoreCallback.bind ( this ) ) ;
 };
 Semaphore.prototype._aquireSemaphoreCallback = function ( err, e )
 {

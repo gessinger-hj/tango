@@ -9,9 +9,10 @@ var Client = require ( "./Client" ) ;
  * @param {string} [host]
  * @return 
  */
-Lock = function ( port, host )
+Lock = function ( resourceId, port, host )
 {
   this.className = "Lock" ;
+  this._resourceId = resourceId ;
   if ( port instanceof Client )
   {
     this._isClientOwner = false ;
@@ -35,6 +36,7 @@ Lock.prototype.toString = function()
 {
   return "(" + this.className + ")[resourceId=" + this._resourceId + ",isOwner=" + this._isLockOwner + "]" ;
 };
+
 /**
  * Description
  * @method aquire
@@ -42,15 +44,14 @@ Lock.prototype.toString = function()
  * @param {} callback
  * @return 
  */
-Lock.prototype.aquire = function ( resourceId, callback )
+Lock.prototype.aquire = function ( callback )
 {
   if ( ! this._client )
   {
     this._client = new Client ( this._port, this._host ) ;
   }
-  this._resourceId = resourceId ;
   this._callback = callback ;
-  this._client.lockResource ( resourceId, this._lockResourceCallback.bind ( this ) ) ;
+  this._client.lockResource ( this._resourceId, this._lockResourceCallback.bind ( this ) ) ;
 };
 Lock.prototype._lockResourceCallback = function ( err, e )
 {
@@ -99,8 +100,8 @@ if ( require.main === module )
 {
   var key = T.getProperty ( "key", "user:4711" ) ;
   var auto = T.getProperty ( "auto" ) ;
-  var lock = new Lock () ;
-  lock.aquire ( key, function ( err, l )
+  var lock = new Lock ( key ) ;
+  lock.aquire ( function ( err, l )
   {
     console.log ( "err=" + err ) ;
     console.log ( "l=" + l ) ;
