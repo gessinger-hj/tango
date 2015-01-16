@@ -1,9 +1,9 @@
-var T = require ( 'Tango' ) ;
-var Tail = require ( './Tail' ) ;
-var File = require ( 'File' ) ;
-var Event = require ( 'gp/Event' ) ;
+var T      = require ( 'Tango' ) ;
+var Tail   = require ( './Tail' ) ;
+var File   = require ( 'File' ) ;
+var Event  = require ( 'gp/Event' ) ;
 var Client = require ( 'gp/Client' ) ;
-var Admin = require ( 'gp/Admin' ) ;
+var Admin  = require ( 'gp/Admin' ) ;
 
 var index = -1 ;
 
@@ -314,7 +314,7 @@ function publish()
 			_SubscriptionList[i].tail.unwatch() ;
 		}
 		_SubscriptionList.length = 0 ;
-		_Subscriptions = {} ;
+		_Subscriptions           = {} ;
 	});
 }
 what = T.getProperty ( "publish" ) ;
