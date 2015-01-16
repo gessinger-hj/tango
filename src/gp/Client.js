@@ -697,7 +697,11 @@ Client.prototype.lockResource = function ( resourceId, callback )
     Log.logln ( "Client.lockResource: callback must be a function." ) ;
     return ;
   }
+<<<<<<< Upstream, based on branch 'master' of git@github.com:gessinger-hj/tango.git
   if ( this._ownedResources[resourceId] || this._aquiredResources[resourceId] )
+=======
+  if ( this._ownedResources[resourceId] )
+>>>>>>> 023efe3 Semaphores / Locks in Browser
   {
     Log.logln ( "Client.unlockResource: already owner of resourceId=" + resourceId ) ;
     return ;
@@ -737,7 +741,10 @@ Client.prototype.unlockResource = function ( resourceId )
     Log.logln ( "Client.lockResource: resourceId must be a string." ) ;
     return ;
   }
+<<<<<<< Upstream, based on branch 'master' of git@github.com:gessinger-hj/tango.git
   delete this._aquiredResources[resourceId] ;
+=======
+>>>>>>> 023efe3 Semaphores / Locks in Browser
   if ( ! this._ownedResources[resourceId] )
   {
     Log.logln ( "Client.unlockResource: not owner of resourceId=" + resourceId ) ;
