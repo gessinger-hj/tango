@@ -93,10 +93,10 @@ Semaphore.prototype.release = function()
 module.exports = Semaphore ;
 if ( require.main === module )
 {
-  var key = T.getProperty ( "key", "user:4711" ) ;
+  var key = T.getProperty ( "key", "user:10000" ) ;
   var auto = T.getProperty ( "auto" ) ;
-  var sem = new Semaphore () ;
-  sem.aquire ( key, function ( err, l )
+  var sem = new Semaphore ( key ) ;
+  sem.aquire ( function ( err, l )
   {
     // console.log ( "err=" + err ) ;
     console.log ( this.toString() ) ;

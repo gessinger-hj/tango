@@ -307,6 +307,16 @@ WebSocketEventProxy.prototype.handleSystemMessages = function ( conn, e )
 	{
 		conn._unlockResourceRequest  ( e ) ;
 	}
+	else
+	if ( e.getType() === 'aquireSemaphoreRequest' )
+	{
+		conn._aquireSemaphoreRequest  ( e ) ;
+	}
+	else
+	if ( e.getType() === 'releaseSemaphoreRequest' )
+	{
+		conn._releaseSemaphoreRequest  ( e ) ;
+	}
   else
   {
     Log.error ( "Invalid event received:\n" + e ) ; return ;
@@ -452,10 +462,8 @@ Conn.prototype._lockResourceRequest = function ( e )
   	thiz.send ( e ) ;
   } ) ;
 };
-
 Conn.prototype._unlockResourceRequest = function ( e )
 {
-console.log ( e ) ;
 	var thiz = this ;
 	var resourceId = e.body.resourceId  ;
 	if ( ! resourceId ) return ;
@@ -466,6 +474,55 @@ console.log ( e ) ;
 	}
 	delete this._locks[resourceId] ;
   lock.release() ;
+  if ( ! this.client.holdsLocksOrSemaphores() )
+  {
+		try
+		{
+			this.client.end() ;
+		}
+		catch ( exc )
+		{
+		}
+		this.client = null ;
+  }
+};
+Conn.prototype._aquireSemaphoreRequest = function ( e )
+{
+	var thiz = this ;
+	var resourceId = e.body.resourceId  ;
+	if ( ! resourceId ) return ;
+	if ( this._semaphores[resourceId] )
+	{
+		return
+	}
+	var sem = new Semaphore ( resourceId, this.getClient() ) ;
+	this._semaphores[resourceId] = sem ;
+  sem.aquire ( function ( err, l )
+  {
+    e.setType ( "aquireSemaphoreResult" ) ;
+  	if ( err )
+  	{
+  		e.body.isSemaphoreOwner = false ;
+  	}
+  	else
+  	{
+	  	e.body.isSemaphoreOwner = l.isOwner() ;
+  	}
+  	thiz.send ( e ) ;
+  } ) ;
+};
+Conn.prototype._releaseSemaphoreRequest = function ( e )
+{
+	var thiz = this ;
+	var resourceId = e.body.resourceId  ;
+	if ( ! resourceId ) return ;
+	var sem = this._semaphores[resourceId] ;
+	if ( ! sem )
+	{
+		return
+	}
+	delete this._semaphores[resourceId] ;
+  sem.release() ;
   if ( ! this.client.holdsLocksOrSemaphores() )
   {
 		try
