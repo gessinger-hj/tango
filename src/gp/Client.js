@@ -33,6 +33,7 @@ var Client = function ( port, host )
   this.eventListenerFunctions      = new MultiHash() ;
   this.listenerFunctionsList       = [] ;
   this._pendingLockList            = [] ;
+  this._aquiredResources           = {} ;
   this._ownedResources             = {} ;
   this.alive                       = false ;
   this.stopImediately              = false ;
@@ -44,6 +45,10 @@ util.inherits ( Client, EventEmitter ) ;
 Client.prototype.holdsLocksOrSemaphores = function()
 {
   var k ;
+  for ( k in this._aquiredResources )
+  {
+    return true ;
+  }
   for ( k in this._ownedResources )
   {
     return true ;
@@ -133,7 +138,7 @@ Client.prototype.connect = function()
         var ctx = thiz._pendingLockList[i] ;
         ctx.e.setUniqueId ( uid ) ;
         this.write ( ctx.e.serialize() ) ;
-        thiz._ownedResources[e.body.resourceId] = ctx;
+        thiz._aquiredResources[e.body.resourceId] = ctx;
       }
       thiz._pendingLockList.length = 0 ;
     }
@@ -235,12 +240,16 @@ Client.prototype.connect = function()
           ////////////////////////////
           if ( e.getType() === "lockResourceResult" )
           {
-            ctx = thiz._ownedResources[e.body.resourceId] ;
-            if ( ! e.body.isLockOwner )
+            ctx = thiz._aquiredResources[e.body.resourceId] ;
+            delete thiz._aquiredResources[e.body.resourceId] ;
+            if ( e.body.isLockOwner )
             {
-              delete thiz._ownedResources[e.body.resourceId] ;
+              thiz._ownedResources[e.body.resourceId] = ctx ;
             }
-            ctx.callback.call ( thiz, null, e ) ;
+            if ( ctx )
+            {
+              ctx.callback.call ( thiz, null, e ) ;
+            }
             continue ;
           }
           if ( e.getType() === "unlockResourceResult" )
@@ -688,7 +697,7 @@ Client.prototype.lockResource = function ( resourceId, callback )
     Log.logln ( "Client.lockResource: callback must be a function." ) ;
     return ;
   }
-  if ( this._ownedResources[resourceId] )
+  if ( this._ownedResources[resourceId] || this._aquiredResources[resourceId] )
   {
     Log.logln ( "Client.unlockResource: already owner of resourceId=" + resourceId ) ;
     return ;
@@ -711,7 +720,7 @@ Client.prototype.lockResource = function ( resourceId, callback )
     counter++ ;
     var uid = os.hostname() + "_" + this.socket.localPort + "-" + counter ;
     e.setUniqueId ( uid ) ;
-    this._ownedResources[resourceId] = ctx;
+    this._aquiredResources[resourceId] = ctx;
     this.send ( e ) ;
   }
 };
@@ -728,6 +737,7 @@ Client.prototype.unlockResource = function ( resourceId )
     Log.logln ( "Client.lockResource: resourceId must be a string." ) ;
     return ;
   }
+  delete this._aquiredResources[resourceId] ;
   if ( ! this._ownedResources[resourceId] )
   {
     Log.logln ( "Client.unlockResource: not owner of resourceId=" + resourceId ) ;
