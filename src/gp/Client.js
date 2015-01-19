@@ -678,9 +678,21 @@ Client.prototype.removeEventListener = function ( eventNameOrFunction )
  */
 Client.prototype.lockResource = function ( resourceId, callback )
 {
-  if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.lockResource: resourceId must be a string." ) ;
-  if ( typeof callback !== 'function' ) throw new Error ( "Client.lockResource: callback must be a function." ) ;
-  if ( this._ownedResources[resourceId] ) throw new Error ( "Client.unlockResource: already owner of resourceId=" + resourceId ) ;
+  if ( typeof resourceId !== 'string' || ! resourceId )
+  {
+    Log.logln ( "Client.lockResource: resourceId must be a string." ) ;
+    return ;
+  }
+  if ( typeof callback !== 'function' )
+  {
+    Log.logln ( "Client.lockResource: callback must be a function." ) ;
+    return ;
+  }
+  if ( this._ownedResources[resourceId] )
+  {
+    Log.logln ( "Client.unlockResource: already owner of resourceId=" + resourceId ) ;
+    return ;
+  }
 
   var e = new Event ( "system", "lockResourceRequest" ) ;
   e.body.resourceId = resourceId ;
@@ -711,8 +723,16 @@ Client.prototype.lockResource = function ( resourceId, callback )
  */
 Client.prototype.unlockResource = function ( resourceId )
 {
-  if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.lockResource: resourceId must be a string." ) ;
-  if ( ! this._ownedResources[resourceId] ) throw new Error ( "Client.unlockResource: not owner of resourceId=" + resourceId ) ;
+  if ( typeof resourceId !== 'string' || ! resourceId )
+  {
+    Log.logln ( "Client.lockResource: resourceId must be a string." ) ;
+    return ;
+  }
+  if ( ! this._ownedResources[resourceId] )
+  {
+    Log.logln ( "Client.unlockResource: not owner of resourceId=" + resourceId ) ;
+    return ;
+  }
 
   var e = new Event ( "system", "unlockResourceRequest" ) ;
   e.body.resourceId = resourceId ;
@@ -723,6 +743,7 @@ Client.prototype.unlockResource = function ( resourceId )
   delete this._ownedResources[resourceId] ;
   this.send ( e ) ;
 };
+
 /**
  * Description
  * @method aquireSemaphore
@@ -732,9 +753,21 @@ Client.prototype.unlockResource = function ( resourceId )
  */
 Client.prototype.aquireSemaphore = function ( resourceId, callback )
 {
-  if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.aquireSemaphore: resourceId must be a string." ) ;
-  if ( typeof callback !== 'function' ) throw new Error ( "Client.aquireSemaphore: callback must be a function." ) ;
-  if ( this._ownedSemaphores[resourceId] ) throw new Error ( "Client.aquireSemaphore: already owner of resourceId=" + resourceId ) ;
+  if ( typeof resourceId !== 'string' || ! resourceId )
+  {
+    Log.logln ( "Client.aquireSemaphore: resourceId must be a string." ) ;
+    return ;
+  }
+  if ( typeof callback !== 'function' )
+  {
+    Log.logln ( "Client.aquireSemaphore: callback must be a function." ) ;
+    return ;
+  }
+  if ( this._ownedSemaphores[resourceId] )
+  {
+    Log.logln ( "Client.aquireSemaphore: already owner of resourceId=" + resourceId ) ;
+    return ;
+  }
 
   var e = new Event ( "system", "aquireSemaphoreRequest" ) ;
   e.body.resourceId = resourceId ;
@@ -766,9 +799,17 @@ Client.prototype.aquireSemaphore = function ( resourceId, callback )
  */
 Client.prototype.releaseSemaphore = function ( resourceId )
 {
-  if ( typeof resourceId !== 'string' || ! resourceId ) throw new Error ( "Client.releaseSemaphore: resourceId must be a string." ) ;
+  if ( typeof resourceId !== 'string' || ! resourceId )
+  {
+    Log.logln ( "Client.releaseSemaphore: resourceId must be a string." ) ;
+    return ;
+  }
   delete this._aquiredSemaphores[resourceId] ;
-  if ( ! this._ownedSemaphores[resourceId] ) throw new Error ( "Client.releaseSemaphore: not owner of resourceId=" + resourceId ) ;
+  if ( ! this._ownedSemaphores[resourceId] )
+  {
+    Log.logln ( "Client.releaseSemaphore: not owner of resourceId=" + resourceId ) ;
+    return ;
+  }
 
   var e = new Event ( "system", "releaseSemaphoreRequest" ) ;
   e.body.resourceId = resourceId ;
