@@ -661,8 +661,8 @@ Broker.prototype._releaseSemaphoreRequest = function ( socket, e )
   {
     if ( currentSemaphoreOwner !== conn )
     {
-      Log.error ( conn.toString() + "\n is not owner of semaphore=" + resourceId ) ;
-      this._ejectSocket ( socket ) ;
+      conn._pendingAquireSemaphoreRecourceIdList.remove ( resourceId ) ;
+      this._pendingAquireSemaphoreConnections.remove ( resourceId, conn ) ;
       return ;
     }
   }

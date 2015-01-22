@@ -459,6 +459,10 @@ Conn.prototype._lockResourceRequest = function ( e )
   	{
 	  	e.body.isLockOwner = l.isOwner() ;
   	}
+  	if ( ! e.body.isLockOwner )
+  	{
+			delete thiz._locks[resourceId] ;
+  	}
   	thiz.send ( e ) ;
   } ) ;
 };
