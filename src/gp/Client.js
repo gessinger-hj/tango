@@ -1,13 +1,13 @@
-var net = require('net');
-var os = require('os');
+var net          = require('net');
+var os           = require('os');
 var EventEmitter = require ( "events" ).EventEmitter ;
-var util = require ( "util" ) ;
+var util         = require ( "util" ) ;
 
-var T = require ( "../Tango" ) ;
-var Event = require ( "./Event" ) ;
-var MultiHash = require ( "../MultiHash" ) ;
-var Log = require ( "../LogFile" ) ;
-var User = require ( "../User" ) ;
+var T            = require ( "../Tango" ) ;
+var Event        = require ( "./Event" ) ;
+var MultiHash    = require ( "../MultiHash" ) ;
+var Log          = require ( "../LogFile" ) ;
+var User         = require ( "../User" ) ;
 
 var counter = 0 ;
 /**

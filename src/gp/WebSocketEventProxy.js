@@ -1,3 +1,7 @@
+var ws           = require ( "nodejs-websocket" ) ;
+var EventEmitter = require ( "events" ).EventEmitter ;
+var util         = require ( 'util' ) ;
+
 var Event        = require ( "./Event" ) ;
 var Client       = require ( "./Client" ) ;
 var Lock         = require ( "./Lock" ) ;
@@ -6,9 +10,6 @@ var Semaphore    = require ( "./Semaphore" ) ;
 var Log          = require ( "../LogFile" ) ;
 var MultiHash    = require ( "../MultiHash" ) ;
 var T            = require ( "../Tango" ) ;
-var ws           = require ( "nodejs-websocket" ) ;
-var EventEmitter = require ( "events" ).EventEmitter ;
-var util         = require ( 'util' ) ;
 
 /**
  * Description

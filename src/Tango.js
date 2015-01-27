@@ -295,9 +295,25 @@ TangoClass.prototype.setProperty = function ( name, value )
  * @param {} name
  * @param {} defaultValue
  */
+TangoClass.prototype.getBool = function ( name, defaultValue )
+{
+  var v = this.getProperty ( name ) ;
+  if ( ! v ) return defaultValue ;
+  if ( v === "true" || v === "1" || v === "yes" || v === "y" ) return true ;
+  return false ;
+};
+/**
+ * Description
+ * @param {} name
+ * @param {} defaultValue
+ */
 TangoClass.prototype.getInt = function ( name, defaultValue )
 {
-  var v = this
+  var v = this.getProperty ( name ) ;
+  if ( ! v ) return defaultValue ;
+  var n = parseInt ( v ) ;
+  if ( isNaN ( n ) ) return defaultValue ;
+  return n ;
 };
 /**
  * Description

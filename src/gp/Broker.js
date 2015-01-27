@@ -4,14 +4,14 @@
  * [net description]
  * @type {[type]}
  */
-var net          = require ( 'net' ) ;
-var util         = require ( 'util' ) ;
-var EventEmitter = require ( "events" ).EventEmitter ;
-var Event        = require ( "./Event" ) ;
-var T            = require ( "../Tango" ) ;
-var MultiHash    = require ( "../MultiHash" ) ;
-var Log          = require ( "../LogFile" ) ;
-
+var net                 = require ( 'net' ) ;
+var util                = require ( 'util' ) ;
+var EventEmitter        = require ( "events" ).EventEmitter ;
+var Event               = require ( "./Event" ) ;
+var T                   = require ( "../Tango" ) ;
+var MultiHash           = require ( "../MultiHash" ) ;
+var Log                 = require ( "../LogFile" ) ;
+var WebSocketEventProxy = require ( "./WebSocketEventProxy" ) ;
 
 /**
  * Description
@@ -800,7 +800,6 @@ if ( require.main === module )
     {
       GEPARD_LOG = new File ( s ) ;
     }
-    
     else
     {
       var fs = require ( "fs" ) ;
@@ -816,5 +815,15 @@ if ( require.main === module )
 
     var b = new Broker() ;
     b.listen() ;
+    if ( T.getBool ( "web", false ) )
+    {
+      var wse = new WebSocketEventProxy() ;
+      wse.listen() ;
+      b.on ( "shutdown", function onshutdown(e)
+      {
+        wse.shutdown() ;
+        process.exit ( 0 ) ;
+      });
+    }
   }
 }
