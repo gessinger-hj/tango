@@ -1,4 +1,3 @@
-// http://www.sebastianseilund.com/nodejs-async-in-practice
 var util = require  ( "util" ) ;
 if ( ! String.prototype.startsWith )
 {
@@ -759,11 +758,20 @@ TangoClass.prototype.resolve = function ( src, map, delimiter )
   return tgt ;
 }
 
+var Tango = null ;
+if ( typeof tangojs === 'undefined' )
+{
+  tangojs = {} ;
+}
+if ( ! tangojs.Tango )
+{
+  Tango = new TangoClass() ;
+  tangojs.Tango = Tango ;
+}
 // if ( ! util.Tango )
 // {
 //   util.Tango = new TangoClass() ;
 // }
 // var Tango = new TangoClass() ;
 // module.exports = util.Tango ;
-var Tango = new TangoClass() ;
 module.exports = Tango ;
