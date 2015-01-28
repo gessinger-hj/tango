@@ -1,5 +1,5 @@
 var T = require ( "./Tango" ) ;
-var Client = require ( "./gp/Client" ) ;
+var Client = require ( "Client" ) ;
 
 if ( require.main === module )
 {

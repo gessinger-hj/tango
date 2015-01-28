@@ -1,6 +1,6 @@
 var T = require ( "./Tango" ) ;
-var Event = require ( "./gp/Event" ) ;
-var Client = require ( "./gp/Client" ) ;
+var Event = require ( "Event" ) ;
+var Client = require ( "Client" ) ;
 var FSWatcher = require ( "./FSWatcher" ) ;
 var DateUtils = require ( "./DateUtils" ) ;
 var os = require ( "os" ) ;

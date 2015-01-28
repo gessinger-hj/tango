@@ -2,9 +2,9 @@
 var T      = require ( 'Tango' ) ;
 var Tail   = require ( './Tail' ) ;
 var File   = require ( 'File' ) ;
-var Event  = require ( 'gp/Event' ) ;
-var Client = require ( 'gp/Client' ) ;
-var Admin  = require ( 'gp/Admin' ) ;
+var Event  = require ( 'Event' ) ;
+var Client = require ( 'Client' ) ;
+var Admin  = require ( 'Admin' ) ;
 
 var index = -1 ;
 
