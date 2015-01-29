@@ -1,10 +1,15 @@
+
+module.exports.ignore=true ;
+if ( require.main !== module )
+{
+  return ;
+}
 var T = require ( "./Tango" ) ;
 var File = require ( "./File" ) ;
 var Event = require ( "Event" ) ;
 var Client = require ( "Client" ) ;
 
 var e ;
-
 // var event = T.getProperty ( "event", "notify" ) ;
 // var type = T.getProperty ( "type" ) ;
 // var json ;
