@@ -1,14 +1,14 @@
 var T                    = require ( "Tango" ) ;
 var Log                  = require ( "LogFile" ) ;
 var File                 = require ( "File" ) ;
-var Admin                = require ( "gp/Admin" ) ;
+var Admin                = require ( "Admin" ) ;
 var GPNotificationBroker = require ( "./GPNotificationBroker" ) ;
 
 var what                 = T.getProperty ( "getWatchResourceList" ) ;
 
 if ( what )
 {
-	var Client = require ( "gp/Client" ) ;
+	var Client = require ( "Client" ) ;
 	new Client().request ( "getWatchResourceList"
 , function result(e)
   {
@@ -30,25 +30,11 @@ new Admin().isRunning ( function admin_is_running ( state )
 
 function execute()
 {
-	var WebSocketEventProxy = require ( "gp/WebSocketEventProxy" ) ;
-	var Broker = require ( "gp/Broker" ) ;
+	var WebSocketEventProxy = require ( "WebSocketEventProxy" ) ;
+	var Gepard = require ( "Gepard" ) ;
+  var logDir = Gepard.getLogDirectory() ;
 
-	var s = T.getProperty ( "GEPARD_LOG" ) ;
-	var GEPARD_LOG ;
-	if ( s )
-	{
-		GEPARD_LOG = new File ( s ) ;
-	}
-	else
-	{
-		var fs = require ( "fs" ) ;
-		var GEPARD_LOG = new File ( T.resolve ( "%HOME%/log" ) ) ;
-		T.setProperty ( "GEPARD_LOG", GEPARD_LOG.toString() ) ;
-	}
-	if ( ! GEPARD_LOG.isDirectory() )
-	{
-		GEPARD_LOG.mkdir() ;
-	}
+	var Broker = require ( "Broker" ) ;
 
 	Log.init ( "level=info,Xedirect=3,file=%GEPARD_LOG%/%APPNAME%.log:max=1m:v=4") ;
 
