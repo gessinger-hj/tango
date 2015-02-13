@@ -535,13 +535,6 @@ TangoClass.prototype.deepDeserializeClass = function ( obj )
         obj[k] = new Date ( o.value ) ;
         continue ;
       }
-      if ( o.type === 'Xml' )
-      {
-        var txml = require ( "Xml" ) ;
-        var f = new txml.XmlFactory() ;
-        obj[k] = f.create ( o.value ) ;
-        continue ;
-      }
       if ( o.type === "Buffer" && this.isArray ( o.data ) )
       {
         obj[k] = new Buffer ( o.data ) ;
@@ -741,6 +734,10 @@ TangoClass.prototype.resolve = function ( src, map, delimiter )
           {
             v = this.getProperty ( n ) ;
           }
+          if ( v && v.indexOf ( delimiter ) >= 0  )
+          {
+            v = this.resolve ( v, map, delimiter ) ;
+          }
           if ( typeof v !== 'string' && name === 'HOME' )
           {
             var hp = this.getProperty ( "HOMEPATH" ) ;
@@ -749,10 +746,6 @@ TangoClass.prototype.resolve = function ( src, map, delimiter )
             {
               v = hd + hp ;
             }
-          }
-          if ( v && v.indexOf ( delimiter ) >= 0  )
-          {
-            v = this.resolve ( v, map, delimiter ) ;
           }
           if ( typeof v === 'string' )
           {
@@ -777,19 +770,13 @@ TangoClass.prototype.resolve = function ( src, map, delimiter )
 }
 
 var Tango = null ;
-if ( typeof tangojs === 'undefined' )
+
+if ( typeof org === 'undefined' ) org = {} ;
+if ( typeof org.gessinger === 'undefined' ) org.gessinger = {} ;
+if ( typeof org.gessinger.tangojs === 'undefined' ) org.gessinger.tangojs = {} ;
+
+if ( ! org.gessinger.tangojs.Tango )
 {
-  tangojs = {} ;
+  org.gessinger.tangojs.Tango = new TangoClass() ;
 }
-if ( ! tangojs.Tango )
-{
-  Tango = new TangoClass() ;
-  tangojs.Tango = Tango ;
-}
-// if ( ! util.Tango )
-// {
-//   util.Tango = new TangoClass() ;
-// }
-// var Tango = new TangoClass() ;
-// module.exports = util.Tango ;
-module.exports = tangojs.Tango ;
+module.exports = org.gessinger.tangojs.Tango ;
