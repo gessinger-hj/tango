@@ -3,7 +3,7 @@
  * @param {} timeoutMillis
  * @param {} callback
  */
-Timer = function ( timeoutMillis, callback )
+var Timer = function ( timeoutMillis, callback )
 {
   if ( typeof ( callback.timedout ) == 'function' )
   {
@@ -125,7 +125,7 @@ Timer.prototype =
           this.first = false ;
           if ( this.timeoutMillis != this.initialDelayMillis )
           {
-            window.clearInterval ( this.intervallId ) ;
+            clearInterval ( this.intervallId ) ;
             this.intervallId = setInterval(this.boundFunction, this.timeoutMillis ) ;
           }
         }
