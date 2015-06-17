@@ -1,55 +1,58 @@
 //https://github.com/then/promise
-var Promise = require('promise');
+// var Promise = require('promise') ;
+var Promise = require('q').Promise ;
 var File = require ( "File" ) ;
 var fs = require ( "fs" ) ;
 var T = require ( "Tango" ) ;
 var User = require ( "User" ) ;
 var LogFile = require ( "LogFile" ) ;
 
-// var promise = new Promise(function (resolve, reject) {
+// var promise = Promise(function (resolve, reject) {
 // 	resolve ( new User ( "gess", 11, "*****" ) ) ;
 // });
 // promise.then ( function ( a )
 // {
-// console.log ( "1 --------------promise.then------------" ) ;
-// console.log ( "a=" + a ) ;
-// return Promise.resolve("DDDDDDDD") ;
+// 	console.log ( "1 --------------promise.then------------" ) ;
+// 	console.log ( "a=" + a ) ;
+// 	return Promise.resolve("DDDDDDDD") ;
 // }
 // , function ( a )
 // {
-// console.log ( "2 --------------promise.then------------" ) ;
-// console.log ( "a=" + a ) ;
+// 	console.log ( "2 --------------promise.then------------" ) ;
+// 	console.log ( "a=" + a ) ;
 // }
 // ).then ( function ( a )
 // {
-// console.log ( "B 1 --------------promise.then------------" ) ;
-// console.log ( "a=" + a ) ;
+// 	console.log ( "B 1 --------------promise.then------------" ) ;
+// 	console.log ( "a=" + a ) ;
 // }
 // , function ( a )
 // {
-// console.log ( "B 2 --------------promise.then------------" ) ;
-// console.log ( "a=" + a ) ;
+// 	console.log ( "B 2 --------------promise.then------------" ) ;
+// 	console.log ( "a=" + a ) ;
 // }
 // );
+// return ;
 
 var promise = new Promise(function (resolve, reject) {
 	fs.readFile ( "Xr.txt", 'utf8', function(err,res)
 	{
+console.log ( "0 --------------------------" ) ;
 		if ( err ) reject ( err ) ;
 		else resolve ( res ) ;
 	});
 });
 promise
-.then(function (fileContent)
+.then(function (fileContent,pp)
 {
 	console.log ( "1 -----------------" ) ;
-	console.log ( fileContent.toString() ) ;
+	console.log ( "pp=" + pp ) ;
+	console.log ( "XXXX" + fileContent.toString() ) ;
 }
 ,function(p)
 {
 	console.log ( "2 -----------------" ) ;
-	LogFile.log ( p ) ;
-	throw new Error ( "Exception from err" ) ;
+	throw new Error ( p ) ;
 })
 .catch ( function(p)
 {
