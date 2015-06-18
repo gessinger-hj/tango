@@ -1,6 +1,6 @@
 //https://github.com/then/promise
 // var Promise = require('promise') ;
-var Promise = require('q').Promise ;
+// var Promise = require('q').Promise ;
 var File = require ( "File" ) ;
 var fs = require ( "fs" ) ;
 var T = require ( "Tango" ) ;
@@ -61,10 +61,10 @@ promise
 	console.log ( "p=" + p ) ;
 	LogFile.log ( p ) ;
 })
-.done(function(p)
-{
-	console.log ( "4 -----------------" ) ;
-})
+// .done(function(p)
+// {
+// 	console.log ( "4 -----------------" ) ;
+// })
   ;
 
 // var read = Promise.denodeify(require('fs').readFile)
