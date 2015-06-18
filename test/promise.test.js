@@ -1,11 +1,17 @@
 //https://github.com/then/promise
 // var Promise = require('promise') ;
 // var Promise = require('q').Promise ;
+
 var File = require ( "File" ) ;
 var fs = require ( "fs" ) ;
 var T = require ( "Tango" ) ;
 var User = require ( "User" ) ;
 var LogFile = require ( "LogFile" ) ;
+
+if ( typeof Promise === 'undefined' )
+{
+  Promise = require ( "promise" ) ;
+}
 
 // var promise = Promise(function (resolve, reject) {
 // 	resolve ( new User ( "gess", 11, "*****" ) ) ;
