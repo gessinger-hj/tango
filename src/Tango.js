@@ -286,7 +286,7 @@ TangoClass.prototype.toArray = function (iterable)
  */
 TangoClass.prototype.setProperty = function ( name, value )
 {
-  if ( ! this._envMap ) this._envMap = [] ;
+  if ( ! this._envMap ) this._envMap = {} ;
   this._envMap[name] = value ;
 };
 /**
@@ -333,7 +333,7 @@ TangoClass.prototype.getProperty = function ( name, defaultValue )
   }
   if ( ! this._envMap )
   {
-    this._envMap = [] ;
+    this._envMap = {} ;
   }
   var i ;
   if ( ! this.argsDone )
@@ -417,6 +417,26 @@ TangoClass.prototype.getProperty = function ( name, defaultValue )
  */
 TangoClass.prototype.log = function ( object )
 {
+  if ( util.isError ( object ) )
+  {
+    var ttt = object.toString() ;
+    var tt = util.inspect ( object.stack ) ;
+    tt = tt.split ( "\\n" ) ;
+    if ( tt.length > 0 )
+    {
+      tt.splice ( 0, 1 ) ;
+    }
+    if ( tt.length )
+    {
+      object = ttt + "\n" + tt.join ( "\n" ) ;
+    }
+    else
+    {
+      object = ttt ;
+    }
+    console.log ( object ) ;
+    return ;
+  }
   console.log ( util.inspect ( object, { showHidden: false, depth: null } ) ) ;
 };
 /**
