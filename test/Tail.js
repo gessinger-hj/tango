@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var ExtTail = require('always-tail');
 var EventEmitter = require ( "events" ).EventEmitter ;
 var util = require ( "util" ) ;
@@ -40,7 +41,8 @@ module.exports = Tail ;
 if ( require.main === module )
 {
 	var i = 0 ;
-  var t = new Tail ( "/home/gess/NGMD/Test/Converter.monitoring.log" ) ;
+  // var t = new Tail ( "/home/gess/NGMD/Test/Converter.monitoring.log" ) ;
+  var t = new Tail ( process.argv[2] ) ;
   t.on ( "line", function online(data)
   {
   	console.log ( data ) ;
