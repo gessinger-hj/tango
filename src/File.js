@@ -24,11 +24,11 @@ var File = function ( path, name )
 	{
 		this.path += "/" + name ;
 	}
-	if ( ! this.path )
-	{
-		this.path = process.cwd() ;
-	}
-	this.path = Path.normalize ( this.path ) ;
+	// if ( ! this.path )
+	// {
+	// 	this.path = process.cwd() ;
+	// }
+	// this.path = Path.normalize ( this.path ) ;
 };
 /**
  * Description
@@ -563,11 +563,65 @@ File.prototype.mkdir = function ( mode )
 };
 File.prototype.mkdirs = function ( mode )
 {
-	fs.mkdirSync ( this.path, mode ) ;
+	var mkdirp = require ( "mkdirp" ) ;
+	mkdirp.sync ( this.path ) ;	
+};
+/**
+ * Open read text file line by line and return a list of strings
+ * @return list list of lines
+ */
+File.prototype.getList = function()
+{
+	var b = new Buffer(1) ;
+	var buf = new Buffer(0) ;
+	var list = [] ;
+	var i ;
+	var line = null ;
+
+	var fd ;
+	try
+	{
+		fd = fs.openSync ( this.path, 'r' ) ;
+		for ( i = 0 ; true ; i++ )
+		{
+			var n = fs.readSync ( fd, b, 0, 1, null ) ;
+			if ( n <= 0 )
+			{
+				break ;
+			}
+			var c = b[0] ;
+			if ( c === 0xD )
+			{
+				continue ;
+			}
+			if ( c === 0xA ) // '\n'
+			{
+				var line = buf.toString ( 'utf8' ) ;
+				list.push ( line ) ;
+				buf = buf.slice ( 0, 0 ) ;
+				continue ;
+			}
+	  	buf = Buffer.concat( [ buf, b ] ) ;
+		}
+		if ( buf.length )
+		{
+			var line = buf.toString ( 'utf8' ) ;
+			list.push ( line ) ;
+			buf = buf.slice ( 0, 0 ) ;
+		}
+	}
+	catch ( exc )
+	{
+		if ( fd ) try { fs.close ( fd, function(){} ) } catch ( exc ){}
+	}
+	return list ;
 };
 module.exports = File ;
 if ( require.main === module )
 {
+	var f = new File ( "x/y/z" ) ;
+	console.log ( "" + f ) ;
+	f.mkdirs() ;
 // 	var CsvReader = require ( "CsvReader" ) ;
 // 	var csvr = new CsvReader ( new File ( "x.csv" ).lines() ) ;
 // 	csvr.on ( "array", function onarray(a)

@@ -1,4 +1,18 @@
 var util = require  ( "util" ) ;
+var path = require  ( "path" ) ;
+if ( ! String.prototype.contains )
+{
+  /*
+   * Description
+   * @param {} needle
+   * @return BinaryExpression
+   */
+  String.prototype.contains = function ( needle )
+  {
+    if ( ! needle ) return false ;
+    return this.indexOf ( needle ) >= 0 ;
+  } ;
+}
 if ( ! String.prototype.startsWith )
 {
   /*
@@ -56,14 +70,67 @@ if ( ! Array.remove )
 var TangoClass = function()
 {
   this.jsClassName = "TangoClass" ;
+  this._monthNames = {} ;
+  this._monthNames["en"] = new Array (
+    'January',   'February', 'March',    'April'
+  , 'May',       'June',     'July',     'August'
+  , 'September', 'October',  'November', 'December'
+  , 'Jan',       'Feb',      'Mar',      'Apr'
+  , 'May',       'Jun',      'Jul',      'Aug'
+  , 'Sep',       'Oct',      'Nov',      'Dec'
+  );
+  this._monthNames["de"] = new Array (
+    'Januar',    'Februar',  'März',     'April'
+  , 'Mai',       'Juni',     'Juli',     'August'
+  , 'September', 'Oktober',  'November', 'Dezember'
+  , 'Jan',       'Feb',      'Mrz',      'Apr'
+  , 'Mai',       'Jun',      'Jul',      'Aug'
+  , 'Sep',       'Okt',      'Nov',      'Dez'
+  ) ;
+  this._dayNames = {} ;
+  this._dayNames["en"] = new Array(
+    'Sunday' ,'Monday' ,'Tuesday' ,'Wednesday' ,'Thursday' ,'Friday' ,'Saturday'
+  , 'Sun' ,'Mon' ,'Tue' ,'Wed' ,'Thu' ,'Fri' ,'Sat'
+  );
+  this._dayNames["de"] = new Array(
+    'Sonntag' ,'Montag' ,'Dienstag' ,'Mittwoch' ,'Donnerstag' ,'Freitag' ,'Samstag'
+  , 'So' ,'Mo' ,'Di' ,'Mi' ,'Do' ,'Fr' ,'Sa'
+  );
 };
 /**
  * Description
  * @return BinaryExpression
  */
-TangoClass.prototype.toString = function()
+TangoClass.prototype.toString = function ( value )
 {
-  return "(" + this.jsClassName + ")" ;
+  if ( typeof value === 'undefined' )
+  {
+    return "(" + this.jsClassName + ")" ;
+  }
+  if ( value instanceof Error )
+  {
+    if ( util.isError ( value ) )
+    {
+      var str = value.toString() ;
+      var stackTrace = util.inspect ( value.stack ) ;
+      stackTrace = stackTrace.split ( "\\n" ) ;
+      if ( stackTrace.length > 0 )
+      {
+        stackTrace.splice ( 0, 1 ) ;
+      }
+      if ( stackTrace.length )
+      {
+        str += "\n" + stackTrace.join ( "\n" ) ;
+      }
+      return str ;
+    }
+  }
+  else
+  if ( typeof value === 'object' )
+  {
+    return util.inspect ( value, { showHidden: false, depth: null } )
+  }
+  return value ;
 };
 /**
  * Description
@@ -328,6 +395,7 @@ TangoClass.prototype.getProperty = function ( name, defaultValue )
     value = this._envMap[name] ;
     if ( typeof value !== 'undefined' )
     {
+      if ( typeof value === 'object' ) return defaultValue ? defaultValue : "true" ;
       return value ;
     }
   }
@@ -354,7 +422,7 @@ TangoClass.prototype.getProperty = function ( name, defaultValue )
         var pos = p.indexOf ( '=' ) ;
         if ( pos < 0 )
         {
-          this.setProperty ( p.substring ( 2 ), "true" ) ;
+          this.setProperty ( p.substring ( 2 ), {} ) ;
         }
         else
         {
@@ -376,7 +444,7 @@ TangoClass.prototype.getProperty = function ( name, defaultValue )
         var pos = p.indexOf ( '=' ) ;
         if ( pos < 0 )
         {
-          this.setProperty ( p.substring ( 2 ), "true" ) ;
+          this.setProperty ( p.substring ( 2 ), {} ) ;
         }
         else
         {
@@ -390,6 +458,7 @@ TangoClass.prototype.getProperty = function ( name, defaultValue )
   value = this._envMap[name] ;
   if ( typeof value !== 'undefined' )
   {
+    if ( typeof value === 'object' ) return defaultValue ? defaultValue : "true" ;
     return value ;
   }
   value = process.env[name] ;
@@ -452,7 +521,7 @@ TangoClass.prototype.getConfigPath = function()
  * @param {} str
  * @return list
  */
-TangoClass.prototype.splitJSONObjects = function ( str )
+TangoClass.prototype.splitJSONObjects = function ( str, max )
 {
   var list = [] ;
   var pcounter = 1 ;
@@ -461,12 +530,20 @@ TangoClass.prototype.splitJSONObjects = function ( str )
   var i = 1 ;
   for ( i = 1 ; i < str.length ; i++ )
   {
+    if ( max && i - i0 > max )
+    {
+      return { invalid: true, size: true, max: max, actual: i - i0 } ;
+    }
     var c = str.charAt ( i ) ;
     if ( c === '"' || c === "'" )
     {
       q = c ;
       for ( var j = i+1 ; j < str.length ; j++ )
       {
+        if ( max && j - i0 > max )
+        {
+          return { invalid: true, size: true, max: max, actual: j - i0 } ;
+        }
         c = str.charAt ( j ) ;
         if ( c === q )
         {
@@ -788,7 +865,182 @@ TangoClass.prototype.resolve = function ( src, map, delimiter )
   }
   return tgt ;
 }
+TangoClass.prototype.isWindows = function()
+{
+  return path.sep === '\\' ;
+};
+TangoClass.prototype.isUnix = function()
+{
+  return path.sep === '/' ;
+};
+TangoClass.prototype.getUSERNAME = function()
+{
+  if ( this.isWindows() )
+  {
+    // USERPROFILE=C:\Users\<user-name>
+    return process.env["USERNAME"] ;
+  }
+  else
+  {
+    return process.env["LOGNAME"] ;
+  }
+};
+TangoClass.prototype.formatDate = function ( date, format )
+{
+  if ( typeof format === 'string' && format.indexOf ( "'" ) >= 0 )
+  {
+    var aa = format.split ( "'" ) ;
+    var tt = "" ;
+    for ( var ii = 0 ; ii < aa.length ; ii++ )
+    {
+      if ( ! aa[ii] )
+      {
+        continue ;
+      }
+      if ( ii & 0x01 )
+      {
+        tt += aa[ii] ;
+      }
+      else
+      {
+        tt += this.formatDate ( date, aa[ii] ) ;
+      }
+    }
+    return tt ;
+  }
+  var language = "en" ;
+  var mn = this._monthNames[language] ;
+  var dn = this._dayNames[language] ;
 
+  if ( ! format ) format = "yyyy-MM-ddTHH:mm:ss.SSS" ;
+
+  format=format+"";
+  var result="";
+  var i_format=0;
+  var c="";
+  var token="";
+  var y=date.getFullYear()+"";
+  var M=date.getMonth()+1;
+  var d=date.getDate();
+  var E=date.getDay();
+  var H=date.getHours();
+  var m=date.getMinutes();
+  var s=date.getSeconds();
+  var milliRest = date.getTime() % 1000 ;
+  var yyyy,yy,MMMM,MMM,MM,dd,hh,h,mm,ss,ampm,HH,H,KK,K,kk,k;
+  var value=new Object();
+  if ( y.length < 4 )
+  {
+    y=""+(y-0+1900);
+  }
+  value["y"]=""+y;
+  value["yyyy"]=y;
+  value["yy"]=y.substring(2,4);
+  value["M"]=M;
+  value["MM"]=this._LZ(M);
+  value["MMM"]=mn[M+11];
+  value["MMMM"]=mn[M-1];
+  value["d"]=d;
+  value["dd"]=this._LZ(d);
+  value["E"]=dn[E+7];
+  value["EE"]=dn[E];
+  value["H"]=H;
+  value["HH"]=this._LZ(H);
+  if ( H == 0 )
+  {
+    value["h"]=12;
+  }
+  else
+  if ( H>12 )
+  {
+    value["h"]=H-12;
+  }
+  else
+  {
+    value["h"]=H;
+  }
+  value["hh"]=this._LZ(value["h"]);
+  if ( H>11 )
+  {
+    value["K"]=H-12;
+  }
+  else
+  {
+    value["K"]=H;
+  }
+  value["k"]=H+1;
+  value["KK"]=this._LZ(value["K"]);
+  value["kk"]=this._LZ(value["k"]);
+  if ( H > 11)
+  {
+    value["a"]="PM";
+  }
+  else
+  {
+    value["a"]="AM";
+  }
+  value["m"]=m;
+  value["mm"]=this._LZ(m);
+  value["s"]=s;
+  value["ss"]=this._LZ(s);
+  value["SSS"]=this._LZ2(milliRest);
+  while ( i_format < format.length )
+  {
+    c = format.charAt ( i_format ) ;
+    token="";
+    while (  ( format.charAt ( i_format ) == c )
+          && ( i_format < format.length )
+          )
+    {
+      token += format.charAt ( i_format++ ) ;
+    }
+    if ( value[token] != null )
+    {
+      result += value[token];
+    }
+    else
+    {
+      result += token;
+    }
+  }
+  return result;
+};
+TangoClass.prototype._LZ = function (x){return(x<0||x>9?"":"0")+x;} ;
+TangoClass.prototype._LZ2 = function (x)
+{
+  if ( x < 0 || x >= 100 ) return "" + x ;
+  if ( x >= 10 || x < 100 ) return "0" + x ;
+  return "00" + x ;
+} ;
+TangoClass.prototype._MLZ = function (x)
+{
+  if ( x == "" ) return 0 ;
+  if ( x == "0" ) return 0 ;
+  if ( x == "00" ) return 0 ;
+  var i = 0 ;
+  var rc = "" ;
+  var found = false ;
+  for ( i = 0 ; i < x.length ; i++ )
+  {
+    if ( ! found && x.charAt ( i ) == '0' ) continue ;
+    found = true ;
+    rc += x.charAt ( i ) ;
+  }
+  return rc ;
+};
+TangoClass.prototype.toRFC3339String = function ( date )
+{
+  var to = date.getTimezoneOffset() ;
+  var signum = to > 0 ? "-" : "+" ;
+  if ( to < 0 ) to *= -1 ;
+  var t = this.formatDate ( date )
+        + signum
+        + this._LZ ( Math.round ( to / 60 ) )
+        + ":"
+        + this._LZ ( to % 60 )
+        ;
+  return t ;
+};
 var Tango = null ;
 
 if ( typeof org === 'undefined' ) org = {} ;
@@ -798,5 +1050,12 @@ if ( typeof org.gessinger.tangojs === 'undefined' ) org.gessinger.tangojs = {} ;
 if ( ! org.gessinger.tangojs.Tango )
 {
   org.gessinger.tangojs.Tango = new TangoClass() ;
+}
+if ( ! Date.toRFC3339String )
+{
+  Date.prototype.toRFC3339String = function ()
+  {
+    return org.gessinger.tangojs.Tango.toRFC3339String ( this ) ;
+  };
 }
 module.exports = org.gessinger.tangojs.Tango ;

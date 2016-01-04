@@ -26,7 +26,8 @@
     },
     "dependencies": {
         "sax":"0.6.x",
-        "nodejs-websocket":">=0.1.5"
+        "nodejs-websocket":">=0.1.5",
+        "mkdirp":">=0.5.x"
     },
     "devDependencies": {
     }
