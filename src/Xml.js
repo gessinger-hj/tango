@@ -34,7 +34,7 @@ var XmlElement = function ( tag, text, attr )
     else
     if ( T.isDate ( text ) )
     {
-      var sd = DateUtils.getSoapDateTime ( text ) ;
+      var sd = T.toRFC3339String ( text ) ; //DateUtils.getSoapDateTime ( text ) ;
       this._value = sd ;
       if ( attr && typeof attr === 'object') this._attributes = attr ;
       else this._attributes = {} ;
