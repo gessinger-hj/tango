@@ -1,34 +1,39 @@
 {
-    "name": "tango",
-    "description": "util lib",
-    "version": "0.0.1",
-    "homepage": "https://github.com/gessinger-hj/tango",
-    "keywords": [
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/gessinger-hj/tango.git"
-    },
-    "author": {
-        "name": "Hans-Jürgen Gessinger",
-        "email": "gessinger.hj@gmail.com",
-        "url": ""
-    },
-    "licenses": [
-        {
-            "type": "MIT",
-            "url": "https://github.com/gessinger-hj/tango/blob/master/LICENSE"
-        }
-    ],
-    "main": "index.js",
-    "engines": {
-        "node": ">= 0.6.x"
-    },
-    "dependencies": {
-        "sax":"0.6.x",
-        "nodejs-websocket":">=0.1.5",
-        "mkdirp":">=0.5.x"
-    },
-    "devDependencies": {
+  "name": "tango",
+  "description": "util lib",
+  "version": "0.0.1",
+  "homepage": "https://github.com/gessinger-hj/tango",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gessinger-hj/tango.git"
+  },
+  "author": "Hans-Jürgen Gessinger <gessinger.hj@gmail.com>",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/gessinger-hj/tango/blob/master/LICENSE"
     }
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">= 0.6.x"
+  },
+  "dependencies": {
+    "file-encryptor": "^0.1.0",
+    "mkdirp": ">=0.5.x",
+    "nodejs-websocket": ">=0.1.5",
+    "sax": "0.6.x"
+  },
+  "devDependencies": {},
+  "bugs": {
+    "url": "https://github.com/gessinger-hj/tango/issues"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "MIT"
 }
