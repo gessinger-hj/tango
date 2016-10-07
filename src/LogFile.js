@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var Path = require ( "path" ) ;
 var fs   = require ( "fs" ) ;
 var util = require ( "util" ) ;
@@ -131,7 +133,7 @@ LogFile.prototype.init = function ( s )
   {
     appName = "NoName" ;
   }
-  var tango_app_str = T.getProperty ( "tango_" + appName ) ;
+  var tango_app_str = T.getProperty ( "tango." + appName ) ;
   var tango_env_str = T.getProperty ( "tango.env" ) ;
   if ( ! tango_app_str )
   {
@@ -159,6 +161,7 @@ LogFile.prototype.init = function ( s )
     nv = tango_app_str.split ( "," ) ;
   }
   var redirectOutput = 0 ;
+  this._redirect_TEE = false ;
   for ( i = 0 ; i < nv.length ; i++ )
   {
     var tag = nv[i] ;
@@ -174,6 +177,10 @@ LogFile.prototype.init = function ( s )
     else
     if ( tag.startsWith ( "redirect" ) )
     {
+      if ( val.indexOf ( "+" ) === val.length - 1 )
+      {
+        this._redirect_TEE = true ;
+      }
       redirectOutput = parseInt ( val ) ;
       if ( isNaN ( redirectOutput ) ) redirectOutput = 3 ;
     }
@@ -344,7 +351,6 @@ LogFile.prototype.init = function ( s )
     if ( this._fileName.indexOf ( '.' ) < 0 ) this._fileName += ".log" ;
     this._outputToFile = true ;
   }
-
   if ( redirectOutput )
   {
     this.redirectOutput ( redirectOutput ) ;
@@ -471,6 +477,11 @@ LogFile.prototype._writeToOutputBuffer = function ( s
   if ( ln ) this._out.write ( "\n" ) ;
   if ( s != null ) this._CurSize += dateLen + s.length + (ln ? 1 : 0) ;
   else             this._CurSize += dateLen + (ln ? 1 : 0) ;
+  if ( this._isRedirected && this._redirect_TEE )
+  {
+    process.stdout.write ( s ) ;
+    if ( ln ) process.stdout.write ( "\n" ) ;
+  }
 };
 /**
  * Description
@@ -834,6 +845,8 @@ LogFile.prototype.redirectOutput = function ( channelFlags )
   {
     channelFlags = 3 ;
   }
+  this._isRedirected = true ;
+  var thiz = this ;
   if ( channelFlags & 1 )
   {
     if ( ! this._oldout )
@@ -848,6 +861,7 @@ LogFile.prototype.redirectOutput = function ( channelFlags )
        */
       console.log = function()
       {
+        if ( thiz._redirect_TEE ) thiz.old_console_log ( util.format.apply ( console, arguments ) ) ;
         thiz.log ( util.format.apply ( console, arguments ) + "\n");
       };
       /**
@@ -855,6 +869,7 @@ LogFile.prototype.redirectOutput = function ( channelFlags )
        */
       console.error = function()
       {
+        if ( thiz._redirect_TEE ) thiz.old_console_error ( util.format.apply ( console, arguments ) ) ;
         thiz.error ( util.format.apply ( console, arguments ) + "\n");
       };
       /**
@@ -862,6 +877,7 @@ LogFile.prototype.redirectOutput = function ( channelFlags )
        */
       console.info = function()
       {
+        if ( thiz._redirect_TEE ) thiz.old_console_info ( util.format.apply ( console, arguments ) ) ;
         thiz.info ( util.format.apply ( console, arguments ) + "\n");
       };
       /**
@@ -869,6 +885,7 @@ LogFile.prototype.redirectOutput = function ( channelFlags )
        */
       console.warn = function()
       {
+        if ( thiz._redirect_TEE ) thiz.old_console_warn ( util.format.apply ( console, arguments ) ) ;
         thiz.warning ( util.format.apply ( console, arguments ) + "\n");
       };
       this._oldout = process.stdout;
@@ -901,6 +918,7 @@ LogFile.prototype.unredirectOutput = function ( channelFlags )
   {
     channelFlags = 3 ;
   }
+  this._isRedirected = false ;
   if ( channelFlags & 1 )
   {
     if ( this._oldout )
@@ -1021,22 +1039,25 @@ module.exports = org.gessinger.tangojs.LogFile ;
 if ( require.main === module )
 {
   var Log = org.gessinger.tangojs.LogFile ;
-  Log.init ( "level=notice,file=Log-%DATE%.log" ) ;
-  Log.emergency ( "----------------" ) ;
-  Log.alert ( "----------------" ) ;
-  Log.critical ( "----------------" ) ;
+  Log.init ( "redirect=3+,level=notice,file=Log-%DATE%.log" ) ;
+  Log.emergency ( "-emergency---------------" ) ;
+  Log.alert ( "-alert---------------" ) ;
+  Log.critical ( "-critical---------------" ) ;
 Log.setLevel ( Log.LogLevel.DEBUG ) ;
-  Log.error ( "----------------" ) ;
-  Log.warning ( "----------------" ) ;
-  Log.info ( "----------------" ) ;
-  Log.notice ( "----------------" ) ;
-  Log.debug ( "----------------" ) ;
+  Log.error ( "-error---------------" ) ;
+  Log.warning ( "-warning---------------" ) ;
+  Log.info ( "-info---------------" ) ;
+  Log.notice ( "-notice---------------" ) ;
+  Log.debug ( "-debug---------------" ) ;
   console.log ( "1 ---- console.log ---------" ) ;
   // Log.redirectOutput() ;
   console.log ( "%sXXX", "2 ---- console.log ---------" ) ;
   console.log ( "3 ---- console.log ---------" ) ;
   // Log.unredirectOutput() ;
   console.log ( "4 ---- console.log ---------" ) ;
+  console.error ( "4 ---- console.error ---------" ) ;
+  console.warn ( "4 ---- console.warn ---------" ) ;
+  console.info ( "4 ---- console.info ---------" ) ;
   process.stdout.write ( "5 ---- write ---------\n" ) ;
 // Log.flush() ;
 // process.exit(0) ;
