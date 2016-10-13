@@ -55,7 +55,7 @@ if ( line_by_line )
 		{
 			// assert.deepStrictEqual ( o1, o2, "XXXXXXXXX" ) ;
 			// assert.deepEqual ( o1, o2, "XXXXXXXXX" ) ;
-			expect(o1).to.deep.equal(o2);
+			expect(o2).to.deep.equal(o1);
 		}
 		catch ( exc )
 		{
