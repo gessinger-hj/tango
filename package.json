@@ -20,12 +20,15 @@
     "node": ">= 0.6.x"
   },
   "dependencies": {
+    "always-tail": "^0.2.0",
     "file-encryptor": "^0.1.0",
     "mkdirp": ">=0.5.x",
     "nodejs-websocket": ">=0.1.5",
     "sax": "0.6.x"
   },
-  "devDependencies": {},
+  "bin": {
+    "gp.tail.sensor": "./dev/GPTail.js"
+  },
   "bugs": {
     "url": "https://github.com/gessinger-hj/tango/issues"
   },
