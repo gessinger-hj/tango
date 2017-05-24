@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-var ExtTail = require('always-tail');
+tango            = require ( "tango" ) ;
+var T            = tango ;
+var File         = tango.File ;
+var ExtTail      = require('always-tail');
 var EventEmitter = require ( "events" ).EventEmitter ;
-var util = require ( "util" ) ;
-var T = require ( "Tango" ) ;
-var File = require ( "File" ) ;
+var util         = require ( "util" ) ;
 
 var Tail = function ( fileName )
 {
@@ -12,7 +13,7 @@ var Tail = function ( fileName )
   var f = new File ( this.fileName ) ;
   var start = f.length() - 512 ;
   if ( start < 0 ) start = 0 ;
-  var opts = { start: start } ;
+  var opts = { start: start, interval: 1000 } ;
 	this.exttail = new ExtTail ( fileName, null, opts ) ;
 };
 util.inherits ( Tail, EventEmitter ) ;

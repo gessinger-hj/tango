@@ -1,14 +1,18 @@
-var T = require ( "./Tango" ) ;
-var Event = require ( "Event" ) ;
-var Client = require ( "Client" ) ;
-var FSWatcher = require ( "./FSWatcher" ) ;
-var DateUtils = require ( "./DateUtils" ) ;
+var gepard    = require ( "gepard" ) ;
+var Event     = gepard.Event ;
+var Client    = gepard.Client ;
+
+var tango     = require ( "tango" ) ;
+var T         = gepard ;
+var FSWatcher = tango.FSWatcher ;
+var DateUtils = tango.DateUtils ;
+var File      = tango.File ;
+var Timer     = tango.Timer ;
+var Log       = tango.LogFile ;
+
 var os = require ( "os" ) ;
-var File = require ( "./File" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;
 var util = require ( "util" ) ;
-var Timer = require ( "./Timer" ) ;
-var Log = require ( "./LogFile" ) ;
 var Path = require ( "path" ) ;
 
 /**
@@ -212,79 +216,6 @@ WatchResource.prototype.close = function()
  * Description
  * @constructor
  * @extends WatchResource
- * @param {} log_dir
- * @param {} MRT_dir
- */
-var MRTResource = function ( log_dir, MRT_dir )
-{
-  WatchResource.apply ( this, arguments ) ;
-  this.MRT_dir = MRT_dir ;
-  this.log_dir = log_dir ;
-  this.watcher2 = null ;
-};
-util.inherits ( MRTResource, WatchResource ) ;
-MRTResource.prototype.close = function()
-{
-  WatchResource.prototype.close.apply ( this, arguments ) ;
-  if ( this.watcher2 )
-  {
-    this.watcher2.close() ;
-  }
-  this.watcher2 = null ;
-};
-/**
- * Description
- * @param {} sentinel
- */
-MRTResource.prototype.setParent = function ( sentinel )
-{
-  WatchResource.prototype.setParent.apply ( this, arguments )
-  var pattern = "log_.*_MRTExport_.*\\.log$"
-  var regexp_MRTExport = new RegExp ( pattern ) ; //,modifiers)
-  var previous_file_name = "" ;
-
-  var thiz = this ;
-  this.watcher = new FSWatcher ( this.MRT_dir + "/rating.guiding.rul.tmp" ) ;
-  var e ;
-  this.watcher.on ( "create", function oncreate ( name )
-  {
-    e = new Event ( thiz.parent.mainEventName ) ;
-    e.body = thiz.parent.make_data ( name, "start", "MRTExport", { path:thiz.MRT_dir } ) ;
-    Log.debug ( e.body ) ;
-    thiz.parent.client.fire ( e ) ;
-  });
-  this.watcher.on ( "delete", function ondelete ( name )
-  {
-    previous_file_name = "" ;
-    e = new Event ( thiz.parent.mainEventName ) ;
-    e.body = thiz.parent.make_data ( name, "stop", "MRTExport", { path:thiz.MRT_dir } ) ;
-    Log.debug ( e.body ) ;
-    thiz.parent.client.fire ( e ) ;
-  });
-  this.watcher.watch() ;
-  this.watcher2 = new FSWatcher ( this.log_dir ) ;
-  this.watcher2.on ( "change", function onchange ( name )
-  {
-    Log.debug ( "name=" + name ) ;
-    if ( regexp_MRTExport.test ( name ) )
-    {
-      if ( previous_file_name === name )
-      {
-        return ;
-      }
-      previous_file_name = name ;
-      e = new Event ( thiz.parent.mainEventName ) ;
-      e.body = thiz.parent.make_data ( name, "start", "MRTExport", { path:thiz.log_dir } ) ;
-      Log.debug ( e.body ) ;
-      thiz.parent.client.fire ( e ) ;
-    }
-  })
-  this.watcher2.watch() ;
-};
-/**
- * Description
- * @constructor
- * @extends WatchResource
  * @param {} dirname
  * @param {} pattern
  * @param {} displayPattern
@@ -456,15 +387,14 @@ module.exports =
 { GPResourceSentinel: GPResourceSentinel
 , DirectoryResource: DirectoryResource
 , WatchResource: WatchResource
-, MRTResource: MRTResource
 } ;
 
 if ( require.main === module )
 {
   Log.init() ;
   // Log.setLevel ( Log.LogLevel.DEBUG ) ;
-  var XmlElement = require ( "Xml" ).XmlElement ;
-  var XmlTree = require ( "Xml" ).XmlTree ;
+  var XmlElement = tango.Xml.XmlElement ;
+  var XmlTree = tango.Xml.XmlTree ;
   var config = T.getProperty ( "watch.config" ) ;
   if ( config )
   {
@@ -492,6 +422,8 @@ RS.mainEventName = "notification" ;
     dlist.push ( r ) ;
   });
 
+  var dr = new DirectoryResource ( "../src ") ;
+  dlist.push ( dr ) ;
   for ( var i = 0 ; i < dlist.length ; i++ )
   {
   //   dlist[i].on ( "change", function onchange ( name )

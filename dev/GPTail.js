@@ -1,10 +1,12 @@
-
-var T      = require ( 'Tango' ) ;
+#!/usr/bin/env node
+var gepard = require ( "gepard" ) ;
+var T      = gepard ;
+var tango  = require ( 'tango' ) ;
 var Tail   = require ( './Tail' ) ;
-var File   = require ( 'File' ) ;
-var Event  = require ( 'Event' ) ;
-var Client = require ( 'Client' ) ;
-var Admin  = require ( 'Admin' ) ;
+var File   = tango.File ;
+var Event  = gepard.Event ;
+var Client = gepard.Client ;
+var Admin  = gepard.Admin ;
 
 
 var index = -1 ;
@@ -13,37 +15,15 @@ if ( T.getProperty ( "help" ) )
 {
 	usage() ;
 }
-fileName = T.getProperty ( "file" ) ;
 
-// var _fileList = [ "/home/gess/work/poi-3.8/ServiceContainer.ACS.log_1"
-// 								, "/home/isdp/isdp-server/log/isdp-ciss.log_1"
-// 								, "/home/gess/NGMD/Test/Converter.log"
-// 								];
-var _List1 = [ "/home/gess/kepler/private/log/KaLog.log_1"
-						 , "/home/gess/kepler/private/log/Kaiso.log_1"
-						 ];
-var _List2 = [ "/home/gess/work/poi-3.8/ServiceContainer.ACS.log_1"
-						 , "/home/isdp/isdp-server/log/isdp-ciss.log_1"
-						 , "/home/gess/NGMD/Test/Converter.log"
-						 ];
-var listFile = new File ( __dirname, "GPTail.json" ) ;
-var _fileList = _List1 ;
+var fileName = T.getProperty ( "file", "GPTail.json" ) ;
+var listFile = new File ( fileName ) ;
+var _fileList ;
 if ( listFile.exists() )
 {
 	_fileList = listFile.getJSON() ;
 }
 
-index = 0 ;
-var fileName = T.getProperty ( "file" ) ;
-if ( fileName )
-{
-	var i = _fileList.indexOf ( fileName ) ;
-	if ( i < 0 )
-	{
-		_fileList.push ( fileName ) ;
-		index = _fileList.length - 1 ;
-	}
-}
 var client = new Client() ;
 
 var what = T.getProperty ( "getFileList" ) ;
@@ -166,13 +146,13 @@ function usage ( t )
 		console.log () ;
 	}
 	var s = "GPTail: publish tail services for various files."
-				+ "\nUsage: node GPTail -DoptionName[=value]"
+				+ "\nUsage: node GPTail --optionName[=value]"
 				+	"\nOptions are:"
-				+	"\n  publish:        connect and publish"
-				+	"\n  closeAll:       close all currently active tail activities."
-				+	"\n  info:           list all active watches."
-				+	"\n  getFileList:    list the configured list of files."
-				+	"\n  reloadFileList: reload the file GPTail.json."
+				+	"\n  --publish:        connect and publish"
+				+	"\n  --closeAll:       close all currently active tail activities."
+				+	"\n  --info:           list all active watches."
+				+	"\n  --getFileList:    list the configured list of files."
+				+	"\n  --reloadFileList: reload the file GPTail.json."
 				;
 	console.log ( s ) ;
 	process.exit ( 0 ) ;
