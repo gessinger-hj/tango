@@ -1114,7 +1114,7 @@ XmlTree.prototype._setCollectedElements = function ( list )
 };
 /**
  * Description
- * @method
+ * @method∏
  * @return MemberExpression
  */
 XmlTree.prototype.getCollectedElements = function()
@@ -1126,16 +1126,21 @@ var EventEmitter = require ( "events" ).EventEmitter ;
 /**
  * @constructor
  * @class
- * @param {requestCallback} callbackCloseTag
+ * @param {object} elementCallback, resolveFromEnvironment
  */
-var XmlFactory = function ( callbackCloseTag )
+var XmlFactory = function ( options )
 {
   EventEmitter.call ( this ) ;
-  this.callbackCloseTag = undefined ;
-  if ( typeof callbackCloseTag === 'function' )
+  if ( !options )
   {
-    this.callbackCloseTag = callbackCloseTag ;
+    options = {} ;
   }
+  this.options = options ;
+  if ( typeof this.options.elementCallback !== 'function' )
+  {
+    this.options.elementCallback = null ;
+  }
+  this.options.resolveFromEnvironment = !! options.resolveFromEnvironment ;
 };
 util.inherits ( XmlFactory, EventEmitter ) ;
 /**
@@ -1171,12 +1176,38 @@ XmlFactory.prototype.create = function ( source )
      * Description
      * @param {} text
      */
-    parser.ontext = function ( text ) { thiz.currentChild._ontext ( text ) } ;
+    parser.ontext = function ( text ) {
+        if ( text )
+        {
+          if ( typeof thiz.options.variablesMap === 'object' )
+          {
+            text = T.resolve ( text, thiz.options.variablesMap ) ;
+          }
+          if ( thiz.options.resolveFromEnvironment )
+          {
+            text = T.resolve ( text ) ;
+          }
+        }
+        thiz.currentChild._ontext ( text ) ;
+      } ;
     /*
      * Description
      * @param {} cdata
      */
-    parser.oncdata = function ( cdata ) { thiz.currentChild._oncdata ( cdata ) } ;
+    parser.oncdata = function ( cdata ) {
+        if ( cdata )
+        {
+          if ( typeof thiz.options.variablesMap === 'object' )
+          {
+            cdata = T.resolve ( cdata, thiz.options.variablesMap ) ;
+          }
+          if ( thiz.options.resolveFromEnvironment )
+          {
+            cdata = T.resolve ( cdata ) ;
+          }
+        }
+        thiz.currentChild._oncdata ( cdata ) ;
+      } ;
     /*
      * Description
      */
@@ -1196,6 +1227,20 @@ XmlFactory.prototype.create = function ( source )
      */
     parser.onopentag = function ( tag )
     {
+      if ( typeof thiz.options.variablesMap === 'object' )
+      {
+        for ( key in tag.attributes )
+        {
+          tag.attributes[key] = T.resolve ( tag.attributes[key], thiz.options.variablesMap ) ;
+        }
+      }
+      if ( thiz.options.resolveFromEnvironment )
+      {
+        for ( key in tag.attributes )
+        {
+          tag.attributes[key] = T.resolve ( tag.attributes[key] ) ;
+        }
+      }
       if ( elementStack[0] === x && first )
       {
         first = false ;
@@ -1215,9 +1260,9 @@ XmlFactory.prototype.create = function ( source )
      */
     parser.onclosetag = function()
     {
-      if ( thiz.callbackCloseTag )
+      if ( thiz.options.elementCallback )
       {
-        thiz.callbackCloseTag.call ( null, elementStack[0] ) ;
+        thiz.options.elementCallback.call ( null, elementStack[0] ) ;
       }
       elementStack.shift();
       thiz.currentChild = elementStack[0] ;

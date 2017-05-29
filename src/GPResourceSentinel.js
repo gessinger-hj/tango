@@ -1,4 +1,5 @@
 var gepard    = require ( "gepard" ) ;
+var gbase     = require ( "gbase" ) ;
 var Event     = gepard.Event ;
 var Client    = gepard.Client ;
 
@@ -6,9 +7,9 @@ var tango     = require ( "tango" ) ;
 var T         = gepard ;
 var FSWatcher = tango.FSWatcher ;
 var DateUtils = tango.DateUtils ;
-var File      = tango.File ;
 var Timer     = tango.Timer ;
-var Log       = tango.LogFile ;
+var File      = gbase.File ;
+var Log       = gbase.LogFile ;
 
 var os = require ( "os" ) ;
 var EventEmitter = require ( "events" ).EventEmitter ;

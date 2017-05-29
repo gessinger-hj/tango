@@ -45,23 +45,11 @@ FileLineReader.prototype.lines = function ( callback )
 module.exports = FileLineReader ;
 if ( require.main === module )
 {
+	var n = 0 ;
  	new FileLineReader ( "../package.json" ).lines ( function onarray(line)
  	{
- console.log ( "line=" + line ) ;
+ 		if ( line === null ) { return ; }
+ 		n++ ;
+		console.log ( n + ":" + line ) ;
  	});
-// 	var start = 0 ;
-// 	var end = -1 ;
-// 	var file = new File ( "x.log" ) ;
-// 	function read()
-// 	{
-// 		var opt = {} ;
-// 		opt.start = start ;
-// 		opt.end = file.length() ;
-// 		var str = fs.createReadStream ( file.path, opt ) ;
-// 		str.on ( "data", function ondata(data)
-// 		{
-// console.log ( "data=" + data ) ;
-// 		} ) ;
-// 		str.on ( "end", ) ;
-// 	}
 }

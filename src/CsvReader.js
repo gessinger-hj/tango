@@ -1,10 +1,10 @@
-var util = require ( "util" ) ;
-var fs = require ( "fs" ) ;
+var util   = require ( "util" ) ;
+var fs     = require ( "fs" ) ;
 var stream = require ( 'stream' ) ;
-var Utils = require ( "./Utils" ) ;
+var Utils  = require ( "./Utils" ) ;
 /**
- *  @constructor
- * @param {} lineReader
+ * @class
+ * @param      {}    lineReader  The line reader
  */
 var CsvReader = function ( lineReader )
 {
@@ -33,3 +33,13 @@ var CsvReader = function ( lineReader )
 util.inherits ( CsvReader, stream.Readable ) ;
 
 module.exports = CsvReader ;
+
+if ( require.main === module )
+{
+	var FileLineReader = require ( "./FileLineReader" ) ;
+	var csvr = new CsvReader ( new FileLineReader ( process.argv[2] ).lines() ) ;
+	csvr.on ( "array", function onarray(a)
+	{
+		console.log ( a ) ;
+	});
+}
