@@ -23,6 +23,7 @@
     "always-tail": "^0.2.0",
     "file-encryptor": "^0.1.0",
     "mkdirp": ">=0.5.x",
+    "node-fetch": "^1.7.0",
     "nodejs-websocket": ">=0.1.5",
     "sax": "0.6.x"
   },
@@ -41,6 +42,7 @@
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.24.1",
-    "babel-plugin-transform-async-to-generator": "^6.24.1"
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "node-fetch": "^1.7.0"
   }
 }
